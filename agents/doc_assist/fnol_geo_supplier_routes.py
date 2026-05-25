@@ -10,7 +10,7 @@ Endpoints (prefix /api/v1/fnol/geo-supplier):
   GET  /field-adjusters       — field adjuster roster
 """
 from __future__ import annotations
-import hmac, logging, os
+import logging
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -46,7 +46,7 @@ class AssignRequest(BaseModel):
 def geo_health(): return gsa.health()
 
 @router.post("/assign/{claim_id}")
-def assign(claim_id: str, body: AssignRequest, _: str = Depends(require_roles(*CLAIMS_ROLES))):
+def assign(claim_id: str, body: AssignRequest, _ = Depends(require_roles(*CLAIMS_ROLES))):
     from dataclasses import asdict
     req = gsa.GeoAssignmentRequest(
         claim_id=claim_id,
@@ -62,15 +62,15 @@ def assign(claim_id: str, body: AssignRequest, _: str = Depends(require_roles(*C
     return asdict(gsa.assign_supplier(claim_id, req))
 
 @router.get("/assignment/{claim_id}")
-def get_assignment(claim_id: str, _: str = Depends(require_roles(*READ_ROLES))):
+def get_assignment(claim_id: str, _ = Depends(require_roles(*READ_ROLES))):
     r = gsa.get_assignment(claim_id)
     if not r: raise HTTPException(404, f"No assignment for {claim_id}")
     return r
 
 @router.get("/drp-network")
-def drp_network(_: str = Depends(require_roles(*READ_ROLES))):
+def drp_network(_ = Depends(require_roles(*READ_ROLES))):
     return {"shops": gsa._DRP_NETWORK, "count": len(gsa._DRP_NETWORK)}
 
 @router.get("/field-adjusters")
-def field_adjusters(_: str = Depends(require_roles(*READ_ROLES))):
+def field_adjusters(_ = Depends(require_roles(*READ_ROLES))):
     return {"adjusters": gsa._FIELD_ADJUSTER_ROSTER, "count": len(gsa._FIELD_ADJUSTER_ROSTER)}

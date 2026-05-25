@@ -41,7 +41,6 @@ from fnol_state_backend import make_store, StateBackend
 from fnol_claim import Claim, TelematicsPayload
 from fnol_settings import settings
 from fnol_api_deps import (
-    require_api_key, rate_limited,
     client_error as _client_error, server_error as _server_error,
 )
 from fnol_auth import auth_router as _auth_router
@@ -192,7 +191,7 @@ def health():
     }
 
 @app.get("/api/v1/config")
-def config(_: str = Depends(require_roles(*ADMIN_ONLY))):
+def config(_ = Depends(require_roles(*ADMIN_ONLY))):
     """Authenticated bootstrap. Policy listing returns identifiers only —
     never names, emails, phones, or in-force ranges."""
     return {
@@ -250,7 +249,7 @@ def config(_: str = Depends(require_roles(*ADMIN_ONLY))):
 @app.post("/api/v1/fnol/claims", status_code=status.HTTP_201_CREATED)
 def submit_claim(submission: FNOLSubmission,
                  idempotency_key: Optional[str] = Header(default=None, alias="Idempotency-Key"),
-                 _: str = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
+                 _ = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
     # Idempotency: re-issuing the same key within the TTL returns the prior
     # response instead of triggering a second pipeline run + duplicate claim.
     if idempotency_key:
@@ -283,7 +282,7 @@ def submit_claim(submission: FNOLSubmission,
     return response
 
 @app.get("/api/v1/fnol/claims")
-def list_claims(_: str = Depends(require_roles(*SUPERVISOR_UP, Role.READONLY))):
+def list_claims(_ = Depends(require_roles(*SUPERVISOR_UP, Role.READONLY))):
     sor = get_sor_adapter()
     rows = sor.list_claims()
     for r in rows:
@@ -297,7 +296,7 @@ def list_claims(_: str = Depends(require_roles(*SUPERVISOR_UP, Role.READONLY))):
 
 @app.get("/api/v1/fnol/claims/{claim_id}")
 def get_claim(claim_id: str,
-              _: str = Depends(require_roles(*READ_ROLES))):
+              _ = Depends(require_roles(*READ_ROLES))):
     sor = get_sor_adapter()
     rec = sor.get_claim(claim_id)
     if not rec:
@@ -315,7 +314,7 @@ def get_claim(claim_id: str,
 
 @app.get("/api/v1/fnol/claims/{claim_id}/pipeline")
 def get_pipeline(claim_id: str,
-                 _: str = Depends(require_roles(*READ_ROLES))):
+                 _ = Depends(require_roles(*READ_ROLES))):
     pipeline = _PIPELINE_TRACES.get(claim_id)
     if not pipeline:
         raise _client_error(f"Pipeline trace not found for claim {claim_id}", 404)
@@ -328,7 +327,7 @@ def get_pipeline(claim_id: str,
 
 @app.post("/api/v1/fnol/policy/lookup")
 def policy_lookup(req: PolicyLookupRequest,
-                  _: str = Depends(require_roles(*CLAIMS_ROLES))):
+                  _ = Depends(require_roles(*CLAIMS_ROLES))):
     sor = get_sor_adapter()
     pol = sor.lookup_policy(req.policy_number)
     if not pol:
@@ -350,7 +349,7 @@ def _enrich_record_with_intake(record: dict, pipeline: Optional[dict]) -> dict:
 
 @app.post("/api/v1/fnol/copilot")
 def copilot_chat(req: CoPilotRequest,
-                 _: str = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
+                 _ = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
     sor = get_sor_adapter()
     record = sor.get_claim(req.claim_id) or {}
     pipeline = _PIPELINE_TRACES.get(req.claim_id)
@@ -366,7 +365,7 @@ def copilot_chat(req: CoPilotRequest,
 
 @app.get("/api/v1/fnol/copilot/alerts/{claim_id}")
 def copilot_alerts(claim_id: str,
-                   _: str = Depends(require_roles(*CLAIMS_ROLES))):
+                   _ = Depends(require_roles(*CLAIMS_ROLES))):
     sor = get_sor_adapter()
     record = sor.get_claim(claim_id) or {}
     pipeline = _PIPELINE_TRACES.get(claim_id)
@@ -377,7 +376,7 @@ def copilot_alerts(claim_id: str,
 
 @app.get("/api/v1/fnol/copilot/telematics/{claim_id}")
 def copilot_telematics(claim_id: str,
-                       _: str = Depends(require_roles(*CLAIMS_ROLES))):
+                       _ = Depends(require_roles(*CLAIMS_ROLES))):
     """Return structured telematics + vendor report context for the Co-Pilot UI panel.
     This is the dedicated data feed for the S0 telematics context card — keeps the
     copilot/chat endpoint lightweight.
@@ -421,13 +420,13 @@ def copilot_telematics(claim_id: str,
 
 @app.post("/api/v1/fnol/conversation/start")
 def convo_start(req: ConversationStartRequest,
-                _: str = Depends(require_roles(*CLAIMS_ROLES))):
+                _ = Depends(require_roles(*CLAIMS_ROLES))):
     return convo.start_session()
 
 
 @app.post("/api/v1/fnol/conversation/turn")
 def convo_turn(req: ConversationTurnRequest,
-               _: str = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
+               _ = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
     try:
         result = convo.turn(req.session_id, req.user_message)
     except Exception as e:
@@ -443,7 +442,7 @@ def convo_turn(req: ConversationTurnRequest,
 
 @app.get("/api/v1/fnol/conversation/{session_id}")
 def convo_view(session_id: str,
-               _: str = Depends(require_roles(*READ_ROLES))):
+               _ = Depends(require_roles(*READ_ROLES))):
     v = convo.session_view(session_id)
     if not v:
         raise _client_error(f"Session {session_id} not found", 404)
@@ -473,7 +472,7 @@ class OwnerLetterRequest(BaseModel):
 
 @app.post("/api/v1/fnol/total-loss/evaluate")
 def tl_evaluate(req: TotalLossEvaluateRequest,
-                _: str = Depends(require_roles_rate_limited(*SUPERVISOR_UP))):
+                _ = Depends(require_roles_rate_limited(*SUPERVISOR_UP))):
     pipe = _PIPELINE_TRACES.get(req.claim_id)
     if not pipe:
         raise _client_error(f"Claim {req.claim_id} not found in pipeline trace store", 404)
@@ -495,7 +494,7 @@ def tl_evaluate(req: TotalLossEvaluateRequest,
 
 @app.post("/api/v1/fnol/total-loss/assign-salvage")
 def tl_assign_salvage(req: SalvageAssignRequest,
-                      _: str = Depends(require_roles_rate_limited(*SUPERVISOR_UP))):
+                      _ = Depends(require_roles_rate_limited(*SUPERVISOR_UP))):
     try:
         ev = tla.assign_salvage(req.evaluation_id, vendor=req.vendor)
     except KeyError:
@@ -512,7 +511,7 @@ def tl_assign_salvage(req: SalvageAssignRequest,
 
 @app.post("/api/v1/fnol/total-loss/owner-decision")
 def tl_owner_decision(req: OwnerDecisionRequest,
-                      _: str = Depends(require_roles(*SUPERVISOR_UP))):
+                      _ = Depends(require_roles(*SUPERVISOR_UP))):
     try:
         ev = tla.record_owner_decision(req.evaluation_id, req.choice)
     except KeyError:
@@ -525,7 +524,7 @@ def tl_owner_decision(req: OwnerDecisionRequest,
 
 @app.post("/api/v1/fnol/total-loss/letter")
 def tl_letter(req: OwnerLetterRequest,
-              _: str = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
+              _ = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
     try:
         letter = tla.generate_owner_letter(req.evaluation_id, choice=req.choice)
     except KeyError:
@@ -537,7 +536,7 @@ def tl_letter(req: OwnerLetterRequest,
 
 @app.get("/api/v1/fnol/total-loss/{evaluation_id}")
 def tl_get(evaluation_id: str,
-           _: str = Depends(require_roles(*READ_ROLES))):
+           _ = Depends(require_roles(*READ_ROLES))):
     ev = tla.get_evaluation(evaluation_id)
     if not ev:
         raise _client_error(f"Evaluation {evaluation_id} not found", 404)
@@ -546,7 +545,7 @@ def tl_get(evaluation_id: str,
 
 @app.get("/api/v1/fnol/total-loss/by-claim/{claim_id}")
 def tl_by_claim(claim_id: str,
-                _: str = Depends(require_roles(*READ_ROLES))):
+                _ = Depends(require_roles(*READ_ROLES))):
     ev = tla.get_evaluation_by_claim(claim_id)
     if not ev:
         raise _client_error(f"No evaluation found for claim {claim_id}", 404)
@@ -554,7 +553,7 @@ def tl_by_claim(claim_id: str,
 
 
 @app.get("/api/v1/fnol/total-loss")
-def tl_list(_: str = Depends(require_roles(*READ_ROLES)), limit: int = 50):
+def tl_list(_ = Depends(require_roles(*READ_ROLES)), limit: int = 50):
     return {"evaluations": tla.list_evaluations(limit=limit)}
 
 

@@ -49,7 +49,7 @@ def _require_langgraph() -> None:
 # ── Routes ──────────────────────────────────────────────────────────────
 
 @router.get("/health")
-def v3_health(_: str = Depends(require_roles(*READ_ROLES))):
+def v3_health(_ = Depends(require_roles(*READ_ROLES))):
     # /health intentionally does NOT raise on LANGGRAPH_AVAILABLE=False —
     # the body itself returns `l3_enabled` so smoke tests can detect the
     # missing-dependency case without a 503.
@@ -57,7 +57,7 @@ def v3_health(_: str = Depends(require_roles(*READ_ROLES))):
 
 
 @router.get("/claims")
-def list_threads(limit: int = 50, _: str = Depends(require_roles(*SUPERVISOR_UP, Role.READONLY))):
+def list_threads(limit: int = 50, _ = Depends(require_roles(*SUPERVISOR_UP, Role.READONLY))):
     if not getattr(lg, "LANGGRAPH_AVAILABLE", False):
         return {"threads": [], "l3_enabled": False}
     limit = max(1, min(limit, 200))
@@ -69,7 +69,7 @@ def list_threads(limit: int = 50, _: str = Depends(require_roles(*SUPERVISOR_UP,
 
 
 @router.post("/claims", status_code=status.HTTP_201_CREATED)
-def submit_claim(claim: Claim, _: str = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
+def submit_claim(claim: Claim, _ = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
     """Run a Claim through the L3 LangGraph engine. Rate-limited because the
     graph invokes LLM-backed nodes (SIU memo, ROR draft, etc.)."""
     _require_langgraph()
@@ -81,7 +81,7 @@ def submit_claim(claim: Claim, _: str = Depends(require_roles_rate_limited(*CLAI
 
 
 @router.get("/claims/{thread_id}")
-def get_thread(thread_id: str, _: str = Depends(require_roles(*READ_ROLES))):
+def get_thread(thread_id: str, _ = Depends(require_roles(*READ_ROLES))):
     _require_langgraph()
     try:
         state = lg.get_thread_state(thread_id)
@@ -108,7 +108,7 @@ class ResumeRequest(BaseModel):
 def resume_thread(
     thread_id: str,
     body: ResumeRequest,
-    _: str = Depends(require_roles(*SUPERVISOR_UP)),
+    _ = Depends(require_roles(*SUPERVISOR_UP)),
 ):
     """
     Resume a graph thread suspended at a HITL interrupt gate.

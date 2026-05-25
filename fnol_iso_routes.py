@@ -56,12 +56,12 @@ class ISOQueryRequest(BaseModel):
 # ── Routes ──────────────────────────────────────────────────────────────
 
 @router.get("/health")
-def iso_health(_: str = Depends(require_roles(*READ_ROLES))):
+def iso_health(_ = Depends(require_roles(*READ_ROLES))):
     return iso.health()
 
 
 @router.post("/query")
-def iso_query(req: ISOQueryRequest, _: str = Depends(require_roles_rate_limited(Role.ADJUSTER, Role.SUPERVISOR, Role.SIU_INVESTIGATOR, Role.ADMIN))):
+def iso_query(req: ISOQueryRequest, _ = Depends(require_roles_rate_limited(Role.ADJUSTER, Role.SUPERVISOR, Role.SIU_INVESTIGATOR, Role.ADMIN))):
     """ISO query is billed per inquiry — rate-limited per API key."""
     try:
         request_obj = iso.ISOClaimSearchRequest(**req.model_dump(exclude_none=True))
@@ -75,11 +75,11 @@ def iso_query(req: ISOQueryRequest, _: str = Depends(require_roles_rate_limited(
 
 
 @router.get("/cache")
-def iso_cache(_: str = Depends(require_roles(*READ_ROLES))):
+def iso_cache(_ = Depends(require_roles(*READ_ROLES))):
     return iso.cache_stats()
 
 
 @router.delete("/cache/{claim_id}")
-def iso_cache_delete(claim_id: str, _: str = Depends(require_roles(*ADMIN_ONLY))):
+def iso_cache_delete(claim_id: str, _ = Depends(require_roles(*ADMIN_ONLY))):
     removed = iso.invalidate_cache(claim_id)
     return {"claim_id": claim_id, "removed": bool(removed)}

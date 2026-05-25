@@ -50,7 +50,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 import fnol_langgraph_engine as lg
@@ -246,7 +246,7 @@ async def _ws_ping_loop(ws: WebSocket) -> None:
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 @router.get("/status")
-def langgraph_status(_: str = Depends(require_roles(*READ_ROLES))):
+def langgraph_status(_ = Depends(require_roles(*READ_ROLES))):
     """
     System-level L3 status — RSK-03 completion.
 
@@ -291,7 +291,7 @@ def langgraph_status(_: str = Depends(require_roles(*READ_ROLES))):
 
 
 @router.post("/run", status_code=202)
-async def async_run(body: RunRequest, _: str = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
+async def async_run(body: RunRequest, _ = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
     """
     Async L3 claim submission.
 
@@ -353,7 +353,8 @@ async def ws_stream(websocket: WebSocket, thread_id: str):
     api_key = websocket.query_params.get("api_key", "")
     try:
         _check_api_key(api_key)
-    except Exception:
+    except HTTPException:
+        log.warning("WS auth failed thread_id=%s: invalid or missing API key", thread_id)
         await websocket.close(code=4001)  # 4001 = Unauthorized
         return
 
@@ -489,7 +490,7 @@ async def ws_stream(websocket: WebSocket, thread_id: str):
 
 
 @router.get("/hitl")
-def list_hitl(limit: int = 50, _: str = Depends(require_roles(*SUPERVISOR_UP, Role.SIU_INVESTIGATOR))):
+def list_hitl(limit: int = 50, _ = Depends(require_roles(*SUPERVISOR_UP, Role.SIU_INVESTIGATOR))):
     """
     Return all threads currently suspended at a HITL interrupt gate.
     Used by the Live Pipeline UI to surface pending adjuster actions.
@@ -513,7 +514,7 @@ def list_hitl(limit: int = 50, _: str = Depends(require_roles(*SUPERVISOR_UP, Ro
 def resolve_hitl(
     thread_id: str,
     decision: HitlDecision,
-    _: str = Depends(require_roles(*SUPERVISOR_UP)),
+    _ = Depends(require_roles(*SUPERVISOR_UP)),
 ):
     """
     Submit a HITL decision to resume a suspended L3 graph thread.

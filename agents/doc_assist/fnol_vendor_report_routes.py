@@ -15,7 +15,6 @@ Endpoints (prefix /api/v1/fnol/vendor-report):
 """
 from __future__ import annotations
 
-import hmac
 import logging
 from typing import List, Optional
 
@@ -57,7 +56,7 @@ def vendor_report_health():
 def trigger_vendor_reports(
     claim_id: str,
     body: TriggerRequest,
-    _: str = Depends(require_roles(*CLAIMS_ROLES)),
+    _ = Depends(require_roles(*CLAIMS_ROLES)),
 ):
     req = vra.VendorReportRequest(
         claim_id=claim_id,
@@ -80,7 +79,7 @@ def trigger_vendor_reports(
 @router.get("/status/{claim_id}")
 def get_report_status(
     claim_id: str,
-    _: str = Depends(require_roles(*CLAIMS_ROLES)),
+    _ = Depends(require_roles(*CLAIMS_ROLES)),
 ):
     result = vra.get_report_status(claim_id)
     if not result:
@@ -90,7 +89,7 @@ def get_report_status(
 @router.get("/report/{report_id}")
 def get_report(
     report_id: str,
-    _: str = Depends(require_roles(*CLAIMS_ROLES)),
+    _ = Depends(require_roles(*CLAIMS_ROLES)),
 ):
     r = vra.get_report(report_id)
     if not r:
@@ -100,14 +99,14 @@ def get_report(
 @router.get("/triggers/{claim_id}")
 def list_triggers(
     claim_id: str,
-    _: str = Depends(require_roles(*CLAIMS_ROLES)),
+    _ = Depends(require_roles(*CLAIMS_ROLES)),
 ):
     return {"claim_id": claim_id, "triggers": vra.list_downstream_triggers(claim_id)}
 
 @router.put("/triggers/{trigger_id}/ack")
 def ack_trigger(
     trigger_id: str,
-    _: str = Depends(require_roles(*CLAIMS_ROLES)),
+    _ = Depends(require_roles(*CLAIMS_ROLES)),
 ):
     t = vra.acknowledge_trigger(trigger_id)
     if not t:

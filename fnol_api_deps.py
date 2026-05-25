@@ -34,19 +34,10 @@ from typing import Optional
 from fastapi import Depends, Header, HTTPException
 
 from fnol_auth import TokenUser, get_current_user   # dual-auth (JWT + API key)
-from fnol_runtime import RateLimiter
+from fnol_rbac import _RATE_LIMITER                 # single shared rate-limit bucket
 from fnol_settings import settings
 
 log = logging.getLogger("fnol.api")
-
-
-# ── Process-wide rate limiter ─────────────────────────────────────────────────
-# Shared with fnol_rbac.require_roles_rate_limited — same process, same bucket.
-
-_RATE_LIMITER = RateLimiter(
-    max_requests=settings.fnol_rate_limit_max,
-    window_seconds=settings.fnol_rate_limit_window_seconds,
-)
 
 
 # ── Legacy X-API-Key validator (used directly by WebSocket auth) ──────────────
@@ -76,7 +67,7 @@ def require_api_key(user: TokenUser = Depends(get_current_user)) -> TokenUser:
     """FastAPI dependency: authenticate via JWT Bearer or X-API-Key.
 
     Backward-compatible shim — returns a TokenUser instead of the raw key
-    string, but callers that discard the value (``_: str = Depends(...)``)
+    string, but callers that discard the value (``_ = Depends(...)``)
     are unaffected at runtime (Python does not enforce annotation types).
 
     Prefer ``require_roles()`` from ``fnol_rbac`` for new endpoints so that
