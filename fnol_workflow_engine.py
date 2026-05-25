@@ -375,6 +375,117 @@ def stage_s1_fnol_capture(claim: Claim, context: Dict[str, Any]) -> StageResult:
 
 
 # ───────────────────────────────────────────────────────────────────────────
+# Stage S1A — Document Assist & Intelligent Classification
+# ───────────────────────────────────────────────────────────────────────────
+
+def stage_s1a_doc_assist(claim: Claim, context: Dict[str, Any]) -> StageResult:
+    """S1-A: Document Assist & Intelligent Classification.
+
+    Runs immediately after S1 FNOL Capture.  Processes any documents bundled
+    with the intake payload through multi-modal LLM classification, OCR field
+    extraction, quality scoring (< 0.60 → re-submission request), SOR task
+    auto-creation, and priority alert dispatch for litigation documents.
+
+    In the POC the standard FNOL submission carries no binary attachments, so
+    the stage initialises the doc-assist session and emits an advisory pointing
+    adjusters to the /doc-assist UI tab.  Documents uploaded post-FNOL are
+    processed independently via the REST API.
+    """
+    # Lazy import — avoids a circular dep; mirrors the A12 pattern.
+    try:
+        import sys as _sys, pathlib as _pl
+        _da = str(_pl.Path(__file__).parent / "agents" / "doc_assist")
+        if _da not in _sys.path:
+            _sys.path.insert(0, _da)
+        from agents.doc_assist import fnol_doc_assist_agent as _da_mod  # type: ignore[import]
+    except Exception as _ie:
+        return StageResult(
+            "S1A", "Document Assist & Intelligent Classification", "Document Assist Agent",
+            "error", _utcnow_iso(), _utcnow_iso(), 0,
+            {}, [], [f"s1a_import_failed: {_ie}"], error=str(_ie),
+        )
+
+    t0 = time.time()
+    started = _utcnow_iso()
+    advisories: List[str] = []
+
+    # Pull documents from S1 outputs (future wiring) or empty list for base POC.
+    s1_out    = context.get("S1", {}) or {}
+    documents = s1_out.get("documents", []) or []
+
+    claim_context: Dict[str, Any] = {
+        "policy_number":        claim.policy_number,
+        "loss_cause":           claim.loss_cause,
+        "injury_reported":      bool(getattr(claim, "injury_reported", False)),
+        "attorney_represented": bool(getattr(claim, "attorney_represented", False)),
+        "loss_type_cd":         s1_out.get("loss_type_cd", ""),
+    }
+
+    try:
+        result = _da_mod.process_claim_documents(
+            claim_id      = claim.claim_id or "UNKNOWN",
+            documents     = documents,
+            claim_context = claim_context,
+        )
+    except Exception as exc:
+        return StageResult(
+            "S1A", "Document Assist & Intelligent Classification", "Document Assist Agent",
+            "error", started, _utcnow_iso(), int((time.time() - t0) * 1000),
+            {}, [], [f"s1a_process_failed: {type(exc).__name__}"],
+            error=f"{type(exc).__name__}",
+        )
+
+    outputs: Dict[str, Any] = {
+        "documents_processed": result.processed_count,
+        "alerts_dispatched":   len(result.alerts_dispatched),
+        "tasks_created":       len(result.tasks_created),
+        "litigation_flag":     result.litigation_flag,
+        "automation_rate":     result.automation_rate,
+        "sla_met":             result.sla_met,
+        "missing_types": (result.missing_docs.missing if result.missing_docs else []),
+    }
+
+    if result.litigation_flag:
+        advisories.append(
+            "Litigation document detected — priority alert dispatched to legal team ≤ 30 min."
+        )
+    resubmit_count = len([d for d in result.documents if d.requires_resubmission])
+    if resubmit_count:
+        advisories.append(
+            f"{resubmit_count} document(s) below quality threshold (< 0.60) — "
+            "resubmission request queued."
+        )
+    if not documents:
+        advisories.append(
+            "No documents bundled at FNOL intake — S1-A session initialised; "
+            "upload documents via Doc Assist tab or POST /api/v1/fnol/doc-assist/classify."
+        )
+
+    decisions: List[DecisionRecord] = [DecisionRecord(
+        stage_id    = "S1A",
+        stage_name  = "Document Assist & Intelligent Classification",
+        agent       = "Document Assist Agent",
+        decision    = "DOC_ASSIST_READY" if not documents else "DOC_ASSIST_PROCESSED",
+        confidence  = 1.0 if not documents else result.automation_rate,
+        rationale   = (
+            f"docs={result.processed_count}, litigation={result.litigation_flag}, "
+            f"alerts={len(result.alerts_dispatched)}, tasks={len(result.tasks_created)}"
+        ),
+        inputs_hash   = _hash(claim.model_dump()),
+        model_version = "doc-assist-v1.0-poc",
+        timestamp     = _utcnow_iso(),
+        hitl_required = result.litigation_flag,
+    )]
+
+    stage_status = "hitl" if result.litigation_flag else "stp"
+    return StageResult(
+        "S1A", "Document Assist & Intelligent Classification", "Document Assist Agent",
+        stage_status, started, _utcnow_iso(), int((time.time() - t0) * 1000),
+        outputs, decisions, advisories,
+    )
+
+
+# ───────────────────────────────────────────────────────────────────────────
 # Stage 2 — Coverage Verification & Reservation
 # ───────────────────────────────────────────────────────────────────────────
 
@@ -1096,7 +1207,7 @@ def stage_s7_subrogation(claim: Claim, context: Dict[str, Any]) -> StageResult:
 # Pipeline orchestrator
 # ───────────────────────────────────────────────────────────────────────────
 
-PIPELINE_VERSION = "4.2.0-A12-siu-case-builder"
+PIPELINE_VERSION = "4.3.0-S1A-doc-assist"
 
 # ───────────────────────────────────────────────────────────────────────────
 # A11 — Total-Loss & Salvage Orchestrator (conditional stage)
@@ -1307,6 +1418,7 @@ class StageDef:
 PIPELINE_STAGES: List[StageDef] = [
     StageDef("S0",  stage_s0_pre_fnol,       "FNOL Intake Agent"),
     StageDef("S1",  stage_s1_fnol_capture,   "FNOL Intake Agent"),
+    StageDef("S1A", stage_s1a_doc_assist,    "Document Assist Agent"),
     StageDef("S2",  stage_s2_coverage,       "Coverage & Liability Agent"),
     StageDef("S3",  stage_s3_triage,         "Triage & Assignment Agent"),
     StageDef("S4A", stage_s4a_fraud,         "Fraud Detection Agent",   parallel_group="S4"),
