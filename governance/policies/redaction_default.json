@@ -1,0 +1,13 @@
+{
+  "rules": [
+    {"path": "parties.ssn",          "action": "tokenize",       "apply_at": "claim_close + 30d"},
+    {"path": "parties.firstName",    "action": "redact",         "apply_at": "claim_close + 7y"},
+    {"path": "parties.lastName",     "action": "redact",         "apply_at": "claim_close + 7y"},
+    {"path": "parties.dateOfBirth",  "action": "tokenize",       "apply_at": "claim_close + 7y"},
+    {"path": "parties.address",      "action": "redact_to_zip3", "apply_at": "claim_close + 30d"},
+    {"path": "claimant.email",       "action": "redact",         "apply_at": "claim_close + 30d"},
+    {"path": "claimant.phone",       "action": "tokenize",       "apply_at": "claim_close + 30d"},
+    {"path": "lossDescription",      "action": "keep",           "apply_at": "never"},
+    {"path": "photosUploaded",       "action": "delete_object",  "apply_at": "claim_close + 7y"}
+  ]
+}

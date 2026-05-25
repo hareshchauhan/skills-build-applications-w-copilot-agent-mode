@@ -1,0 +1,19 @@
+{
+  "schedule": "nightly_03:00_local",
+  "window_days": 30,
+  "min_cell_size": 5,
+  "attributes_monitored": ["age_band", "gender", "language_preference", "census_tract_composition"],
+  "thresholds": {
+    "demographic_parity_ratio": 0.80,
+    "equalized_odds_difference": 0.10,
+    "calibration_by_group": 0.02,
+    "false_positive_rate_disparity": 0.05
+  },
+  "breach_actions": {
+    "notify_cco": true,
+    "log_to_decision_record": true,
+    "raise_hitl_rate_to": 1.0,
+    "banner_in_ui": true,
+    "remediation_path": "Threshold breach → CCO notified → re-calibration job queued → HITL rate 100% on flagged segment until resolved"
+  }
+}

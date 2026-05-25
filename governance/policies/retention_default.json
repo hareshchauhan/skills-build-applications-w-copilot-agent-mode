@@ -1,0 +1,18 @@
+{
+  "default_class": "STANDARD_7Y",
+  "overrides": [
+    {"if": {"decisionType": "BI_EVALUATE"}, "set": "EXTENDED_10Y"},
+    {"if": {"decisionType": "INJURY_ASSESS"}, "set": "EXTENDED_10Y"},
+    {"if": {"decisionType": "FRAUD_SCORE", "band": ["HIGH", "CRITICAL"]}, "set": "EXTENDED_10Y"},
+    {"if": {"decisionType": "SETTLE", "status": ["BLOCKED_FRAUD", "BLOCKED_COVERAGE"]}, "set": "EXTENDED_10Y"},
+    {"if": {"decisionType": "SETTLE", "status": "DENIED"}, "set": "MINIMAL_3Y"},
+    {"if": {"decisionType": "COVERAGE_VERIFY", "decision": "DENIED"}, "set": "MINIMAL_3Y"},
+    {"if": {"litigationFlag": true}, "set": "LITIGATION_HOLD"}
+  ],
+  "durations_days": {
+    "STANDARD_7Y": 2555,
+    "EXTENDED_10Y": 3650,
+    "MINIMAL_3Y": 1095,
+    "LITIGATION_HOLD": -1
+  }
+}

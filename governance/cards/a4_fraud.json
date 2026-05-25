@@ -1,0 +1,173 @@
+{
+  "agent_id": "a4_fraud",
+  "agent_name": "Fraud Detection Agent",
+  "version": "3.5.0",
+  "blueprint_stage": "04A \u2014 Fraud & Anomaly Detection",
+  "maturity_level": "L2",
+  "owner": {
+    "team": "Accenture P&C Claims AI",
+    "contact": "claims-ai@accenture.com",
+    "last_review": "2026-05-08",
+    "next_review": "2026-08-08"
+  },
+  "intended_use": {
+    "primary": "40-signal composite fraud model across 8 categories; ISO ClaimSearch handshake; SIU referral and payment hold for score > 0.75.",
+    "in_scope": [
+      "US personal-lines auto first-party claims",
+      "All 50 US states"
+    ],
+    "out_of_scope": [
+      "Commercial auto",
+      "Workers' comp",
+      "Pricing/underwriting"
+    ]
+  },
+  "model_type": "hybrid_rules_plus_ml",
+  "training_approach": "Rules + heuristics calibrated against POC closed-claim outcomes. ML uplift planned for v4. No demographic features used.",
+  "inputs": {
+    "data_sources": [
+      {
+        "source": "FNOL Intake (A1)",
+        "sensitivity": "PII",
+        "fields": [
+          "claimants",
+          "vehicles",
+          "lossDescription"
+        ]
+      },
+      {
+        "source": "ISO_ClaimSearch",
+        "sensitivity": "PII + CRA",
+        "fields": [
+          "prior_loss_history",
+          "network_link_graph"
+        ]
+      },
+      {
+        "source": "LexisNexis_CLUE",
+        "sensitivity": "PII + CRA",
+        "fields": [
+          "claim_history"
+        ]
+      },
+      {
+        "source": "Telematics provider",
+        "sensitivity": "behavioral",
+        "fields": [
+          "impactSeverityScore vs lossDescription"
+        ]
+      }
+    ],
+    "prohibited_inputs": [
+      "Race/ethnicity",
+      "Religion",
+      "National origin",
+      "Sexual orientation",
+      "Genetic information",
+      "Credit score in claims handling"
+    ]
+  },
+  "outputs": {
+    "fields": [
+      "fraudRiskScore",
+      "fraudBand",
+      "signalBreakdown",
+      "siuReferralFiled",
+      "paymentHoldFlag",
+      "networkLinkAlert"
+    ],
+    "decision_record_emitted": true,
+    "hitl_gate": "confidence < 0.70"
+  },
+  "performance": {
+    "metrics": [
+      {
+        "name": "fraud_recall_at_p75_threshold",
+        "current": 0.42,
+        "target": 0.55
+      },
+      {
+        "name": "fraud_precision",
+        "current": 0.71,
+        "target": 0.8
+      },
+      {
+        "name": "latency_p95_ms",
+        "current": 820,
+        "target": 1000
+      }
+    ],
+    "calibration": {
+      "expected_calibration_error": 0.04,
+      "target_ece": 0.05
+    }
+  },
+  "fairness": {
+    "monitored": true,
+    "monitor": "governance/bias_monitor.py",
+    "protected_attributes": [
+      {
+        "attribute": "age_band (where permitted)",
+        "proxy": "DOB from policy data"
+      },
+      {
+        "attribute": "language_preference",
+        "proxy": "claimant.preferredLanguage"
+      },
+      {
+        "attribute": "census_tract_composition",
+        "proxy": "garaging ZIP \u2192 census",
+        "note": "Monitoring only \u2014 never input"
+      }
+    ],
+    "metrics": [
+      {
+        "demographic_parity_ratio": 0.8
+      },
+      {
+        "equalized_odds_difference": 0.1
+      },
+      {
+        "calibration_by_group": 0.02
+      }
+    ],
+    "remediation_path": "Threshold breach \u2192 bias_monitor flags \u2192 CCO + model owner notified within 24h \u2192 re-calibration job queued \u2192 HITL rate raised to 100% on flagged segment until resolved."
+  },
+  "failure_modes_known": [
+    {
+      "id": "FM-01",
+      "description": "Sparse loss narrative \u2192 low confidence",
+      "mitigation": "HITL gate"
+    }
+  ],
+  "human_oversight": {
+    "hitl_gates": [
+      {
+        "high_score": "fraudBand in [HIGH, CRITICAL]"
+      },
+      {
+        "network_alert": "Network graph: claimant shares provider/attorney with 3+ prior fraud-flagged claims"
+      },
+      {
+        "bias_flag_active": "Any FPR-disparity breach in last 7d"
+      }
+    ],
+    "override_logging": "All adjuster overrides logged with overrideUserId, overrideReason, overrideTimestamp; feedback signal sent to model registry."
+  },
+  "regulatory_alignment": [
+    "NAIC Model Bulletin \u00a75 monitoring",
+    "Colorado Reg 10-1-1 \u00a75 (algorithmic discrimination)",
+    "NYDFS CL-7",
+    "FCRA \u00a7615(a) when CRA data used",
+    "State UCSPA (proportionate investigation)"
+  ],
+  "audit_log_location": "governance/decision_log/a4_fraud/",
+  "retention_class": "EXTENDED_10Y",
+  "change_log": [
+    {
+      "date": "2026-05-08",
+      "version": "3.5.0",
+      "note": "Governance Layer v1 \u2014 model card added; bias monitor wired where applicable"
+    }
+  ]
+}

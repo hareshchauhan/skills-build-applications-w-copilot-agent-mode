@@ -1,0 +1,146 @@
+{
+  "agent_id": "a8_subrogation",
+  "agent_name": "Subrogation Agent",
+  "version": "3.5.0",
+  "blueprint_stage": "07 \u2014 Subrogation & Recovery",
+  "maturity_level": "L2",
+  "owner": {
+    "team": "Accenture P&C Claims AI",
+    "contact": "claims-ai@accenture.com",
+    "last_review": "2026-05-08",
+    "next_review": "2026-08-08"
+  },
+  "intended_use": {
+    "primary": "Identify subrogation opportunities at FNOL (target \u226580% vs <50% industry baseline); auto-draft demand letter; flag arbitration eligibility; track statute of limitations; UM recovery pathway.",
+    "in_scope": [
+      "US personal-lines auto first-party claims",
+      "All 50 US states"
+    ],
+    "out_of_scope": [
+      "Commercial auto",
+      "Workers' comp",
+      "Pricing/underwriting"
+    ]
+  },
+  "model_type": "hybrid_rules_plus_ml",
+  "training_approach": "Rules + heuristics calibrated against POC closed-claim outcomes. ML uplift planned for v4. No demographic features used.",
+  "inputs": {
+    "data_sources": [
+      {
+        "source": "BI Evaluation (A6)",
+        "sensitivity": "PHI",
+        "fields": [
+          "adverseFaultPct",
+          "paidAmounts"
+        ]
+      },
+      {
+        "source": "Police report (LexisNexis)",
+        "sensitivity": "PII + CRA",
+        "fields": [
+          "accident evidence"
+        ]
+      },
+      {
+        "source": "NHTSA Recall API",
+        "sensitivity": "public",
+        "fields": [
+          "vehicleRecallIndicator"
+        ]
+      },
+      {
+        "source": "Third-party carrier data",
+        "sensitivity": "PII",
+        "fields": [
+          "thirdPartyCarrier",
+          "thirdPartyPolicy"
+        ]
+      }
+    ],
+    "prohibited_inputs": [
+      "Race/ethnicity",
+      "Religion",
+      "National origin",
+      "Sexual orientation",
+      "Genetic information",
+      "Credit score in claims handling"
+    ]
+  },
+  "outputs": {
+    "fields": [
+      "subrogationScore",
+      "pursueRecovery",
+      "targetCarrier",
+      "estimatedRecoveryUSD",
+      "statuteOfLimitationsDays",
+      "demandLetter",
+      "arbitrationFiled"
+    ],
+    "decision_record_emitted": true,
+    "hitl_gate": "confidence < 0.70"
+  },
+  "performance": {
+    "metrics": [
+      {
+        "name": "subro_identification_rate",
+        "current": 0.81,
+        "target": 0.85
+      },
+      {
+        "name": "avg_recovery_per_pursued",
+        "current": 0.62,
+        "target": 0.7
+      }
+    ],
+    "calibration": {
+      "expected_calibration_error": 0.04,
+      "target_ece": 0.05
+    }
+  },
+  "fairness": {
+    "monitored": false,
+    "monitor": "governance/bias_monitor.py",
+    "protected_attributes": [],
+    "metrics": [
+      {
+        "demographic_parity_ratio": 0.8
+      },
+      {
+        "equalized_odds_difference": 0.1
+      },
+      {
+        "calibration_by_group": 0.02
+      }
+    ],
+    "remediation_path": "Threshold breach \u2192 bias_monitor flags \u2192 CCO + model owner notified within 24h \u2192 re-calibration job queued \u2192 HITL rate raised to 100% on flagged segment until resolved."
+  },
+  "failure_modes_known": [
+    {
+      "id": "FM-01",
+      "description": "Sparse loss narrative \u2192 low confidence",
+      "mitigation": "HITL gate"
+    }
+  ],
+  "human_oversight": {
+    "hitl_gates": [
+      {
+        "low_confidence": "confidence < 0.70"
+      }
+    ],
+    "override_logging": "All adjuster overrides logged with overrideUserId, overrideReason, overrideTimestamp; feedback signal sent to model registry."
+  },
+  "regulatory_alignment": [
+    "NAIC Model Bulletin on AI (Dec 2023): \u00a74 documentation, \u00a75 monitoring",
+    "NIST AI RMF GOVERN-1.4: model risk profile",
+    "State UCSPA (all 50): timely investigation requirements"
+  ],
+  "audit_log_location": "governance/decision_log/a8_subrogation/",
+  "retention_class": "EXTENDED_10Y",
+  "change_log": [
+    {
+      "date": "2026-05-08",
+      "version": "3.5.0",
+      "note": "Governance Layer v1 \u2014 model card added; bias monitor wired where applicable"
+    }
+  ]
+}

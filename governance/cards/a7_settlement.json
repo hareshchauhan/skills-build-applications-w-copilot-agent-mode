@@ -1,0 +1,157 @@
+{
+  "agent_id": "a7_settlement",
+  "agent_name": "Settlement Agent",
+  "version": "3.5.0",
+  "blueprint_stage": "06 \u2014 Settlement & Payment Authorization",
+  "maturity_level": "L2",
+  "owner": {
+    "team": "Accenture P&C Claims AI",
+    "contact": "claims-ai@accenture.com",
+    "last_review": "2026-05-08",
+    "next_review": "2026-08-08"
+  },
+  "intended_use": {
+    "primary": "Calculate settlement terms; check authority matrix; STP express auto-payment for PD \u2264 $15k with no injury and fraud cleared; FCRA-compliant adverse action notice when claim reduced or denied.",
+    "in_scope": [
+      "US personal-lines auto first-party claims",
+      "All 50 US states"
+    ],
+    "out_of_scope": [
+      "Commercial auto",
+      "Workers' comp",
+      "Pricing/underwriting"
+    ]
+  },
+  "model_type": "hybrid_rules_plus_ml",
+  "training_approach": "Rules + heuristics calibrated against POC closed-claim outcomes. ML uplift planned for v4. No demographic features used.",
+  "inputs": {
+    "data_sources": [
+      {
+        "source": "Damage Estimation (A5)",
+        "sensitivity": "financial",
+        "fields": [
+          "damageEstimateUSD",
+          "totalLossFlag"
+        ]
+      },
+      {
+        "source": "BI Evaluation (A6)",
+        "sensitivity": "PHI + financial",
+        "fields": [
+          "settlementP50"
+        ]
+      },
+      {
+        "source": "Fraud Detection (A4)",
+        "sensitivity": "PII",
+        "fields": [
+          "fraudBand",
+          "paymentHoldFlag"
+        ]
+      },
+      {
+        "source": "Coverage Agent (A2)",
+        "sensitivity": "financial",
+        "fields": [
+          "coverageDecision",
+          "deductibleAmount",
+          "limits"
+        ]
+      }
+    ],
+    "prohibited_inputs": [
+      "Race/ethnicity",
+      "Religion",
+      "National origin",
+      "Sexual orientation",
+      "Genetic information",
+      "Credit score in claims handling"
+    ]
+  },
+  "outputs": {
+    "fields": [
+      "settlementAmount",
+      "paymentMethod",
+      "eftStatus",
+      "claimStatus",
+      "adverseActionNotice",
+      "supervisorApprovalRequired"
+    ],
+    "decision_record_emitted": true,
+    "hitl_gate": "confidence < 0.70"
+  },
+  "performance": {
+    "metrics": [
+      {
+        "name": "stp_payment_accuracy",
+        "current": 0.92,
+        "target": 0.97
+      },
+      {
+        "name": "adverse_action_notice_compliance",
+        "current": 1.0,
+        "target": 1.0
+      }
+    ],
+    "calibration": {
+      "expected_calibration_error": 0.04,
+      "target_ece": 0.05
+    }
+  },
+  "fairness": {
+    "monitored": false,
+    "monitor": "governance/bias_monitor.py",
+    "protected_attributes": [],
+    "metrics": [
+      {
+        "demographic_parity_ratio": 0.8
+      },
+      {
+        "equalized_odds_difference": 0.1
+      },
+      {
+        "calibration_by_group": 0.02
+      }
+    ],
+    "remediation_path": "Threshold breach \u2192 bias_monitor flags \u2192 CCO + model owner notified within 24h \u2192 re-calibration job queued \u2192 HITL rate raised to 100% on flagged segment until resolved."
+  },
+  "failure_modes_known": [
+    {
+      "id": "FM-01",
+      "description": "Sparse loss narrative \u2192 low confidence",
+      "mitigation": "HITL gate"
+    }
+  ],
+  "human_oversight": {
+    "hitl_gates": [
+      {
+        "fraud_hold": "paymentHoldFlag=true \u2192 no payment"
+      },
+      {
+        "over_authority": "settlement > adjuster authority limit \u2192 supervisor"
+      },
+      {
+        "dispute": "claimant disputes settlement amount \u2192 appraisal pathway"
+      }
+    ],
+    "override_logging": "All adjuster overrides logged with overrideUserId, overrideReason, overrideTimestamp; feedback signal sent to model registry."
+  },
+  "regulatory_alignment": [
+    "NAIC Model Bulletin \u00a74",
+    "FCRA \u00a7615(a) (adverse action notice)",
+    "State UCSPA (proportionate settlement)",
+    "CA Insurance Code \u00a7791.10",
+    "NY Reg 64",
+    "FL \u00a7627.4137",
+    "TX \u00a7542.055"
+  ],
+  "audit_log_location": "governance/decision_log/a7_settlement/",
+  "retention_class": "STANDARD_7Y",
+  "change_log": [
+    {
+      "date": "2026-05-08",
+      "version": "3.5.0",
+      "note": "Governance Layer v1 \u2014 model card added; bias monitor wired where applicable"
+    }
+  ]
+}

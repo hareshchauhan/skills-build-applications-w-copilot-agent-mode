@@ -1,0 +1,144 @@
+{
+  "agent_id": "a1_intake",
+  "agent_name": "FNOL Intake Agent",
+  "version": "3.5.0",
+  "blueprint_stage": "01 \u2014 FNOL Capture & Validation",
+  "maturity_level": "L2",
+  "owner": {
+    "team": "Accenture P&C Claims AI",
+    "contact": "claims-ai@accenture.com",
+    "last_review": "2026-05-08",
+    "next_review": "2026-08-08"
+  },
+  "intended_use": {
+    "primary": "Multi-channel structured loss capture; NLP entity extraction; policy in-force validation; claim number generation; DOI acknowledgment dispatch.",
+    "in_scope": [
+      "US personal-lines auto first-party claims",
+      "All 50 US states"
+    ],
+    "out_of_scope": [
+      "Commercial auto",
+      "Workers' comp",
+      "Pricing/underwriting"
+    ]
+  },
+  "model_type": "hybrid_rules_plus_ml",
+  "training_approach": "Rules + heuristics calibrated against POC closed-claim outcomes. ML uplift planned for v4. No demographic features used.",
+  "inputs": {
+    "data_sources": [
+      {
+        "source": "IVR call transcript (STT\u2192NLP)",
+        "sensitivity": "PII + voice",
+        "fields": [
+          "transcript"
+        ]
+      },
+      {
+        "source": "Web/mobile FNOL form",
+        "sensitivity": "PII",
+        "fields": [
+          "all 12 object groups"
+        ]
+      },
+      {
+        "source": "Third-party FNOL API (adverse carrier)",
+        "sensitivity": "PII",
+        "fields": [
+          "payload"
+        ]
+      },
+      {
+        "source": "Telematics provider (optional)",
+        "sensitivity": "PII + behavioral",
+        "fields": [
+          "impactSeverityScore",
+          "deltaV",
+          "airbagDeployed"
+        ]
+      }
+    ],
+    "prohibited_inputs": [
+      "Race/ethnicity",
+      "Religion",
+      "National origin",
+      "Sexual orientation",
+      "Genetic information",
+      "Credit score in claims handling"
+    ]
+  },
+  "outputs": {
+    "fields": [
+      "FNOLPayload",
+      "claimNumber",
+      "intakeQualityScore",
+      "policyInForce",
+      "duplicateFlag"
+    ],
+    "decision_record_emitted": true,
+    "hitl_gate": "confidence < 0.70"
+  },
+  "performance": {
+    "metrics": [
+      {
+        "name": "extraction_field_accuracy",
+        "current": 0.93,
+        "target": 0.95
+      },
+      {
+        "name": "latency_p95_ms",
+        "current": 1850,
+        "target": 3000
+      }
+    ],
+    "calibration": {
+      "expected_calibration_error": 0.04,
+      "target_ece": 0.05
+    }
+  },
+  "fairness": {
+    "monitored": false,
+    "monitor": "governance/bias_monitor.py",
+    "protected_attributes": [],
+    "metrics": [
+      {
+        "demographic_parity_ratio": 0.8
+      },
+      {
+        "equalized_odds_difference": 0.1
+      },
+      {
+        "calibration_by_group": 0.02
+      }
+    ],
+    "remediation_path": "Threshold breach \u2192 bias_monitor flags \u2192 CCO + model owner notified within 24h \u2192 re-calibration job queued \u2192 HITL rate raised to 100% on flagged segment until resolved."
+  },
+  "failure_modes_known": [
+    {
+      "id": "FM-01",
+      "description": "Sparse loss narrative \u2192 low confidence",
+      "mitigation": "HITL gate"
+    }
+  ],
+  "human_oversight": {
+    "hitl_gates": [
+      {
+        "low_confidence": "confidence < 0.70"
+      }
+    ],
+    "override_logging": "All adjuster overrides logged with overrideUserId, overrideReason, overrideTimestamp; feedback signal sent to model registry."
+  },
+  "regulatory_alignment": [
+    "NAIC Model Bulletin on AI (Dec 2023): \u00a74 documentation, \u00a75 monitoring",
+    "NIST AI RMF GOVERN-1.4: model risk profile",
+    "State UCSPA (all 50): timely investigation requirements"
+  ],
+  "audit_log_location": "governance/decision_log/a1_intake/",
+  "retention_class": "STANDARD_7Y",
+  "change_log": [
+    {
+      "date": "2026-05-08",
+      "version": "3.5.0",
+      "note": "Governance Layer v1 \u2014 model card added; bias monitor wired where applicable"
+    }
+  ]
+}

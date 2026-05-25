@@ -1,0 +1,125 @@
+{
+  "agent_id": "l3a_conversational",
+  "agent_name": "Conversational Orchestration Agent",
+  "version": "3.5.0",
+  "blueprint_stage": "L3 hook \u2014 claimant-facing AI Agent + Interface Layer",
+  "maturity_level": "L3",
+  "owner": {
+    "team": "Accenture P&C Claims AI",
+    "contact": "claims-ai@accenture.com",
+    "last_review": "2026-05-08",
+    "next_review": "2026-08-08"
+  },
+  "intended_use": {
+    "primary": "State-machine driven claimant-facing intake conversation. Slot-fills FNOL fields via natural language; delegates decisioning to A2/A4/A7; presents settlement to claimant; captures release.",
+    "in_scope": [
+      "L3 maturity carriers only",
+      "English + Spanish (v1)"
+    ],
+    "out_of_scope": [
+      "Litigation discussions",
+      "Coverage interpretation in disputes",
+      "Medical advice"
+    ]
+  },
+  "model_type": "hybrid_rules_plus_ml",
+  "training_approach": "Rules + heuristics calibrated against POC closed-claim outcomes. ML uplift planned for v4. No demographic features used.",
+  "inputs": {
+    "data_sources": [
+      {
+        "source": "FNOL Intake (A1)",
+        "sensitivity": "PII",
+        "fields": [
+          "policyNumber",
+          "lossDateTime",
+          "lossDescription"
+        ]
+      }
+    ],
+    "prohibited_inputs": [
+      "Race/ethnicity",
+      "Religion",
+      "National origin",
+      "Sexual orientation",
+      "Genetic information",
+      "Credit score in claims handling"
+    ]
+  },
+  "outputs": {
+    "fields": [
+      "conversationState",
+      "capturedFields",
+      "claimNumber",
+      "sessionTranscript",
+      "claimantSatisfactionScore"
+    ],
+    "decision_record_emitted": true,
+    "hitl_gate": "confidence < 0.70"
+  },
+  "performance": {
+    "metrics": [
+      {
+        "name": "slot_fill_completion_rate",
+        "current": 0.78,
+        "target": 0.88
+      }
+    ],
+    "calibration": {
+      "expected_calibration_error": 0.04,
+      "target_ece": 0.05
+    }
+  },
+  "fairness": {
+    "monitored": false,
+    "monitor": "governance/bias_monitor.py",
+    "protected_attributes": [],
+    "metrics": [
+      {
+        "demographic_parity_ratio": 0.8
+      },
+      {
+        "equalized_odds_difference": 0.1
+      },
+      {
+        "calibration_by_group": 0.02
+      }
+    ],
+    "remediation_path": "Threshold breach \u2192 bias_monitor flags \u2192 CCO + model owner notified within 24h \u2192 re-calibration job queued \u2192 HITL rate raised to 100% on flagged segment until resolved."
+  },
+  "failure_modes_known": [
+    {
+      "id": "FM-01",
+      "description": "Sparse loss narrative \u2192 low confidence",
+      "mitigation": "HITL gate"
+    }
+  ],
+  "human_oversight": {
+    "hitl_gates": [
+      {
+        "escalation_request": "Claimant requests human"
+      },
+      {
+        "low_confidence": "Slot extraction confidence < 0.70 for 3 consecutive turns"
+      },
+      {
+        "distress": "Claimant indicates injury, fatality, or emotional distress"
+      }
+    ],
+    "override_logging": "All adjuster overrides logged with overrideUserId, overrideReason, overrideTimestamp; feedback signal sent to model registry."
+  },
+  "regulatory_alignment": [
+    "NAIC Model Bulletin \u00a74",
+    "State UCSPA (right to human escalation)",
+    "ADA accessibility",
+    "TCPA (consent for SMS/push)"
+  ],
+  "audit_log_location": "governance/decision_log/l3a_conversational/",
+  "retention_class": "STANDARD_7Y",
+  "change_log": [
+    {
+      "date": "2026-05-08",
+      "version": "3.5.0",
+      "note": "Governance Layer v1 \u2014 model card added; bias monitor wired where applicable"
+    }
+  ]
+}
