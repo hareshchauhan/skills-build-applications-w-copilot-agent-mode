@@ -99,10 +99,12 @@ import fnol_siu_routes as _siu_routes
 import fnol_governance_routes as _gov_routes
 import fnol_iso_routes as _iso_routes
 import fnol_v3_routes as _v3_routes
+import fnol_langgraph_routes as _lg_live_routes
 app.include_router(_siu_routes.router)           # A12 SIU Case Builder
 app.include_router(_gov_routes.router)           # Governance / Compliance
 app.include_router(_iso_routes.router)           # Verisk ISO ClaimSearch
 app.include_router(_v3_routes.router)            # L3 LangGraph orchestration
+app.include_router(_lg_live_routes.router)       # L3 LangGraph Live (RSK-03)
 
 
 # Bounded in-memory pipeline trace store (POC). Size + TTL prevent unbounded

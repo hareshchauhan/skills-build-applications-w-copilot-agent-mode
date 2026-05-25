@@ -20,7 +20,10 @@ Wire into fnol_api_server.py:
 from __future__ import annotations
 
 import logging
+from typing import Any, Dict, Optional
+
 from fastapi import APIRouter, Depends, status
+from pydantic import BaseModel
 
 import fnol_langgraph_engine as lg
 from fnol_claim import Claim
@@ -88,3 +91,43 @@ def get_thread(thread_id: str, _: str = Depends(require_api_key)):
     if not state:
         raise client_error(f"Thread {thread_id} not found", 404)
     return state
+
+
+class ResumeRequest(BaseModel):
+    """Adjuster or SIU decision to resume a suspended HITL thread."""
+    decision:           Optional[str]   = "APPROVED"
+    adjuster_id:        Optional[str]   = None
+    adjuster_notes:     Optional[str]   = None
+    approved_bi_usd:    Optional[float] = None
+    investigator_notes: Optional[str]   = None
+    disposition:        Optional[str]   = None
+
+
+@router.post("/claims/{thread_id}/resume")
+def resume_thread(
+    thread_id: str,
+    body: ResumeRequest,
+    _: str = Depends(require_api_key),
+):
+    """
+    Resume a graph thread suspended at a HITL interrupt gate.
+
+    Injects the adjuster/SIU decision into the graph state and continues
+    execution from the checkpoint.  Returns the pipeline trace if the graph
+    reaches END, or a new interrupt payload if another gate is encountered.
+
+    Typical payloads
+    ----------------
+    Triage gate  — {"decision": "APPROVED", "adjuster_id": "ADJ-001"}
+    SIU hold     — {"disposition": "CLEARED", "investigator_notes": "All good"}
+    BI gate      — {"decision": "ADJUST_OFFER", "approved_bi_usd": 45000}
+    """
+    _require_langgraph()
+    decision_dict = body.model_dump(exclude_none=True)
+    try:
+        result = lg.resume_thread(thread_id, decision_dict)
+    except KeyError:
+        raise client_error(f"Thread {thread_id} not found", 404)
+    except Exception as e:
+        raise server_error("lg.resume_thread failed", e)
+    return result
