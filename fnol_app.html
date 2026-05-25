@@ -1,0 +1,1841 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>FNOL Intelligence Platform · Accenture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ───────────────────────────────────────────── */
+:root{
+  --w0:#fff;--w1:#fafafa;--w2:#f4f4f5;--w3:#e4e4e7;
+  --g5:#a1a1aa;--g6:#71717a;--g7:#52525b;--g8:#3f3f46;--g9:#18181b;
+  --rule:#e4e4e7;--rule2:#d4d4d8;
+  --acc:#6d28d9;--acc-m:#7c3aed;--acc-s:#ede9fe;
+  --em:#047857;--em-m:#059669;--em-s:#d1fae5;
+  --am:#b45309;--am-m:#d97706;--am-s:#fef3c7;
+  --re:#b91c1c;--re-m:#dc2626;--re-s:#fee2e2;
+  --bl:#1d4ed8;--bl-s:#dbeafe;
+  --sk:#0369a1;--sk-s:#e0f2fe;
+  --te:#0f766e;--te-s:#ccfbf1;
+  --or:#c2410c;--or-s:#fff7ed;
+  --serif:'Fraunces',Georgia,serif;
+  --sans:'Inter Tight',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+  --sb:220px; /* sidebar width */
+  --r:6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--w1);color:var(--g9);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:13px;color:var(--g9)}
+:focus-visible{outline:2px solid var(--acc-m);outline-offset:2px}
+
+/* ── SHELL ────────────────────────────────────────────── */
+.shell{display:flex;height:100vh;overflow:hidden}
+
+/* ── LEFT SIDEBAR ─────────────────────────────────────── */
+.sb{
+  width:var(--sb);flex-shrink:0;
+  background:var(--w0);border-right:1px solid var(--rule);
+  display:flex;flex-direction:column;
+  height:100vh;overflow:hidden;
+}
+.sb-brand{padding:14px 14px 12px;border-bottom:1px solid var(--rule);flex-shrink:0}
+.sb-logo{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.sb-icon{width:26px;height:26px;background:linear-gradient(145deg,#1a0533,#6d28d9);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-icon svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sb-title{font-family:var(--serif);font-size:13px;font-weight:700;color:var(--g9);line-height:1.2}
+.sb-sub{font-family:var(--mono);font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--g5)}
+.sb-status{display:flex;flex-direction:column;gap:3px;padding:7px 8px;background:var(--w2);border-radius:var(--r)}
+.sb-row{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--g6)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g5);flex-shrink:0}
+.dot.ok{background:var(--em-m)}
+.dot.err{background:var(--re-m);animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Sidebar nav */
+.sb-nav{flex:1;overflow-y:auto;padding:8px 6px;scrollbar-width:none}
+.sb-nav::-webkit-scrollbar{display:none}
+.sb-sect{font-family:var(--mono);font-size:7.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--g5);padding:10px 8px 3px}
+.sb-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 8px;border-radius:var(--r);
+  border:none;background:transparent;width:100%;text-align:left;
+  color:var(--g7);font-size:12px;font-family:var(--sans);font-weight:500;
+  transition:background .1s,color .1s;cursor:pointer;
+}
+.sb-btn:hover{background:var(--w2);color:var(--g9)}
+.sb-btn.on{background:var(--acc-s);color:var(--acc)}
+.sb-btn .ico{font-size:13px;width:17px;text-align:center;flex-shrink:0}
+.sb-btn .lbl{flex:1;font-size:11.5px;line-height:1.2}
+.sb-tag{font-family:var(--mono);font-size:7px;padding:1px 5px;border-radius:7px;background:var(--acc-s);color:var(--acc);letter-spacing:.04em;flex-shrink:0}
+.sb-tag.n{background:var(--em-s);color:var(--em)}
+.sb-tag.a{background:var(--sk-s);color:var(--sk)}
+.sb-tag.g{background:var(--am-s);color:var(--am)}
+
+/* Sidebar footer */
+.sb-foot{padding:9px 6px;border-top:1px solid var(--rule);flex-shrink:0}
+#key-btn{
+  display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:var(--r);
+  border:1px solid var(--rule);background:var(--w0);width:100%;
+  font-family:var(--mono);font-size:10.5px;color:var(--g6);
+  transition:all .1s;letter-spacing:.04em;
+}
+#key-btn:hover{background:var(--w2);border-color:var(--rule2);color:var(--g9)}
+#key-dot{width:7px;height:7px;border-radius:50%;background:var(--g5);flex-shrink:0}
+#key-dot.ok{background:var(--em-m)}
+#key-dot.err{background:var(--re-m)}
+
+/* ── MAIN ─────────────────────────────────────────────── */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* Top bar */
+.topbar{height:48px;background:var(--w0);border-bottom:1px solid var(--rule);display:flex;align-items:center;padding:0 20px;gap:10px;flex-shrink:0}
+#tb-title{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--g7);font-weight:600;flex:1}
+.tb-pill{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:7px;border:1px solid var(--rule);background:var(--w1);color:var(--g6);white-space:nowrap}
+
+/* Scroll area */
+.scroll{flex:1;overflow-y:auto;padding:20px;scrollbar-width:thin;scrollbar-color:var(--rule2) transparent}
+.scroll::-webkit-scrollbar{width:5px}
+.scroll::-webkit-scrollbar-thumb{background:var(--rule2);border-radius:3px}
+
+/* ── TAB PANELS ───────────────────────────────────────── */
+.panel{display:none}
+.panel.on{display:block}
+
+/* ── CARDS ────────────────────────────────────────────── */
+.card{background:var(--w0);border:1px solid var(--rule);border-radius:var(--r);margin-bottom:12px}
+.card:last-child{margin-bottom:0}
+.card-hd{padding:13px 17px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.eyebrow{font-family:var(--mono);font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--g5);margin-bottom:2px}
+.card-title{font-family:var(--serif);font-size:15px;font-weight:700;color:var(--g9)}
+.card-acts{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.card-bd{padding:17px}
+
+/* ── LEFT VERTICAL SUB-TABS ───────────────────────────── */
+/* Used inside Total Loss, Governance etc.                */
+.vtab-wrap{display:flex;border-top:1px solid var(--rule)}
+.vtab-nav{
+  width:148px;flex-shrink:0;
+  border-right:1px solid var(--rule);
+  padding:10px 6px;
+  display:flex;flex-direction:column;gap:2px;
+  background:var(--w1);
+  border-radius:0 0 0 var(--r);
+}
+.vtab-btn{
+  display:flex;align-items:center;gap:7px;
+  padding:7px 9px;border-radius:var(--r);
+  border:none;background:transparent;width:100%;text-align:left;
+  color:var(--g7);font-size:11px;font-family:var(--mono);font-weight:500;
+  letter-spacing:.05em;cursor:pointer;transition:background .1s,color .1s;
+}
+.vtab-btn:hover{background:var(--w2);color:var(--g9)}
+.vtab-btn.on{background:var(--acc-s);color:var(--acc)}
+.vtab-btn .vi{font-size:12px;flex-shrink:0;width:15px;text-align:center}
+.vtab-content{flex:1;min-width:0;padding:17px;overflow-x:hidden}
+.vpanel{display:none}
+.vpanel.on{display:block}
+
+/* ── HERO ─────────────────────────────────────────────── */
+.hero{display:grid;grid-template-columns:1.4fr 1fr;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--w0);margin-bottom:14px}
+.hero-l{padding:22px 24px;border-right:1px solid var(--rule)}
+.hero-ey{font-family:var(--mono);font-size:7.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--g5);margin-bottom:7px}
+.hero-h{font-family:var(--serif);font-size:22px;font-weight:700;line-height:1.15;letter-spacing:-.02em;margin-bottom:6px;color:var(--g9)}
+.hero-h em{font-style:italic;color:var(--acc)}
+.hero-p{font-size:11.5px;color:var(--g7);line-height:1.6;margin-bottom:11px;max-width:420px}
+.hero-meta{display:flex;gap:12px;flex-wrap:wrap}
+.hero-meta span{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--g5)}
+.hero-meta span strong{color:var(--g7);font-weight:500}
+.hero-r{padding:22px 24px;background:var(--w1);display:flex;align-items:center}
+.kpi-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.kpi{padding:9px 10px;background:var(--w0);border:1px solid var(--rule);border-radius:var(--r)}
+.kpi-n{font-family:var(--serif);font-size:20px;font-weight:700;line-height:1;color:var(--g9)}
+.kpi-l{font-family:var(--mono);font-size:7px;letter-spacing:.14em;text-transform:uppercase;color:var(--g5);margin-top:3px}
+
+/* ── FORMS ────────────────────────────────────────────── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px 15px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 15px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px 15px}
+.fld{display:flex;flex-direction:column;gap:3px}
+.fld label{font-size:10px;font-weight:600;color:var(--g8);letter-spacing:.01em}
+.req{color:var(--re-m)}
+.fi{padding:6px 9px;border:1px solid var(--rule2);border-radius:var(--r);background:var(--w0);color:var(--g9);font-size:12px;transition:border-color .12s,box-shadow .12s;-webkit-appearance:none;appearance:none;width:100%}
+.fi:focus{border-color:var(--acc-m);box-shadow:0 0 0 3px rgba(124,58,237,.1);outline:none}
+textarea.fi{resize:vertical;min-height:58px}
+.fld-hint{font-family:var(--mono);font-size:8.5px;color:var(--g5);min-height:12px}
+.fld-hint.ok{color:var(--em)}
+.fld-hint.wa{color:var(--am)}
+.ck{display:flex;align-items:center;gap:7px;padding:6px 9px;border:1px solid var(--rule);border-radius:var(--r);background:var(--w1);cursor:pointer;transition:border-color .1s}
+.ck:hover{border-color:var(--rule2);background:var(--w2)}
+.ck input[type=checkbox]{width:13px;height:13px;accent-color:var(--acc-m);flex-shrink:0;cursor:pointer}
+.ck label{font-size:11px;font-weight:500;color:var(--g8);cursor:pointer;line-height:1.2}
+.ssep{display:flex;align-items:center;gap:8px;margin:15px 0 9px}
+.ssep .si{font-size:12px;flex-shrink:0}
+.ssep .sl{font-family:var(--mono);font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--g5);flex-shrink:0}
+.ssep .sln{flex:1;height:1px;background:var(--rule)}
+
+/* ── BUTTONS ──────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:var(--r);border:1px solid transparent;font-family:var(--sans);font-size:11px;font-weight:600;transition:all .1s;cursor:pointer;white-space:nowrap}
+.btn svg{width:11px;height:11px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-p{background:var(--acc-m);color:#fff;border-color:var(--acc-m)}
+.btn-p:hover{background:var(--acc)}
+.btn-s{background:var(--w0);color:var(--g7);border-color:var(--rule2)}
+.btn-s:hover{border-color:var(--g5);background:var(--w1)}
+.btn-g{background:transparent;color:var(--g6);border-color:transparent}
+.btn-g:hover{background:var(--w2);color:var(--g9)}
+.btn-lg{padding:8px 17px;font-size:12.5px}
+.btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+
+/* ── BADGES ───────────────────────────────────────────── */
+.b{display:inline-flex;align-items:center;padding:1px 6px;border-radius:8px;font-family:var(--mono);font-size:8px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+.bv{background:var(--acc-s);color:var(--acc)}
+.bg{background:var(--em-s);color:var(--em)}
+.ba{background:var(--am-s);color:var(--am)}
+.br{background:var(--re-s);color:var(--re)}
+.bb{background:var(--bl-s);color:var(--bl)}
+.bs{background:var(--sk-s);color:var(--sk)}
+.bt{background:var(--te-s);color:var(--te)}
+.bo{background:var(--or-s);color:var(--or)}
+.bx{background:var(--w2);color:var(--g6)}
+
+/* ── ALERTS ───────────────────────────────────────────── */
+.al{padding:9px 12px;border-radius:var(--r);display:flex;align-items:flex-start;gap:8px;font-size:11.5px;margin-bottom:11px}
+.al svg{width:13px;height:13px;flex-shrink:0;margin-top:1px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.al-ok{background:var(--em-s);color:#064e3b;border:1px solid #6ee7b7}
+.al-wa{background:var(--am-s);color:#78350f;border:1px solid #fcd34d}
+.al-er{background:var(--re-s);color:#7f1d1d;border:1px solid #fca5a5}
+.al-in{background:var(--bl-s);color:#1e3a8a;border:1px solid #93c5fd}
+.al-vl{background:var(--acc-s);color:#4c1d95;border:1px solid #c4b5fd}
+
+/* ── PIPELINE TRACK ───────────────────────────────────── */
+.track{display:flex;align-items:center;overflow-x:auto;padding:6px 0 3px;scrollbar-width:thin}
+.track::-webkit-scrollbar{height:3px}
+.track::-webkit-scrollbar-thumb{background:var(--rule2)}
+.ts{display:flex;flex-direction:column;align-items:center;flex:0 0 auto;min-width:64px}
+.ts-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--rule2);background:var(--w0);display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.ts-dot svg{width:9px;height:9px;stroke:var(--g5);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.ts.ok .ts-dot{background:var(--em-m);border-color:var(--em-m)}
+.ts.ok .ts-dot svg{stroke:#fff}
+.ts.warn .ts-dot{background:var(--am-m);border-color:var(--am-m)}
+.ts.warn .ts-dot svg{stroke:#fff}
+.ts.err .ts-dot{background:var(--re-m);border-color:var(--re-m)}
+.ts.err .ts-dot svg{stroke:#fff}
+.ts.skip .ts-dot{background:var(--w2);border-color:var(--rule)}
+.ts.skip .ts-dot svg{stroke:var(--g5);opacity:.5}
+.ts-cn{flex:1;min-width:9px;height:2px;background:var(--rule);align-self:center;margin-top:-16px}
+.ts-cn.ok{background:var(--em-m)}
+.ts-lb{font-family:var(--mono);font-size:6.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--g5);text-align:center;margin-top:4px;line-height:1.3;max-width:64px}
+.ts.ok .ts-lb{color:var(--em)}
+.ts.warn .ts-lb{color:var(--am)}
+.ts.err .ts-lb{color:var(--re)}
+.ts-dr{font-family:var(--mono);font-size:6px;color:var(--g5);text-align:center;margin-top:1px}
+
+/* ── RESULT BOX ───────────────────────────────────────── */
+.result-box{background:#f5f3ff;border:1px solid #c4b5fd;border-radius:var(--r);padding:15px;margin-top:14px;animation:riseIn .25s ease}
+@keyframes riseIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.rkpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:11px}
+.rkpi{background:var(--w0);border:1px solid var(--rule);border-radius:var(--r);padding:8px 10px}
+.rkpi-v{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--g9);line-height:1}
+.rkpi-l{font-family:var(--mono);font-size:7px;letter-spacing:.14em;text-transform:uppercase;color:var(--g5);margin-top:3px}
+
+/* ── TABLE ────────────────────────────────────────────── */
+.tbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.tbl thead{background:var(--w1)}
+.tbl th{padding:6px 10px;text-align:left;font-family:var(--mono);font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--g5);border-bottom:1px solid var(--rule);white-space:nowrap}
+.tbl td{padding:6px 10px;border-bottom:1px solid var(--rule);color:var(--g8);vertical-align:middle}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl tbody tr{cursor:pointer;transition:background .08s}
+.tbl tbody tr:hover{background:var(--w1)}
+.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--rule)}
+.td-id{font-family:var(--mono);font-size:9.5px;font-weight:600;color:var(--acc)}
+.td-m{font-family:var(--mono);font-size:9.5px;color:var(--g6)}
+
+/* ── CHAT ─────────────────────────────────────────────── */
+.chat-wrap{background:var(--w0);border:1px solid var(--rule);border-radius:var(--r);display:flex;flex-direction:column;overflow:hidden}
+.chat-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:260px;max-height:420px;scrollbar-width:thin;scrollbar-color:var(--rule2) transparent}
+.chat-body::-webkit-scrollbar{width:4px}
+.chat-body::-webkit-scrollbar-thumb{background:var(--rule2)}
+.chat-foot{padding:8px 10px;border-top:1px solid var(--rule);display:flex;gap:6px;background:var(--w0);flex-shrink:0}
+.chat-foot textarea{flex:1;resize:none;border:1px solid var(--rule2);border-radius:var(--r);padding:6px 8px;font-size:11.5px;height:32px;max-height:80px;transition:border-color .1s}
+.chat-foot textarea:focus{border-color:var(--acc-m);outline:none;box-shadow:0 0 0 3px rgba(124,58,237,.08)}
+.msg{max-width:80%;animation:riseIn .15s ease}
+.msg.user{align-self:flex-end}
+.msg.user .bbl{background:var(--acc-m);color:#fff;border-radius:10px 10px 3px 10px}
+.msg.bot .bbl,.msg.assistant .bbl{background:var(--w2);color:var(--g9);border-radius:10px 10px 10px 3px;border:1px solid var(--rule)}
+.msg.alert .bbl{background:var(--am-s);color:#78350f;border:1px solid #fcd34d;border-radius:var(--r)}
+.msg.system .bbl{background:var(--sk-s);color:var(--sk);border:1px solid #bae6fd;border-radius:var(--r);font-family:var(--mono);font-size:9px;line-height:1.5}
+.bbl{padding:7px 10px;font-size:11.5px;line-height:1.55;word-break:break-word}
+.msg-role{font-family:var(--mono);font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--g5);margin-bottom:3px;padding:0 2px}
+.msg.user .msg-role{text-align:right}
+.msg-chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px;padding:0 2px}
+.chip{padding:1px 5px;border-radius:6px;border:1px solid var(--rule2);background:var(--w0);font-size:8.5px;color:var(--g6);font-family:var(--mono)}
+
+/* ── COPILOT SPLIT ────────────────────────────────────── */
+.cop-split{display:grid;grid-template-columns:190px 1fr;gap:11px;height:calc(100vh - 200px);min-height:420px}
+
+/* ── CONVO SPLIT ──────────────────────────────────────── */
+.cv-split{display:grid;grid-template-columns:1fr 230px;gap:11px}
+.cv-cap-box{background:var(--w0);border:1px solid var(--rule);border-radius:var(--r);padding:11px}
+.cv-cap-box h4{font-family:var(--mono);font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--g5);margin-bottom:8px}
+
+/* ── STAGE CARDS ──────────────────────────────────────── */
+.sc{background:var(--w0);border:1px solid var(--rule);border-radius:var(--r);margin-bottom:6px;overflow:hidden;cursor:pointer;transition:border-color .1s}
+.sc:hover{border-color:var(--rule2)}
+.sc.open{border-color:var(--acc-m)}
+.sc-hd{padding:8px 11px;display:flex;align-items:center;gap:8px}
+.sc-id{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--g5);min-width:26px;flex-shrink:0}
+.sc-nm{font-size:11.5px;font-weight:500;color:var(--g9);flex:1}
+.sc-dr{font-family:var(--mono);font-size:8.5px;color:var(--g5)}
+.sc-bd{padding:10px;border-top:1px solid var(--rule);background:var(--w1);display:none}
+.sc.open .sc-bd{display:block}
+.kv{display:grid;grid-template-columns:145px 1fr;gap:2px 8px;font-size:10.5px}
+.kv dt{font-family:var(--mono);font-size:8px;color:var(--g5);letter-spacing:.06em;text-transform:uppercase;padding:2px 0}
+.kv dd{color:var(--g7);padding:2px 0;margin:0;word-break:break-word}
+.di{padding:7px 9px;border-radius:var(--r);background:var(--w1);border:1px solid var(--rule);margin-bottom:4px}
+.di-hd{display:flex;align-items:center;gap:6px;margin-bottom:2px;flex-wrap:wrap}
+.di-rat{font-size:10px;color:var(--g6);font-style:italic;line-height:1.5}
+
+/* ── TOTAL LOSS ───────────────────────────────────────── */
+.rbar{height:6px;border-radius:3px;background:var(--w3);overflow:hidden;position:relative;margin:4px 0}
+.rfill{height:100%;border-radius:3px;transition:width .4s;background:var(--em-m)}
+.rfill.w{background:var(--am-m)}
+.rfill.d{background:var(--re-m)}
+.rmark{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--re-m);border-radius:1px}
+.letter-box{font-family:var(--mono);font-size:10px;line-height:1.7;color:var(--g7);background:var(--w1);border:1px solid var(--rule);border-radius:var(--r);padding:11px;white-space:pre-wrap;max-height:340px;overflow-y:auto}
+
+/* ── GOVERNANCE GRID ──────────────────────────────────── */
+.gov-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.gov-card{background:var(--w0);border:1px solid var(--rule);border-radius:var(--r);padding:11px;display:flex;flex-direction:column;gap:5px;transition:border-color .1s}
+.gov-card:hover{border-color:var(--rule2);box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.gov-ico{font-size:16px}
+.gov-ttl{font-size:11.5px;font-weight:600;color:var(--g9)}
+.gov-dsc{font-size:10px;color:var(--g6);line-height:1.5}
+.gov-ft{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:8px;color:var(--g5)}
+
+/* ── SYSTEM GRID ──────────────────────────────────────── */
+.sys-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:9px;margin-bottom:14px}
+.sys-card{background:var(--w0);border:1px solid var(--rule);border-radius:var(--r);padding:11px}
+.sys-lb{font-family:var(--mono);font-size:7.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--g5);margin-bottom:4px}
+.sys-val{font-family:var(--serif);font-size:18px;font-weight:700;color:var(--g9);line-height:1.1}
+.sys-sub{font-family:var(--mono);font-size:8.5px;color:var(--g6);margin-top:2px}
+
+/* ── MISC ─────────────────────────────────────────────── */
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(124,58,237,.2);border-top-color:var(--acc-m);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;flex-shrink:0}
+.spin-lg{width:26px;height:26px;border-width:3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+.ctr{display:flex;align-items:center;justify-content:center}
+.empty{text-align:center;padding:36px 18px;color:var(--g5)}
+.empty svg{width:36px;height:36px;margin:0 auto 8px;display:block;opacity:.25;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.empty p{margin:0 auto;font-size:11.5px;max-width:220px;line-height:1.5}
+.demo-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.demo-lbl{font-family:var(--mono);font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--g5)}
+.sub-row{display:flex;align-items:center;gap:10px;padding-top:14px;border-top:1px solid var(--rule);margin-top:14px}
+#sub-st{font-family:var(--mono);font-size:9px;color:var(--g6);display:flex;align-items:center;gap:5px}
+.ci{padding:6px 8px;border-radius:var(--r);cursor:pointer;margin-bottom:3px;border:1px solid var(--rule);background:var(--w0);transition:all .1s}
+.ci:hover{border-color:var(--rule2);background:var(--w1)}
+.ci.on{border-color:var(--acc-m);background:var(--acc-s)}
+
+/* ── TOAST ────────────────────────────────────────────── */
+#toast{position:fixed;bottom:18px;right:18px;z-index:9999;padding:8px 13px;border-radius:var(--r);font-size:11.5px;font-weight:500;max-width:300px;box-shadow:0 8px 20px rgba(0,0,0,.12);transform:translateY(7px);opacity:0;transition:all .18s;pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.info{background:#18181b;color:#fff}
+#toast.ok{background:#064e3b;color:#d1fae5}
+#toast.err{background:#7f1d1d;color:#fee2e2}
+#toast.warn{background:#78350f;color:#fef3c7}
+
+/* ── KEY MODAL ────────────────────────────────────────── */
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:9998;display:flex;align-items:center;justify-content:center}
+#modal.hidden{display:none}
+.modal-box{background:var(--w0);border-radius:var(--r);box-shadow:0 12px 30px rgba(0,0,0,.12);padding:20px;width:380px;max-width:94vw;animation:riseIn .18s ease}
+.modal-box h3{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--g9);margin-bottom:5px}
+.modal-box p{font-size:11.5px;color:var(--g6);margin-bottom:12px;line-height:1.5}
+.modal-foot{display:flex;gap:6px;justify-content:flex-end;margin-top:12px}
+
+/* ── RESPONSIVE ───────────────────────────────────────── */
+@media(max-width:1100px){.hero{grid-template-columns:1fr}.hero-r{border-top:1px solid var(--rule);border-left:none}.rkpis{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.cop-split{grid-template-columns:1fr}.cv-split{grid-template-columns:1fr}.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sb">
+  <div class="sb-brand">
+    <div class="sb-logo">
+      <div class="sb-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <div><div class="sb-title">FNOL Intelligence</div><div class="sb-sub">Platform</div></div>
+    </div>
+    <div class="sb-status">
+      <div class="sb-row"><span class="dot" id="h-dot"></span><span id="h-txt">connecting…</span></div>
+      <div class="sb-row" id="llm-row" style="display:none"><span id="llm-txt">LLM · —</span></div>
+      <div class="sb-row" id="sor-row" style="display:none"><span id="sor-txt">SOR · —</span></div>
+      <div class="sb-row" id="ver-row" style="display:none"><span id="ver-txt">v —</span></div>
+    </div>
+  </div>
+
+  <nav class="sb-nav">
+    <div class="sb-sect">Intake</div>
+    <button class="sb-btn on" data-to="submit"><span class="ico">📋</span><span class="lbl">Submit FNOL</span></button>
+
+    <div class="sb-sect">Analysis</div>
+    <button class="sb-btn" data-to="pipeline"><span class="ico">🔬</span><span class="lbl">Pipeline Trace</span></button>
+    <button class="sb-btn" data-to="claims"><span class="ico">📂</span><span class="lbl">Claims Register</span></button>
+
+    <div class="sb-sect">AI Agents</div>
+    <button class="sb-btn" data-to="copilot"><span class="ico">🤖</span><span class="lbl">Adjuster Co-Pilot</span><span class="sb-tag">A9</span></button>
+    <button class="sb-btn" data-to="convo"><span class="ico">💬</span><span class="lbl">Conversational FNOL</span><span class="sb-tag a">A10</span></button>
+    <button class="sb-btn" data-to="totalloss"><span class="ico">🚗</span><span class="lbl">Total Loss &amp; Salvage</span><span class="sb-tag n">A11</span></button>
+    <button class="sb-btn" data-to="siu"><span class="ico">🔴</span><span class="lbl">SIU Case Builder</span><span class="sb-tag" style="background:var(--re-s);color:var(--re)">A12</span></button>
+
+    <div class="sb-sect">Compliance</div>
+    <button class="sb-btn" data-to="gov"><span class="ico">🛡️</span><span class="lbl">Governance</span><span class="sb-tag g">AI Act</span></button>
+
+    <div class="sb-sect">Admin</div>
+    <button class="sb-btn" data-to="sys"><span class="ico">⚙️</span><span class="lbl">System</span></button>
+  </nav>
+
+  <div class="sb-foot">
+    <button id="key-btn"><span id="key-dot"></span><span id="key-lbl">Set API Key</span></button>
+  </div>
+</aside>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main">
+  <div class="topbar">
+    <div id="tb-title">01 · Submit FNOL</div>
+    <div style="display:flex;gap:5px;margin-left:auto">
+      <span class="tb-pill" id="pill-v">Engine · L100-V2</span>
+      <span class="tb-pill">Duck Creek · Native</span>
+      <span class="tb-pill">Accenture · P&amp;C Auto</span>
+    </div>
+  </div>
+
+  <div class="scroll">
+
+  <!-- ── 01 SUBMIT ── -->
+  <div class="panel on" data-p="submit">
+    <div class="hero">
+      <div class="hero-l">
+        <div class="hero-ey">FNOL Intelligence Platform · Operator Console · L100 May 2026</div>
+        <h1 class="hero-h">From <em>First Notice of Loss</em><br>to settlement in seconds.</h1>
+        <p class="hero-p">8 AI agents — intake, coverage, triage, fraud, damage, BI, settlement, subrogation — orchestrated on Duck Creek as system of record.</p>
+        <div class="hero-meta">
+          <span>Blueprint <strong>L100 · MAY 2026</strong></span>
+          <span>Maturity <strong>L2 → L3</strong></span>
+          <span>SOR <strong>Duck Creek</strong></span>
+        </div>
+      </div>
+      <div class="hero-r">
+        <div class="kpi-g">
+          <div class="kpi"><div class="kpi-n">85%</div><div class="kpi-l">STP Automation</div></div>
+          <div class="kpi"><div class="kpi-n">8</div><div class="kpi-l">AI Agents</div></div>
+          <div class="kpi"><div class="kpi-n">&lt;2 min</div><div class="kpi-l">Intake to Decision</div></div>
+          <div class="kpi"><div class="kpi-n">≥80%</div><div class="kpi-l">Subro at FNOL</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-row">
+      <span class="demo-lbl">Demo →</span>
+      <button class="btn btn-s" id="d1">🚗 Rear-end · TX</button>
+      <button class="btn btn-s" id="d2">⚠️ Fraud · GA</button>
+      <button class="btn btn-s" id="d3">💥 Total Loss · TX</button>
+    </div>
+
+    <div id="sub-banner"></div>
+
+    <div class="card">
+      <div class="card-hd"><div><div class="eyebrow">Section 01</div><div class="card-title">New First Notice of Loss</div></div></div>
+      <div class="card-bd">
+        <form id="fnol-form">
+
+          <div class="ssep"><span class="si">📋</span><span class="sl">Policy &amp; Loss</span><span class="sln"></span></div>
+          <div class="g3">
+            <div class="fld">
+              <label>Policy Number <span class="req">*</span></label>
+              <select id="f-pol" class="fi"><option value="">— choose policy —</option></select>
+              <div class="fld-hint" id="pol-ctx"></div>
+            </div>
+            <div class="fld">
+              <label>Loss Date &amp; Time <span class="req">*</span></label>
+              <input class="fi" type="datetime-local" id="f-dt"/>
+            </div>
+            <div class="fld">
+              <label>Loss Cause <span class="req">*</span></label>
+              <select id="f-cause" class="fi">
+                <option value="">— select —</option>
+                <option value="REAR_END_COLLISION">Rear-end Collision</option>
+                <option value="HEAD_ON_COLLISION">Head-on Collision</option>
+                <option value="SINGLE_VEHICLE">Single Vehicle</option>
+                <option value="SINGLE_VEHICLE_COLLISION">Single Vehicle Collision</option>
+                <option value="HIT_AND_RUN">Hit &amp; Run</option>
+                <option value="PARKING_LOT">Parking Lot</option>
+                <option value="WEATHER">Weather / Environmental</option>
+                <option value="THEFT">Theft / Vandalism</option>
+                <option value="FIRE">Fire</option>
+                <option value="ANIMAL">Animal Strike</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="g2" style="margin-top:10px">
+            <div class="fld"><label>Loss Location</label><input class="fi" type="text" id="f-loc" placeholder="City, State, highway…"/></div>
+            <div class="fld"><label>Description <span class="req">*</span></label><textarea class="fi" id="f-desc" rows="2" placeholder="What happened…"></textarea></div>
+          </div>
+
+          <div class="ssep"><span class="si">👤</span><span class="sl">Reporter</span><span class="sln"></span></div>
+          <div class="g4">
+            <div class="fld"><label>Name <span class="req">*</span></label><input class="fi" type="text" id="f-rn"/></div>
+            <div class="fld"><label>Phone</label><input class="fi" type="tel" id="f-rp" placeholder="+1-555-000-0000"/></div>
+            <div class="fld"><label>Tenure (days)</label><input class="fi" type="number" id="f-ten" min="0" value="365"/></div>
+            <div class="fld"><label>Prior Claims</label><input class="fi" type="number" id="f-pri" min="0" value="0"/></div>
+          </div>
+
+          <div class="ssep"><span class="si">🚘</span><span class="sl">Vehicle &amp; Damage</span><span class="sln"></span></div>
+          <div class="g4">
+            <div class="fld"><label>Est. Loss (USD)</label><input class="fi" type="number" id="f-est" min="0" value="0"/></div>
+            <div class="fld"><label>Vehicle ACV (USD)</label><input class="fi" type="number" id="f-acv" min="0" value="0"/></div>
+            <div class="fld"><label>Vehicle Class</label>
+              <select id="f-vcl" class="fi">
+                <option value="">— select —</option>
+                <option value="STANDARD">Standard</option><option value="LUXURY">Luxury</option>
+                <option value="EV">EV</option><option value="TRUCK">Truck / SUV</option>
+                <option value="MOTORCYCLE">Motorcycle</option><option value="COMMERCIAL">Commercial</option>
+              </select>
+            </div>
+            <div class="fld"><label>Photos / Quality (0-1)</label>
+              <div style="display:flex;gap:4px">
+                <input class="fi" type="number" id="f-pc" min="0" value="0" style="width:52px"/>
+                <input class="fi" type="number" id="f-pq" min="0" max="1" step="0.01" value="0.5" style="flex:1"/>
+              </div>
+            </div>
+          </div>
+          <div class="g4" style="margin-top:9px">
+            <div class="ck"><input type="checkbox" id="f-drv"/><label for="f-drv">Vehicle Drivable</label></div>
+            <div class="ck"><input type="checkbox" id="f-rcl"/><label for="f-rcl">Recall Indicator</label></div>
+            <div class="ck"><input type="checkbox" id="f-iso"/><label for="f-iso">ISO Match</label></div>
+            <div class="ck"><input type="checkbox" id="f-sfd"/><label for="f-sfd">🧪 Seed Fraud (Demo)</label></div>
+          </div>
+
+          <div class="ssep"><span class="si">⚕️</span><span class="sl">Injury &amp; Liability</span><span class="sln"></span></div>
+          <div class="g4">
+            <div class="ck"><input type="checkbox" id="f-inj"/><label for="f-inj">Injury Reported</label></div>
+            <div class="fld"><label>Severity</label>
+              <select id="f-isv" class="fi">
+                <option value="">None / Unknown</option>
+                <option value="MINOR">Minor</option><option value="MODERATE">Moderate</option>
+                <option value="SERIOUS">Serious</option><option value="CRITICAL">Critical</option><option value="FATAL">Fatal</option>
+              </select>
+            </div>
+            <div class="ck"><input type="checkbox" id="f-fat"/><label for="f-fat">Fatality</label></div>
+            <div class="ck"><input type="checkbox" id="f-att"/><label for="f-att">Attorney Rep.</label></div>
+          </div>
+          <div class="g4" style="margin-top:9px">
+            <div class="ck"><input type="checkbox" id="f-lib"/><label for="f-lib">Liability Clear</label></div>
+            <div class="ck"><input type="checkbox" id="f-rby"/><label for="f-rby">Rear-ended by Other</label></div>
+            <div class="ck"><input type="checkbox" id="f-rot"/><label for="f-rot">Rear-ended Other</label></div>
+            <div class="fld"><label>3rd Party Carrier</label><input class="fi" type="text" id="f-tpc"/></div>
+          </div>
+          <div class="g2" style="margin-top:9px">
+            <div class="fld"><label>3rd Party Policy #</label><input class="fi" type="text" id="f-tpp"/></div>
+          </div>
+
+          <div class="ssep"><span class="si">📡</span><span class="sl">Telematics (S0)</span><span class="sln"></span></div>
+          <div class="g4">
+            <div class="ck"><input type="checkbox" id="t-cr"/><label for="t-cr">Crash Alert</label></div>
+            <div class="fld"><label>Delta-V (mph)</label><input class="fi" type="number" id="t-dv" min="0" max="200" step="0.1" value="0"/></div>
+            <div class="fld"><label>Impact Severity (0-10)</label><input class="fi" type="number" id="t-is" min="0" max="10" step="0.1" value="0"/></div>
+            <div style="display:flex;gap:6px">
+              <div class="ck" style="flex:1"><input type="checkbox" id="t-ab"/><label for="t-ab">Airbag</label></div>
+              <div class="ck" style="flex:1"><input type="checkbox" id="t-cn"/><label for="t-cn">Consent</label></div>
+            </div>
+          </div>
+
+          <div class="sub-row">
+            <button type="submit" class="btn btn-p btn-lg" id="sub-btn">
+              <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+              Run 8-Agent Pipeline
+            </button>
+            <span id="sub-st"></span>
+          </div>
+        </form>
+
+        <div id="result" class="hidden">
+          <div class="result-box">
+            <div class="rkpis">
+              <div class="rkpi"><div class="rkpi-v td-id" id="r-cid" style="font-size:10px">—</div><div class="rkpi-l">Claim ID</div></div>
+              <div class="rkpi"><div class="rkpi-v" id="r-st" style="font-size:12px">—</div><div class="rkpi-l">Final Status</div></div>
+              <div class="rkpi"><div class="rkpi-v" id="r-dur">—</div><div class="rkpi-l">Duration</div></div>
+              <div class="rkpi"><div class="rkpi-v td-m" id="r-prov" style="font-size:10px">—</div><div class="rkpi-l">LLM Provider</div></div>
+            </div>
+            <div id="r-track"></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+              <button class="btn btn-s" id="r-pipe">📊 Inspect Pipeline</button>
+              <button class="btn btn-s" id="r-cop">🤖 Open Co-Pilot</button>
+              <button class="btn btn-s" id="r-siu" style="display:none;background:var(--re-s);color:var(--re);border-color:var(--re-m)">🔴 View SIU Case</button>
+              <button class="btn btn-g" id="r-new">+ New FNOL</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /submit -->
+
+  <!-- ── 02 PIPELINE ── -->
+  <div class="panel" data-p="pipeline">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:13px;flex-wrap:wrap">
+      <div><div class="eyebrow">Section 02</div><h2 style="font-family:var(--serif);font-size:16px;font-weight:700;margin:0">Pipeline Trace Viewer</h2></div>
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+        <select id="pipe-sel" class="fi" style="min-width:185px;font-family:var(--mono);font-size:9.5px"><option value="">— select claim —</option></select>
+        <button class="btn btn-s" id="pipe-ref">↻</button>
+      </div>
+    </div>
+    <div id="pipe-view"><div class="empty"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><p>Submit a claim then select it from the dropdown.</p></div></div>
+  </div>
+
+  <!-- ── 03 CLAIMS ── -->
+  <div class="panel" data-p="claims">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:13px;flex-wrap:wrap">
+      <div><div class="eyebrow">Section 03</div><h2 style="font-family:var(--serif);font-size:16px;font-weight:700;margin:0">Claims Register</h2></div>
+      <div style="margin-left:auto;display:flex;gap:6px">
+        <input id="cl-q" type="text" class="fi" placeholder="Search…" style="width:190px"/>
+        <button class="btn btn-s" id="cl-ref">↻ Refresh</button>
+      </div>
+    </div>
+    <div class="card" id="cl-card"><div class="ctr" style="padding:44px"><span class="spin spin-lg"></span></div></div>
+    <div id="cl-det" class="hidden" style="margin-top:11px">
+      <div class="card">
+        <div class="card-hd">
+          <div><div class="eyebrow">Claim Detail</div><div class="card-title" id="cd-ttl">—</div></div>
+          <div class="card-acts">
+            <button class="btn btn-s" id="cd-pipe">📊 Pipeline</button>
+            <button class="btn btn-s" id="cd-cop">🤖 Co-Pilot</button>
+            <button class="btn btn-g" id="cd-x">✕</button>
+          </div>
+        </div>
+        <div class="card-bd" id="cd-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 04 COPILOT ── -->
+  <div class="panel" data-p="copilot">
+    <div class="eyebrow" style="margin-bottom:3px">Section 04</div>
+    <h2 style="font-family:var(--serif);font-size:16px;font-weight:700;margin:0 0 11px">A9 · Adjuster Co-Pilot</h2>
+    <div class="cop-split">
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+        <div class="card-hd" style="padding:8px 10px;flex-shrink:0"><div class="eyebrow" style="margin:0">Claims</div></div>
+        <div id="cop-list" style="flex:1;overflow-y:auto;padding:6px;scrollbar-width:thin">
+          <div class="empty" style="padding:18px 8px"><p>Submit a claim first.</p></div>
+        </div>
+      </div>
+      <div class="chat-wrap">
+        <div class="card-hd" style="padding:8px 13px;flex-shrink:0">
+          <div><div class="eyebrow">A9 · Adjuster Co-Pilot</div><div class="card-title" id="cop-ttl" style="font-size:13px">Select a claim</div></div>
+          <div class="card-acts"><button class="btn btn-g" id="cop-alrt" style="display:none">🔔 Alerts</button></div>
+        </div>
+        <div class="chat-body" id="cop-body"><div class="empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>Select a claim to start.</p></div></div>
+        <div class="chat-foot">
+          <textarea id="cop-inp" placeholder="Ask anything… (Ctrl+Enter to send)" rows="1" disabled></textarea>
+          <button class="btn btn-p" id="cop-snd" disabled><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 05 CONVO ── -->
+  <div class="panel" data-p="convo">
+    <div class="eyebrow" style="margin-bottom:3px">Section 05</div>
+    <h2 style="font-family:var(--serif);font-size:16px;font-weight:700;margin:0 0 9px">A10 · Conversational FNOL (L3)</h2>
+    <div class="al al-in" style="margin-bottom:11px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>Customer-facing intake via natural dialogue. Agent extracts all FNOL fields and runs the pipeline automatically on completion.</span></div>
+    <div class="cv-split">
+      <div class="chat-wrap">
+        <div class="card-hd" style="padding:8px 13px;flex-shrink:0">
+          <div><div class="eyebrow">A10 · L3</div><div class="card-title" style="font-size:13px">FNOL Intake Agent</div></div>
+          <div class="card-acts">
+            <span class="td-m" id="cv-sid-l" style="font-size:8.5px;color:var(--g5)">No session</span>
+            <button class="btn btn-g" id="cv-rst">↺ New</button>
+          </div>
+        </div>
+        <div class="chat-body" id="cv-body"></div>
+        <div class="chat-foot">
+          <textarea id="cv-inp" placeholder="Type your message… (Enter to send)" rows="1"></textarea>
+          <button class="btn btn-p" id="cv-snd"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div class="cv-cap-box"><h4>📋 Captured Fields</h4><div id="cv-cap"></div></div>
+        <div class="card" style="padding:11px">
+          <h4 style="font-family:var(--mono);font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--g5);margin-bottom:8px">Session</h4>
+          <dl class="kv">
+            <dt>Session</dt><dd id="cv-sid" style="font-family:var(--mono);font-size:8.5px">—</dd>
+            <dt>Status</dt><dd id="cv-st">—</dd>
+            <dt>Turns</dt><dd id="cv-turns">0</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 06 TOTAL LOSS ── -->
+  <div class="panel" data-p="totalloss">
+    <div class="eyebrow" style="margin-bottom:3px">Section 06</div>
+    <h2 style="font-family:var(--serif);font-size:16px;font-weight:700;margin:0 0 11px">A11 · Total Loss &amp; Salvage Orchestrator</h2>
+    <div class="card">
+      <!-- Vertical left sub-tabs -->
+      <div class="vtab-wrap">
+        <div class="vtab-nav" id="tl-vnav">
+          <button class="vtab-btn on" data-vt="tl-evals"><span class="vi">📋</span>Evaluations</button>
+          <button class="vtab-btn" data-vt="tl-detail"><span class="vi">🔍</span>Detail &amp; Actions</button>
+          <button class="vtab-btn" data-vt="tl-letter"><span class="vi">📄</span>Owner Letter</button>
+        </div>
+        <div class="vtab-content">
+          <div class="vpanel on" data-vp="tl-evals">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:11px;flex-wrap:wrap">
+              <button class="btn btn-s" onclick="loadTlList()">↻ Refresh</button>
+              <button class="btn btn-p" id="tl-run">Run A11 Evaluation</button>
+              <span id="tl-run-st" style="font-family:var(--mono);font-size:9px;color:var(--g5)"></span>
+            </div>
+            <div id="tl-list"><div class="ctr" style="padding:36px"><span class="spin spin-lg"></span></div></div>
+          </div>
+          <div class="vpanel" data-vp="tl-detail">
+            <div id="tl-det"><div class="empty"><p>Select an evaluation from the Evaluations tab.</p></div></div>
+          </div>
+          <div class="vpanel" data-vp="tl-letter">
+            <div id="tl-let"><div class="empty"><p>Generate a letter from the Detail &amp; Actions tab.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 07 SIU CASE BUILDER ── -->
+  <div class="panel" data-p="siu">
+    <div class="eyebrow" style="margin-bottom:3px">Section 07</div>
+    <h2 style="font-family:var(--serif);font-size:16px;font-weight:700;margin:0 0 11px">A12 · SIU Case Builder</h2>
+    <div class="al al-er" style="margin-bottom:11px">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>SIU cases auto-open when S4A fraud band is <strong>HIGH (&gt;0.50)</strong> or <strong>CRITICAL (&gt;0.75)</strong>. CRITICAL cases activate a <strong>payment hold</strong> — disbursement is blocked until SIU clearance per Blueprint §S4A · §siu-hold-subprocess. NAIC Model Bulletin §IV compliance required on all referrals.</span>
+    </div>
+    <div class="card">
+      <div class="vtab-wrap">
+        <div class="vtab-nav" id="siu-vnav">
+          <button class="vtab-btn on" data-vt="siu-cases"><span class="vi">📋</span>Case List</button>
+          <button class="vtab-btn" data-vt="siu-detail"><span class="vi">🔍</span>Case Detail</button>
+          <button class="vtab-btn" data-vt="siu-referral"><span class="vi">📄</span>Referral Memo</button>
+        </div>
+        <div class="vtab-content">
+
+          <!-- Case List -->
+          <div class="vpanel on" data-vp="siu-cases">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:11px;flex-wrap:wrap">
+              <button class="btn btn-s" onclick="loadSiuList()">↻ Refresh</button>
+              <button class="btn btn-p" id="siu-open" style="background:var(--re-m);border-color:var(--re-m)">🔴 Open SIU Case</button>
+              <span style="font-family:var(--mono);font-size:8px;color:var(--g5)">Uses selected claim (Claims Register)</span>
+              <span id="siu-open-st" style="font-family:var(--mono);font-size:9px;color:var(--g5)"></span>
+            </div>
+            <div id="siu-list"><div class="ctr" style="padding:36px"><span class="spin spin-lg"></span></div></div>
+          </div>
+
+          <!-- Case Detail -->
+          <div class="vpanel" data-vp="siu-detail">
+            <div id="siu-det"><div class="empty"><p>Select a case from the Case List tab, or submit the ⚠️ Fraud demo and click <em>Open SIU Case</em>.</p></div></div>
+          </div>
+
+          <!-- Referral Memo -->
+          <div class="vpanel" data-vp="siu-referral">
+            <div id="siu-ref"><div class="empty"><p>Generate a referral memo from the Case Detail tab.</p></div></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 08 GOVERNANCE ── -->
+  <div class="panel" data-p="gov">
+    <div class="eyebrow" style="margin-bottom:3px">Section 08</div>
+    <h2 style="font-family:var(--serif);font-size:16px;font-weight:700;margin:0 0 9px">Governance &amp; AI Compliance Layer</h2>
+    <div class="al al-vl" style="margin-bottom:11px"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>Aligned to <strong>NAIC Model Bulletin on AI</strong>, <strong>Colorado Reg 10-1-1</strong>, <strong>NYDFS Circular Letter No. 7</strong>, and <strong>FCRA §615</strong>. All 51 state addenda implemented.</span></div>
+    <div class="card">
+      <div class="vtab-wrap">
+        <div class="vtab-nav" id="gov-vnav">
+          <button class="vtab-btn on" data-vt="gov-ov"><span class="vi">🏛️</span>Overview</button>
+          <button class="vtab-btn" data-vt="gov-reg"><span class="vi">📜</span>Regulatory Matrix</button>
+          <button class="vtab-btn" data-vt="gov-arch"><span class="vi">🏗️</span>Architecture</button>
+        </div>
+        <div class="vtab-content">
+          <div class="vpanel on" data-vp="gov-ov">
+            <div class="gov-g">
+              <div class="gov-card"><div class="gov-ico">📜</div><div class="gov-ttl">Model Cards</div><div class="gov-dsc">10 model cards documenting training data, bias assessments and benchmarks.</div><div class="gov-ft"><span class="b bg">Active</span> 10 registered</div></div>
+              <div class="gov-card"><div class="gov-ico">⚖️</div><div class="gov-ttl">Decision Log</div><div class="gov-dsc">Immutable SQLite with SHA-256 hash chain integrity on every decision.</div><div class="gov-ft"><span class="b bg">SQLite</span> Hash-chained</div></div>
+              <div class="gov-card"><div class="gov-ico">🏛️</div><div class="gov-ttl">Regulatory Frameworks</div><div class="gov-dsc">NAIC · CO 10-1-1 · NYDFS No. 7 · FCRA §615. All 51 state addenda.</div><div class="gov-ft"><span class="b bb">51 states</span></div></div>
+              <div class="gov-card"><div class="gov-ico">🎯</div><div class="gov-ttl">Bias Monitor</div><div class="gov-dsc">DOB, gender, language, ZIP proxies — monitoring-only, never input features.</div><div class="gov-ft"><span class="b ba">Monitor-only</span> 4 proxies</div></div>
+              <div class="gov-card"><div class="gov-ico">📣</div><div class="gov-ttl">FCRA Adverse Action</div><div class="gov-dsc">Auto-generated adverse-action notices with consumer rights language.</div><div class="gov-ft"><span class="b br">FCRA §615</span></div></div>
+              <div class="gov-card"><div class="gov-ico">⚑</div><div class="gov-ttl">HITL Escalation</div><div class="gov-dsc">Fires when TLT exceeds state threshold ≥10pp or fraud score ≥0.80.</div><div class="gov-ft"><span class="b bt">Configured</span></div></div>
+              <div class="gov-card"><div class="gov-ico">🔍</div><div class="gov-ttl">Explainability (XAI)</div><div class="gov-dsc">Rationale + confidence + evidence on every AI decision in the pipeline.</div><div class="gov-ft"><span class="b bv">XAI · All stages</span></div></div>
+              <div class="gov-card"><div class="gov-ico">🔒</div><div class="gov-ttl">PII Handling</div><div class="gov-dsc">TTL-bounded trace store. Sensitive fields masked. SOC 2 data minimization.</div><div class="gov-ft"><span class="b bv">TTL-bounded</span></div></div>
+              <div class="gov-card"><div class="gov-ico">📄</div><div class="gov-ttl">PDF Audit Emission</div><div class="gov-dsc">reportlab Letter-size PDFs with hash-anchored audit footers (~4.5 KB).</div><div class="gov-ft"><span class="b bs">reportlab</span></div></div>
+            </div>
+          </div>
+          <div class="vpanel" data-vp="gov-reg">
+            <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Framework</th><th>Scope</th><th>Jurisdiction</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td style="font-weight:600">NAIC Model Bulletin on AI</td><td class="td-m">AI use in insurance — all lines</td><td class="td-m">All states</td><td><span class="b bg">Implemented</span></td></tr>
+              <tr><td style="font-weight:600">Colorado Reg 10-1-1</td><td class="td-m">Algorithmic bias in auto claims</td><td class="td-m">CO</td><td><span class="b bg">Implemented</span></td></tr>
+              <tr><td style="font-weight:600">NYDFS Circular Letter No. 7</td><td class="td-m">AI model governance</td><td class="td-m">NY</td><td><span class="b bg">Implemented</span></td></tr>
+              <tr><td style="font-weight:600">FCRA §615</td><td class="td-m">Adverse action notices</td><td class="td-m">Federal</td><td><span class="b bg">Implemented</span></td></tr>
+              <tr><td style="font-weight:600">51 State Addenda</td><td class="td-m">TLT thresholds &amp; compliance</td><td class="td-m">All 51</td><td><span class="b bg">All addenda</span></td></tr>
+            </tbody></table></div>
+          </div>
+          <div class="vpanel" data-vp="gov-arch">
+            <div class="g2">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="padding:10px;background:var(--w1);border:1px solid var(--rule);border-radius:var(--r)"><div style="font-weight:600;font-size:11.5px;margin-bottom:3px">🏗️ governance/ Package</div><div style="font-size:10.5px;color:var(--g6);line-height:1.5">8 modules · 10 model cards · 5 templates · 51 state addenda · 3 policy files</div></div>
+                <div style="padding:10px;background:var(--w1);border:1px solid var(--rule);border-radius:var(--r)"><div style="font-weight:600;font-size:11.5px;margin-bottom:3px">🔗 16 Governance API Endpoints</div><div style="font-size:10.5px;color:var(--g6);line-height:1.5">/api/v1/fnol/governance/* — model cards, decision log, bias report, adverse action, HITL queue</div></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="padding:10px;background:var(--w1);border:1px solid var(--rule);border-radius:var(--r)"><div style="font-weight:600;font-size:11.5px;margin-bottom:3px">📊 Real-time Bias Monitoring</div><div style="font-size:10.5px;color:var(--g6);line-height:1.5">DOB, gender, preferred language, garaging ZIP — variance tracked per claim, never input features</div></div>
+                <div style="padding:10px;background:var(--w1);border:1px solid var(--rule);border-radius:var(--r)"><div style="font-weight:600;font-size:11.5px;margin-bottom:3px">🗄️ Decision Log Backend</div><div style="font-size:10.5px;color:var(--g6);line-height:1.5">SQLite at governance/decision_log_data/decisions.db · SHA-256 chain · FCRA adverse-action template firing correctly</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 09 SYSTEM ── -->
+  <div class="panel" data-p="sys">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:13px">
+      <div><div class="eyebrow">Section 09</div><h2 style="font-family:var(--serif);font-size:16px;font-weight:700;margin:0">System &amp; Configuration</h2></div>
+      <button class="btn btn-s" style="margin-left:auto" onclick="loadSys()">↻ Refresh</button>
+    </div>
+    <div id="sys-body"><div class="ctr" style="padding:44px"><span class="spin spin-lg"></span></div></div>
+  </div>
+
+  </div><!-- /scroll -->
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- KEY MODAL -->
+<div id="modal" class="hidden">
+  <div class="modal-box">
+    <h3>🔑 API Key Required</h3>
+    <p id="modal-msg">Enter the <strong>FNOL_API_KEY</strong> shown in your launcher output. Look for the line: <code>API key....... set</code></p>
+    <div class="fld" style="margin-bottom:4px">
+      <label>X-API-Key</label>
+      <input class="fi" type="password" id="modal-inp" autocomplete="off" placeholder="Paste key from launcher output…"/>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-g" id="modal-cancel">Cancel</button>
+      <button class="btn btn-p" id="modal-ok">Save &amp; Connect</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+/* ═══ CONFIG ════════════════════════════════════════════ */
+// Derive base URL from where the page was served.
+// When served from FastAPI at /app → origin is correct.
+// When opened as file:// → fall back to localhost:8000.
+const API = (() => {
+  const o = window.location.origin;
+  return (o && o !== 'null' && !o.startsWith('file:')) ? o : 'http://127.0.0.1:8000';
+})();
+
+// Single localStorage key, new version. Clear anything old.
+const KEY_LS = 'fnol_k4';
+['fnol_api_key','fnol_apikey_v2','fnol_key_v3'].forEach(k => {
+  if(localStorage.getItem(k)) {
+    // Only migrate if it looks like a real key (not the blocked defaults)
+    const v = localStorage.getItem(k);
+    const blocked = ['fnol-api-key-2026','changeme','test',''];
+    if(!blocked.includes(v)) localStorage.setItem(KEY_LS, v);
+    localStorage.removeItem(k);
+  }
+});
+
+const NAV_TITLES = {
+  submit:'01 · Submit FNOL', pipeline:'02 · Pipeline Trace', claims:'03 · Claims Register',
+  copilot:'04 · A9 · Adjuster Co-Pilot', convo:'05 · A10 · Conversational FNOL',
+  totalloss:'06 · A11 · Total Loss & Salvage', siu:'07 · A12 · SIU Case Builder',
+  gov:'08 · Governance', sys:'09 · System'
+};
+const STC = {S0:'📡',S1:'📋',S2:'🛡️',S3:'🎯',S4A:'🔍',S4B:'🔧',A11:'🚗',A12:'🔴',S5:'⚖️',S6:'💰',S7:'↩️',A9:'🤖',A10:'💬'};
+
+/* ═══ DOM HELPERS ═══════════════════════════════════════ */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtMs = ms => ms==null?'—':ms<1000?ms+' ms':(ms/1000).toFixed(2)+' s';
+const fmtUsd = n => n==null?'—':'$'+Number(n).toLocaleString(undefined,{maximumFractionDigits:0});
+const nowL = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); };
+
+function scl(s) {
+  if(!s) return 'bx';
+  const l = s.toLowerCase();
+  if(l.includes('stp')||l.includes('complete')) return 'bg';
+  if(l.includes('fraud')||l.includes('siu')) return 'br';
+  if(l.includes('review')||l.includes('hitl')||l.includes('manual')) return 'ba';
+  if(l.includes('loss')||l.includes('total')) return 'bo';
+  if(l.includes('pend')||l.includes('open')) return 'bb';
+  return 'bv';
+}
+
+function toast(msg, k='info', ms=3000) {
+  const t=$('#toast'); t.textContent=msg; t.className='toast show '+k;
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),ms);
+}
+
+/* ═══ API KEY MANAGEMENT ════════════════════════════════ */
+let _kr = null;
+const getK = () => localStorage.getItem(KEY_LS)||'';
+const setK = v => {
+  if(v&&v.trim()) localStorage.setItem(KEY_LS, v.trim());
+  else localStorage.removeItem(KEY_LS);
+  refreshKeyUI();
+};
+
+function refreshKeyUI() {
+  const k = getK();
+  const dot = $('#key-dot'), lbl = $('#key-lbl');
+  dot.className = k ? 'ok' : 'err';
+  dot.style.cssText = `width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${k?'var(--em-m)':'var(--re-m)'}`;
+  lbl.textContent = k ? 'Key: …'+k.slice(-6) : 'Set API Key ⚠';
+  lbl.style.color = k ? 'var(--em)' : 'var(--re-m)';
+}
+
+$('#key-btn').onclick = () => showKeyModal('Update your API key.', false);
+$('#modal-cancel').onclick = () => closeModal(null);
+$('#modal-ok').onclick = () => {
+  const v = $('#modal-inp').value.trim();
+  if(!v) { toast('Please enter an API key.','err'); return; }
+  const blocked = ['fnol-api-key-2026','changeme','test'];
+  if(blocked.includes(v)) { toast('That key is in the server blocked list — use the key from your launcher output.','err',6000); return; }
+  setK(v); closeModal(v);
+};
+$('#modal-inp').onkeydown = e => { if(e.key==='Enter') $('#modal-ok').click(); };
+$('#modal').onclick = e => { if(e.target===$('#modal')) closeModal(null); };
+
+function showKeyModal(reason, required=false) {
+  return new Promise(resolve => {
+    _kr = resolve;
+    $('#modal-msg').innerHTML = reason;
+    $('#modal-inp').value = getK();
+    $('#modal-cancel').style.display = required ? 'none' : '';
+    $('#modal').classList.remove('hidden');
+    setTimeout(() => $('#modal-inp').select(), 80);
+  });
+}
+function closeModal(val) {
+  $('#modal').classList.add('hidden');
+  if(_kr) { _kr(val); _kr=null; }
+}
+
+/* ═══ FETCH ══════════════════════════════════════════════ */
+async function api(path, opts={}, _retry=false) {
+  const headers = { 'Content-Type':'application/json', ...(opts.headers||{}) };
+  const k = getK();
+  if(k) headers['X-API-Key'] = k;
+
+  let res;
+  try {
+    res = await fetch(API + path, {...opts, headers});
+  } catch(e) {
+    throw new Error(`Network error — is the server running at ${API}? (${e.message})`);
+  }
+
+  if(res.status === 401 && !_retry) {
+    const reason = k
+      ? `Server rejected the key <code>…${esc(k.slice(-6))}</code>. Check your launcher output for the active <strong>FNOL_API_KEY</strong>.`
+      : 'API key required. Paste it from your launcher output.';
+    const fresh = await showKeyModal(reason, false);
+    if(fresh) return api(path, opts, true);
+    throw new Error('401 — API key required');
+  }
+  if(!res.ok) {
+    const b = await res.text().catch(()=>'');
+    throw new Error(`${res.status} ${res.statusText}${b?' — '+b.slice(0,180):''}`);
+  }
+  return res.json();
+}
+
+/* ═══ STATE ══════════════════════════════════════════════ */
+const S = {
+  cfg: null, health: null, policies: [],
+  claims: [], claimsF: [],
+  pipes: {}, sel: null,
+  copMsgs: {},
+  cv: { sid:null, history:[], captured:{} },
+  tlEvals: [], selEval: null,
+  siuCases: [], selSiu: null,
+};
+
+/* ═══ SIDEBAR NAVIGATION ════════════════════════════════ */
+$$('.sb-btn[data-to]').forEach(b => b.addEventListener('click', () => go(b.dataset.to)));
+
+function go(tab) {
+  $$('.sb-btn[data-to]').forEach(b => b.classList.toggle('on', b.dataset.to===tab));
+  $$('.scroll > .panel').forEach(p => p.classList.toggle('on', p.dataset.p===tab));
+  $('#tb-title').textContent = NAV_TITLES[tab] || tab;
+  if(tab==='pipeline') buildPipeSel();
+  if(tab==='claims')   loadClaims();
+  if(tab==='copilot')  renderCopList();
+  if(tab==='totalloss') loadTlList();
+  if(tab==='siu')      loadSiuList();
+  if(tab==='sys')      loadSys();
+}
+
+/* ═══ VERTICAL SUB-TABS ════════════════════════════════= */
+$$('.vtab-nav').forEach(nav => {
+  nav.querySelectorAll('.vtab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Find the sibling vtab-content
+      const content = nav.nextElementSibling;
+      nav.querySelectorAll('.vtab-btn').forEach(b => b.classList.toggle('on', b===btn));
+      content.querySelectorAll('.vpanel').forEach(p => p.classList.toggle('on', p.dataset.vp===btn.dataset.vt));
+    });
+  });
+});
+
+/* ═══ BOOTSTRAP — STRICT SEQUENCE ══════════════════════ */
+async function boot() {
+  refreshKeyUI();
+
+  // Step 1: Health check (NO auth required)
+  try {
+    const h = await fetch(API + '/api/v1/health').then(r => r.json());
+    S.health = h;
+    $('#h-dot').className = 'dot ok';
+    $('#h-txt').textContent = 'API Live';
+  } catch(e) {
+    $('#h-dot').className = 'dot err';
+    $('#h-txt').textContent = 'API Offline';
+    toast(`Cannot reach API at ${API}. Run: python fnol_launcher.py`, 'err', 10000);
+    return; // Stop — server not running, no point continuing
+  }
+
+  // Step 2: If no key stored, prompt NOW before any authenticated call
+  if(!getK()) {
+    await showKeyModal(
+      'Enter the <strong>FNOL_API_KEY</strong> from your launcher terminal output.<br><br>' +
+      'Look for the line:<br><code>API key....... set</code><br><br>' +
+      'Then find the actual key value by checking your environment or <code>fnol_settings.py</code>.',
+      true // required — can't cancel
+    );
+    if(!getK()) {
+      toast('No API key set. Click "API Key" in the sidebar to add one.', 'warn', 8000);
+      return;
+    }
+  }
+
+  // Step 3: Config (authenticated)
+  try {
+    const c = await api('/api/v1/config');
+    S.cfg = c; S.policies = c.policies||[];
+    $('#llm-row').style.display=''; $('#llm-txt').textContent='LLM · '+(c.llm_provider||'—').toUpperCase();
+    $('#sor-row').style.display=''; $('#sor-txt').textContent='SOR · '+(c.sor_type||'MOCK').toUpperCase();
+    $('#ver-row').style.display=''; $('#ver-txt').textContent='v '+(c.version||'—');
+    $('#pill-v').textContent='v '+(c.version||'—')+' · '+(c.llm_provider||'MOCK').toUpperCase();
+    buildPolDrop(c.policies||[]);
+    $('#f-dt').value = nowL();
+  } catch(e) {
+    toast('Config failed: '+e.message, 'err', 7000);
+    return;
+  }
+
+  // Step 4: Load claims silently (don't block UI if this fails)
+  try { await loadClaims(true); } catch(e) {}
+
+  // Step 5: Start conversational agent
+  try { await bootConvo(); } catch(e) {}
+
+  // Step 6: Pre-load SIU cases silently (A12 cases may already exist)
+  try { await loadSiuList(); } catch(e) {}
+}
+
+/* ═══ POLICY DROPDOWN ═══════════════════════════════════ */
+function buildPolDrop(pols) {
+  const sel = $('#f-pol');
+  sel.innerHTML = '<option value="">— choose policy —</option>'
+    + pols.map(p => `<option value="${esc(p.policy_number)}">${esc(p.policy_number)} · ${esc(p.jurisdiction_state)}</option>`).join('')
+    + '<option value="__c">— enter custom —</option>';
+  sel.onchange = () => {
+    const v=sel.value, ctx=$('#pol-ctx');
+    if(v==='__c') {
+      const inp=document.createElement('input');
+      inp.type='text'; inp.id='f-pol'; inp.className='fi'; inp.placeholder='Enter policy number';
+      sel.replaceWith(inp);
+      ctx.textContent='Custom — will fail coverage if not in SOR.'; ctx.className='fld-hint wa';
+    } else if(v) {
+      ctx.textContent='✓ In-force'; ctx.className='fld-hint ok';
+    } else {
+      ctx.textContent=''; ctx.className='fld-hint';
+    }
+  };
+}
+
+/* ═══ DEMO FILL ════════════════════════════════════════= */
+function sf(id,v) { const e=document.getElementById(id); if(!e) return; if(e.type==='checkbox') e.checked=!!v; else e.value=v; }
+
+$('#d1').onclick = () => {
+  sf('f-pol','POC-POL-00123'); sf('f-dt',nowL()); sf('f-cause','REAR_END_COLLISION');
+  sf('f-loc','Houston, TX (I-10 W)'); sf('f-desc','Stopped at red light, struck from behind. Mild whiplash, vehicle drivable.');
+  sf('f-rn','Aria Castillo'); sf('f-rp','+1-713-555-0142'); sf('f-ten','720'); sf('f-pri','0');
+  sf('f-est','4800'); sf('f-acv','22500'); sf('f-vcl','STANDARD'); sf('f-pc','6'); sf('f-pq','0.82');
+  sf('f-drv',1); sf('f-inj',1); sf('f-isv','MINOR'); sf('f-lib',1); sf('f-rby',1);
+  sf('f-tpc','ACME Mutual'); sf('f-tpp','ACM-7782-99');
+  sf('t-cr',1); sf('t-dv','9.5'); sf('t-is','3.2'); sf('t-cn',1); sf('f-sfd',0);
+  toast('Demo loaded.','info');
+};
+$('#d2').onclick = () => {
+  sf('f-pol','POC-POL-00456'); sf('f-dt',nowL()); sf('f-cause','SINGLE_VEHICLE');
+  sf('f-loc','Atlanta, GA'); sf('f-desc','Hit a deer late at night. No witnesses. Third claim this year.');
+  sf('f-rn','Jordan Mehta'); sf('f-rp','+1-404-555-0188'); sf('f-ten','45'); sf('f-pri','3');
+  sf('f-est','9200'); sf('f-acv','12000'); sf('f-vcl','STANDARD'); sf('f-pc','1'); sf('f-pq','0.41');
+  sf('f-drv',0); sf('f-iso',1); sf('f-att',1); sf('f-lib',1); sf('f-inj',0);
+  sf('t-cr',0); sf('t-dv','0'); sf('t-is','0'); sf('t-cn',0); sf('f-sfd',1);
+  toast('Fraud demo loaded — triggers A12 SIU Case Builder (CRITICAL band).','info',5000);
+};
+$('#d3').onclick = () => {
+  sf('f-pol','POC-POL-00789'); sf('f-dt',nowL()); sf('f-cause','HEAD_ON_COLLISION');
+  sf('f-loc','Austin, TX — US-183'); sf('f-desc','Severe head-on at highway speed. Both airbags deployed. Vehicle inoperable. Serious injury.');
+  sf('f-rn','Priya Donnelly'); sf('f-rp','+1-512-555-0199'); sf('f-ten','400'); sf('f-pri','0');
+  sf('f-est','62000'); sf('f-acv','58000'); sf('f-vcl','EV'); sf('f-pc','12'); sf('f-pq','0.91');
+  sf('f-drv',0); sf('f-inj',1); sf('f-isv','SERIOUS'); sf('f-lib',1); sf('f-rby',1);
+  sf('f-tpc','Statewide Auto'); sf('f-tpp','SWA-101-22');
+  sf('t-cr',1); sf('t-dv','28.4'); sf('t-is','8.7'); sf('t-ab',1); sf('t-cn',1); sf('f-sfd',0);
+  toast('Total loss demo loaded — triggers A11.','info');
+};
+
+/* ═══ SUBMIT ════════════════════════════════════════════ */
+$('#fnol-form').onsubmit = async e => {
+  e.preventDefault();
+  const polEl = document.getElementById('f-pol');
+  const pol = polEl.value.trim();
+  if(!pol) { toast('Select a policy.','err'); return; }
+  const body = {
+    policy_number: pol,
+    loss_date_time: (() => { const v=$('#f-dt').value; return v ? new Date(v).toISOString() : new Date().toISOString(); })(),
+    loss_location: $('#f-loc').value.trim()||null,
+    loss_cause: $('#f-cause').value||'OTHER',
+    loss_description: $('#f-desc').value.trim(),
+    reporter_name: $('#f-rn').value.trim(),
+    reporter_phone: $('#f-rp').value.trim()||null,
+    estimated_loss_usd: +$('#f-est').value||0,
+    vehicle_acv_usd: +$('#f-acv').value||0,
+    photo_count: +$('#f-pc').value||0,
+    photo_quality_score: +$('#f-pq').value||0,
+    drivable_indicator: $('#f-drv').checked,
+    injury_reported: $('#f-inj').checked,
+    injury_severity: $('#f-isv').value||null,
+    fatality_indicator: $('#f-fat').checked,
+    liability_clear: $('#f-lib').checked,
+    rear_ended_other: $('#f-rot').checked,
+    rear_ended_by_other: $('#f-rby').checked,
+    attorney_represented: $('#f-att').checked,
+    prior_claims_count: +$('#f-pri').value||0,
+    iso_match: $('#f-iso').checked,
+    third_party_carrier: $('#f-tpc').value.trim()||null,
+    third_party_policy_number: $('#f-tpp').value.trim()||null,
+    vehicle_recall_indicator: $('#f-rcl').checked,
+    vehicle_class: $('#f-vcl').value||null,
+    policy_tenure_days: +$('#f-ten').value||365,
+    seed_fraud: $('#f-sfd').checked,
+    telematics: {
+      crash_alert_received: $('#t-cr').checked,
+      delta_v_mph: +$('#t-dv').value||0,
+      impact_severity_score: +$('#t-is').value||0,
+      airbag_deployed: $('#t-ab').checked,
+      consent_given: $('#t-cn').checked,
+    },
+  };
+  const btn=$('#sub-btn'); btn.disabled=true;
+  $('#sub-st').innerHTML='<span class="spin"></span>&nbsp;Running pipeline…';
+  $('#sub-banner').innerHTML='';
+  $('#result').classList.add('hidden');
+  try {
+    const t0=performance.now();
+    const out=await api('/api/v1/fnol/claims',{method:'POST',body:JSON.stringify(body)});
+    const wall=Math.round(performance.now()-t0);
+    S.pipes[out.claim_id]=out.pipeline;
+    renderResult(out,wall);
+    loadClaims(true);
+    toast('✓ Pipeline complete — '+out.final_status,'ok');
+  } catch(err) {
+    $('#sub-banner').innerHTML=`<div class="al al-er"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><div><strong>Submit failed</strong> — ${esc(err.message)}</div></div>`;
+  } finally { btn.disabled=false; $('#sub-st').innerHTML=''; }
+};
+
+$('#r-new').onclick=()=>{ $('#result').classList.add('hidden'); scrollTo({top:0,behavior:'smooth'}); };
+
+function renderResult(out,wall) {
+  $('#result').classList.remove('hidden');
+  $('#r-cid').textContent=out.claim_id;
+  $('#r-st').innerHTML=`<span class="b ${scl(out.final_status)}">${esc(out.final_status)}</span>`;
+  $('#r-dur').textContent=fmtMs(out.total_duration_ms||wall);
+  $('#r-prov').textContent=(out.llm_provider||S.cfg?.llm_provider||'—').toUpperCase();
+  $('#r-track').innerHTML=mkTrack(out.pipeline);
+  $('#r-pipe').onclick=()=>{ S.sel=out.claim_id; go('pipeline'); renderPipeFor(out.claim_id); };
+  $('#r-cop').onclick=()=>{ S.sel=out.claim_id; go('copilot'); openCop(out.claim_id); };
+  // A12 — SIU Case Builder: show button + payment-hold badge when stage ran
+  const a12=(out.pipeline?.stages||[]).find(s=>s.stage_id==='A12');
+  const siuBtn=$('#r-siu');
+  if(a12 && a12.status!=='skipped' && a12.status!=='error') {
+    siuBtn.style.display='';
+    siuBtn.onclick=()=>{ S.sel=out.claim_id; go('siu'); };
+    if(a12.outputs?.payment_hold_flag) {
+      toast('⛔ PAYMENT HOLD ACTIVE — SIU case opened (CRITICAL fraud band). Disbursement blocked.','err',7000);
+    } else {
+      toast('🔴 SIU case opened (HIGH fraud band) — enhanced review required.','info',5000);
+    }
+  } else {
+    siuBtn.style.display='none';
+  }
+  $('#result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ═══ PIPELINE TRACK ════════════════════════════════════ */
+const CHK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+const DSH=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+
+function mkTrack(pipeline) {
+  if(!pipeline?.stages) return '';
+  let h='<div class="track">';
+  pipeline.stages.forEach((s,i) => {
+    const st=s.status||(s.skipped?'skip':'ok');
+    if(i>0) h+=`<div class="ts-cn ${st==='ok'?'ok':''}"></div>`;
+    h+=`<div class="ts ${st}" title="${esc(s.stage_name||s.stage_id)} · ${fmtMs(s.duration_ms)}">
+      <div class="ts-dot">${st==='skip'?DSH:CHK}</div>
+      <div class="ts-lb">${esc(s.stage_id)}</div>
+      <div class="ts-dr">${fmtMs(s.duration_ms)}</div>
+    </div>`;
+  });
+  return h+'</div>';
+}
+
+/* ═══ PIPELINE VIEWER ═══════════════════════════════════ */
+function buildPipeSel() {
+  const sel=$('#pipe-sel'), ids=Object.keys(S.pipes);
+  sel.innerHTML='<option value="">— select claim —</option>'+ids.map(id=>`<option value="${esc(id)}">${esc(id)}</option>`).join('');
+  if(S.sel&&S.pipes[S.sel]){ sel.value=S.sel; renderPipeFor(S.sel); }
+}
+$('#pipe-sel').onchange = e => e.target.value?renderPipeFor(e.target.value):$('#pipe-view').innerHTML='<div class="empty"><p>Select a claim.</p></div>';
+$('#pipe-ref').onclick = ()=>{ loadClaims(true); buildPipeSel(); toast('Refreshed','info',1500); };
+
+function renderPipeFor(cid) {
+  const pipe=S.pipes[cid];
+  if(!pipe){ $('#pipe-view').innerHTML='<div class="empty"><p>No pipeline trace found.</p></div>'; return; }
+  let h=`<div class="card" style="margin-bottom:11px"><div class="card-bd">
+    <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:7px">
+      <span class="b ${scl(pipe.final_status)}">${esc(pipe.final_status||'—')}</span>
+      <span class="td-id" style="font-size:9.5px">${esc(cid)}</span>
+      <span class="td-m">${fmtMs(pipe.total_duration_ms)}</span>
+      <span class="td-m">LLM: ${esc((pipe.llm_provider||'—').toUpperCase())}</span>
+    </div>${mkTrack(pipe)}</div></div>`;
+  (pipe.stages||[]).forEach(s => {
+    const st=s.status||(s.skipped?'skip':'ok');
+    const bc=st==='ok'?'bg':st==='warn'?'ba':st==='err'?'br':'bx';
+    const outs=s.outputs||{}, decs=s.decisions||[];
+    h+=`<div class="sc" onclick="this.classList.toggle('open')">
+      <div class="sc-hd">
+        <span class="sc-id">${STC[s.stage_id]||'⚙️'} ${esc(s.stage_id)}</span>
+        <span class="sc-nm">${esc(s.stage_name||s.stage_id)}</span>
+        <span class="b ${bc}" style="margin-left:auto">${esc(st)}</span>
+        <span class="sc-dr">${fmtMs(s.duration_ms)}</span>
+      </div>
+      <div class="sc-bd">`;
+    if(Object.keys(outs).length) {
+      h+='<dl class="kv">';
+      Object.entries(outs).slice(0,14).forEach(([k,v]) => {
+        h+=`<dt>${esc(k)}</dt><dd>${esc(typeof v==='object'?JSON.stringify(v).slice(0,120):String(v??'—'))}</dd>`;
+      });
+      h+='</dl>';
+    }
+    decs.forEach(d => {
+      h+=`<div class="di" style="margin-top:7px"><div class="di-hd">
+        <span class="b ${d.hitl_required?'br':'bg'}">${esc(d.decision||'—')}</span>
+        <span class="td-m" style="font-size:8.5px">conf=${(d.confidence||0).toFixed(2)}</span>
+        ${d.hitl_required?'<span class="b ba">⚑ HITL</span>':''}
+      </div>${d.rationale?`<div class="di-rat">"${esc(d.rationale.slice(0,280))}"</div>`:''}</div>`;
+    });
+    h+=`</div></div>`;
+  });
+  $('#pipe-view').innerHTML=h;
+}
+
+/* ═══ CLAIMS ════════════════════════════════════════════ */
+async function loadClaims(silent=false) {
+  if(!silent) $('#cl-card').innerHTML='<div class="ctr" style="padding:44px"><span class="spin spin-lg"></span></div>';
+  try {
+    const r=await api('/api/v1/fnol/claims');
+    S.claims=r.claims||[]; S.claimsF=[...S.claims];
+    renderClTbl(S.claimsF); renderCopList(); buildPipeSel();
+  } catch(e) { if(!silent) toast('Claims failed: '+e.message,'err'); }
+}
+$('#cl-ref').onclick = ()=>loadClaims();
+$('#cl-q').oninput = e => {
+  const q=e.target.value.toLowerCase();
+  S.claimsF=S.claims.filter(c=>((c.claim_id||'')+(c.loss_cause||'')+(c.summary?.final_status||'')).toLowerCase().includes(q));
+  renderClTbl(S.claimsF);
+};
+
+function renderClTbl(cls) {
+  if(!cls.length){ $('#cl-card').innerHTML='<div class="empty" style="padding:40px"><p>No claims. Submit your first FNOL.</p></div>'; return; }
+  let h='<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Claim ID</th><th>Policy</th><th>Cause</th><th>Status</th><th>Duration</th><th>Loss Date</th></tr></thead><tbody>';
+  cls.forEach(c => {
+    const st=c.summary?.final_status||c.final_status||'—';
+    h+=`<tr onclick="openClDet('${esc(c.claim_id||'')}')">
+      <td class="td-id">${esc(c.claim_id||'—')}</td>
+      <td class="td-m">${esc(c.policy_number||'—')}</td>
+      <td>${esc((c.loss_cause||'—').replace(/_/g,' '))}</td>
+      <td><span class="b ${scl(st)}">${esc(st)}</span></td>
+      <td class="td-m">${fmtMs(c.summary?.pipeline_duration_ms)}</td>
+      <td class="td-m">${c.loss_date_time?c.loss_date_time.slice(0,10):'—'}</td>
+    </tr>`;
+  });
+  h+='</tbody></table></div>';
+  $('#cl-card').innerHTML=h;
+}
+
+async function openClDet(cid) {
+  try {
+    const r=await api('/api/v1/fnol/claims/'+cid);
+    const pipe=S.pipes[cid]||r.pipeline;
+    const st=r.summary?.final_status||pipe?.final_status||'—';
+    $('#cd-ttl').innerHTML=`${esc(cid)} <span class="b ${scl(st)}">${esc(st)}</span>`;
+    const flds=[['Policy',r.policy_number],['Cause',r.loss_cause],['Reporter',r.reporter_name],['Phone',r.reporter_phone],['Location',r.loss_location],['Est. Loss',fmtUsd(r.estimated_loss_usd)],['ACV',fmtUsd(r.vehicle_acv_usd)],['Drivable',r.drivable_indicator?'Yes':'No'],['Injury',r.injury_reported?(r.injury_severity||'Yes'):'No'],['Attorney',r.attorney_represented?'Yes':'No'],['Prior Claims',r.prior_claims_count]];
+    let h='<div class="g3" style="gap:6px">';
+    flds.forEach(([k,v]) => h+=`<div style="padding:6px 8px;background:var(--w1);border-radius:var(--r)"><div style="font-family:var(--mono);font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--g5)">${esc(k)}</div><div style="font-size:11.5px;font-weight:500;color:var(--g9);margin-top:2px">${esc(String(v??'—'))}</div></div>`);
+    h+='</div>';
+    if(pipe) h+='<div style="margin-top:11px">'+mkTrack(pipe)+'</div>';
+    $('#cd-body').innerHTML=h;
+    $('#cd-pipe').onclick=()=>{ S.sel=cid; go('pipeline'); renderPipeFor(cid); };
+    $('#cd-cop').onclick=()=>{ S.sel=cid; go('copilot'); openCop(cid); };
+    $('#cl-det').classList.remove('hidden');
+    $('#cl-det').scrollIntoView({behavior:'smooth',block:'start'});
+  } catch(e){ toast('Detail failed: '+e.message,'err'); }
+}
+$('#cd-x').onclick=()=>$('#cl-det').classList.add('hidden');
+
+/* ═══ COPILOT ═══════════════════════════════════════════ */
+function renderCopList() {
+  const el=$('#cop-list');
+  if(!S.claims.length){ el.innerHTML='<div class="empty" style="padding:18px 8px"><p>Submit a claim first.</p></div>'; return; }
+  el.innerHTML=S.claims.map(c => {
+    const st=c.summary?.final_status||'—', on=S.sel===c.claim_id;
+    return `<div class="ci ${on?'on':''}" onclick="openCop('${esc(c.claim_id||'')}')">
+      <div style="font-family:var(--mono);font-size:9.5px;font-weight:600;color:${on?'var(--acc)':'var(--g7)'}">${esc(c.claim_id||'—')}</div>
+      <div style="margin-top:2px"><span class="b ${scl(st)}" style="font-size:7px">${esc(st)}</span></div>
+    </div>`;
+  }).join('');
+}
+
+async function openCop(cid) {
+  S.sel=cid; renderCopList();
+  $('#cop-ttl').textContent=cid;
+  $('#cop-inp').disabled=false; $('#cop-snd').disabled=false;
+  $('#cop-alrt').style.display='';
+  if(!S.copMsgs[cid]) S.copMsgs[cid]=[];
+  renderCopMsgs(cid);
+  try {
+    const a=await api('/api/v1/fnol/copilot/alerts/'+cid);
+    (a.alerts||[]).forEach(al => {
+      if(!S.copMsgs[cid].find(m=>m.text===(al.text||al)))
+        S.copMsgs[cid].push({role:'alert',text:al.text||al,suggested_actions:al.suggested_actions||[]});
+    });
+    renderCopMsgs(cid);
+  } catch(e){}
+}
+
+function renderCopMsgs(cid) {
+  const msgs=S.copMsgs[cid]||[], el=$('#cop-body');
+  if(!msgs.length){ el.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>Ask anything about ${esc(cid)}</p></div>`; return; }
+  el.innerHTML=msgs.map(m => {
+    const r=m.role==='user'?'user':m.role==='alert'?'alert':m.role==='system'?'system':'bot';
+    const l=r==='user'?'You':r==='alert'?'⚡ Alert':r==='system'?'System':'Co-Pilot (A9)';
+    const chips=(m.suggested_actions||[]).map(a=>`<div class="chip">${esc(a.label||a)}</div>`).join('');
+    return `<div class="msg ${r}"><div class="msg-role">${esc(l)}</div><div class="bbl">${esc(m.text||'…')}</div>${chips?`<div class="msg-chips">${chips}</div>`:''}</div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+async function sendCop() {
+  const cid=S.sel; if(!cid) return;
+  const inp=$('#cop-inp'), q=inp.value.trim(); if(!q) return;
+  inp.value='';
+  const msgs=S.copMsgs[cid]||(S.copMsgs[cid]=[]);
+  msgs.push({role:'user',text:q}); msgs.push({role:'bot',text:'…'});
+  renderCopMsgs(cid);
+  try {
+    const r=await api('/api/v1/fnol/copilot',{method:'POST',body:JSON.stringify({claim_id:cid,question:q})});
+    msgs[msgs.length-1]={role:'bot',text:r.text,suggested_actions:r.suggested_actions||[]};
+  } catch(e){ msgs[msgs.length-1]={role:'bot',text:'Error: '+e.message}; }
+  renderCopMsgs(cid);
+}
+$('#cop-snd').onclick=sendCop;
+$('#cop-inp').onkeydown=e=>{ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){e.preventDefault();sendCop();} };
+$('#cop-alrt').onclick=()=>{ if(S.sel) openCop(S.sel); };
+
+/* ═══ CONVERSATIONAL ════════════════════════════════════ */
+async function bootConvo() {
+  if(S.cv.history.length) return;
+  try {
+    const r=await api('/api/v1/fnol/conversation/start',{method:'POST',body:JSON.stringify({})});
+    S.cv.sid=r.session_id; pushCv('assistant',r.assistant_message); updCvMeta();
+  } catch(e){ pushCv('assistant',"Hello — I'm your FNOL intake agent. Can't reach the server right now."); }
+}
+
+function pushCv(role,text){ S.cv.history.push({role,text}); renderCvMsgs(); $('#cv-turns').textContent=S.cv.history.filter(m=>m.role==='user').length; }
+
+function renderCvMsgs() {
+  const el=$('#cv-body');
+  el.innerHTML=S.cv.history.map(m => {
+    const r=m.role==='user'?'user':m.role==='system'?'system':'bot';
+    const l=r==='user'?'You':r==='system'?'System':'FNOL Agent (A10)';
+    return `<div class="msg ${r}"><div class="msg-role">${esc(l)}</div><div class="bbl">${esc(m.text||'')}</div></div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+function renderCvCap() {
+  const c=S.cv.captured||{}, keys=Object.keys(c), el=$('#cv-cap');
+  if(!keys.length){ el.innerHTML='<div style="font-family:var(--mono);font-size:8.5px;color:var(--g5);text-align:center;padding:8px 0">Nothing captured yet</div>'; return; }
+  el.innerHTML=keys.map(k=>`<div style="display:flex;justify-content:space-between;gap:6px;padding:3px 0;border-bottom:1px solid var(--rule);font-size:10.5px"><span style="font-family:var(--mono);font-size:8.5px;color:var(--g5);flex-shrink:0">${esc(k)}</span><span style="font-weight:500;color:var(--g9);text-align:right;word-break:break-word">${esc(JSON.stringify(c[k]))}</span></div>`).join('');
+}
+
+function updCvMeta() {
+  const sid=S.cv.sid;
+  $('#cv-sid').textContent=sid?sid.slice(0,16)+'…':'—';
+  $('#cv-sid-l').textContent=sid?'Session: '+sid.slice(0,10):'No session';
+  $('#cv-st').innerHTML=sid?'<span class="b bg">Active</span>':'—';
+}
+
+async function sendCv() {
+  const inp=$('#cv-inp'), txt=inp.value.trim(); if(!txt) return;
+  inp.value=''; pushCv('user',txt); pushCv('assistant','…');
+  try {
+    const r=await api('/api/v1/fnol/conversation/turn',{method:'POST',body:JSON.stringify({session_id:S.cv.sid,user_message:txt})});
+    S.cv.captured=r.captured||S.cv.captured; renderCvCap();
+    S.cv.history.pop(); pushCv('assistant',r.assistant_message);
+    if(r.done&&r.claim_result) {
+      const cr=r.claim_result;
+      if(cr.pipeline) S.pipes[cr.claim_id]=cr.pipeline;
+      loadClaims(true);
+      pushCv('system','✓ Pipeline complete · '+cr.claim_id+' · '+cr.final_status+' · '+fmtMs(cr.total_duration_ms));
+    }
+  } catch(e){ S.cv.history.pop(); pushCv('assistant','Error: '+e.message); }
+  $('#cv-turns').textContent=S.cv.history.filter(m=>m.role==='user').length;
+}
+$('#cv-snd').onclick=sendCv;
+$('#cv-inp').onkeydown=e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendCv();} };
+$('#cv-rst').onclick=async()=>{ S.cv={sid:null,history:[],captured:{}}; renderCvMsgs(); renderCvCap(); updCvMeta(); await bootConvo(); };
+
+/* ═══ SIU CASE BUILDER (A12) ════════════════════════════ */
+
+async function loadSiuList() {
+  $('#siu-list').innerHTML='<div class="ctr" style="padding:36px"><span class="spin spin-lg"></span></div>';
+  try {
+    const r=await api('/api/v1/fnol/siu/');
+    S.siuCases=r.cases||[]; renderSiuList();
+  } catch(e){ toast('SIU list failed: '+e.message,'err'); }
+}
+
+$('#siu-open').onclick = async () => {
+  const cid=S.sel;
+  if(!cid){ toast('Select a claim first — use the Claims Register tab.','err'); return; }
+  $('#siu-open-st').innerHTML='<span class="spin"></span> Opening…';
+  try {
+    const c=await api('/api/v1/fnol/siu/open',{method:'POST',body:JSON.stringify({claim_id:cid})});
+    await loadSiuList(); openSiuDet(c.case_id);
+    toast('A12 SIU case opened — '+c.case_id,'ok');
+  } catch(e){ toast('Open SIU failed: '+e.message,'err',5000); }
+  finally{ $('#siu-open-st').innerHTML=''; }
+};
+
+function renderSiuList() {
+  if(!S.siuCases.length){
+    $('#siu-list').innerHTML='<div class="empty" style="padding:36px"><p>No SIU cases yet.<br>Submit the <strong>⚠️ Fraud</strong> demo — A12 opens automatically on CRITICAL/HIGH fraud band. Then click <em>🔴 Open SIU Case</em> if needed.</p></div>';
+    return;
+  }
+  let h='<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Case ID</th><th>Claim ID</th><th>Band</th><th>Score</th><th>Hold</th><th>Status</th><th>Team</th><th>Investigator</th><th>SLA</th><th>Evidence</th></tr></thead><tbody>';
+  S.siuCases.forEach(c => {
+    const bc=c.fraud_band==='CRITICAL'?'br':c.fraud_band==='HIGH'?'ba':'bx';
+    h+=`<tr onclick="openSiuDet('${esc(c.case_id||'')}')">
+      <td class="td-id">${esc((c.case_id||'—').slice(0,18))}</td>
+      <td class="td-m" style="font-size:9px">${esc((c.claim_id||'—').slice(0,16))}</td>
+      <td><span class="b ${bc}">${esc(c.fraud_band||'—')}</span></td>
+      <td class="td-m">${c.fraud_risk_score!=null?Math.round(c.fraud_risk_score*100)+'%':'—'}</td>
+      <td>${c.payment_hold_flag?'<span class="b br">⛔ HOLD</span>':'<span class="b bg">—</span>'}</td>
+      <td><span class="b ${scl(c.status)}">${esc(c.status||'—')}</span></td>
+      <td class="td-m" style="font-size:9px;max-width:120px">${esc(c.siu_team||'—')}</td>
+      <td class="td-m" style="font-size:9px">${esc(c.investigator_name||'—')}</td>
+      <td class="td-m" style="font-size:9px">${c.sla_deadline?c.sla_deadline.slice(0,16):'—'}</td>
+      <td class="td-m">${c.evidence_count??0}</td>
+    </tr>`;
+  });
+  h+='</tbody></table></div>';
+  $('#siu-list').innerHTML=h;
+}
+
+async function openSiuDet(caseId) {
+  try {
+    const c=await api('/api/v1/fnol/siu/'+caseId);
+    S.selSiu=c;
+    goVTab($('#siu-vnav'),'siu-detail');
+    renderSiuDetPanel(c);
+  } catch(e){ toast('Load SIU case failed: '+e.message,'err'); }
+}
+
+function renderSiuDetPanel(c) {
+  const bc=c.fraud_band==='CRITICAL'?'br':c.fraud_band==='HIGH'?'ba':'bx';
+  const holdHtml=c.payment_hold_flag
+    ?'<span class="b br">⛔ PAYMENT HOLD ACTIVE</span>'
+    :'<span class="b bg">No payment hold</span>';
+
+  // Score bar (0–100%)
+  const scorePct=Math.round((c.fraud_risk_score||0)*100);
+  const barColor=c.fraud_band==='CRITICAL'?'var(--re-m)':c.fraud_band==='HIGH'?'var(--am-m)':'var(--em-m)';
+  const scoreBar=`<div style="margin:6px 0 11px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-family:var(--mono);font-size:8px;color:var(--g5)">FRAUD RISK SCORE</span><span style="font-family:var(--mono);font-size:9px;font-weight:600">${scorePct}%</span></div><div class="rbar"><div class="rfill" style="width:${scorePct}%;background:${barColor}"></div></div></div>`;
+
+  // Signals table
+  let sigHtml='';
+  if((c.signals||[]).length){
+    sigHtml='<div style="margin-bottom:12px"><div class="eyebrow" style="margin-bottom:5px">Fraud Signals — Blueprint §S4A</div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Signal</th><th>Category</th><th>Weight</th><th>Status</th><th>Detail</th></tr></thead><tbody>';
+    c.signals.forEach(s=>{
+      sigHtml+=`<tr>
+        <td style="font-size:10.5px;font-weight:600">${esc(s.label||s.signal_id)}</td>
+        <td class="td-m">${esc(s.evidence_category)}</td>
+        <td class="td-m">${(s.weight||0).toFixed(2)}</td>
+        <td>${s.active?'<span class="b br">FIRED</span>':'<span class="b bx">—</span>'}</td>
+        <td style="font-size:9.5px;color:var(--g6);max-width:240px;white-space:normal">${esc((s.detail||'').slice(0,130))}</td>
+      </tr>`;
+    });
+    sigHtml+='</tbody></table></div></div>';
+  }
+
+  // Evidence dossier
+  let evHtml='';
+  if((c.evidence_items||[]).length){
+    evHtml=`<div style="margin-bottom:12px"><div class="eyebrow" style="margin-bottom:5px">Evidence Dossier (${c.evidence_items.length})</div>`;
+    c.evidence_items.forEach(ev=>{
+      evHtml+=`<div class="di"><div class="di-hd"><span class="b bs">${esc(ev.evidence_type)}</span><span class="td-m" style="font-size:8.5px">${esc(ev.source)}</span>${ev.added_by?`<span class="td-m" style="font-size:8px;margin-left:auto">${esc(ev.added_by)}</span>`:''}</div><div class="di-rat">${esc((ev.description||'').slice(0,220))}</div></div>`;
+    });
+    evHtml+='</div>';
+  }
+
+  const dispOpts=['CLEARED','CONFIRMED_FRAUD','CLOSED_INCONCLUSIVE'].map(d=>`<option value="${d}">${d.replace(/_/g,' ')}</option>`).join('');
+  const cid=esc(c.case_id);
+
+  $('#siu-det').innerHTML=`
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+    <span class="b ${bc}" style="font-size:9px">${esc(c.fraud_band)}</span>
+    <span class="td-id" style="font-size:9px">${esc(c.case_id)}</span>
+    ${holdHtml}
+    <span class="b ${scl(c.status)}">${esc(c.status)}</span>
+    ${c.disposition?`<span class="b bx">${esc(c.disposition)}</span>`:''}
+    <span class="td-m" style="font-size:8.5px;margin-left:auto">SLA: ${esc((c.sla_deadline||'—').slice(0,19))}</span>
+  </div>
+  ${scoreBar}
+  <div class="g2" style="margin-bottom:12px">
+    <div class="kv">
+      <dt>Claim ID</dt><dd class="td-id" style="font-size:9px">${esc(c.claim_id)}</dd>
+      <dt>Signals Fired</dt><dd><strong>${(c.triggered_categories||[]).length}</strong> of 8</dd>
+      <dt>Evidence Items</dt><dd>${(c.evidence_items||[]).length}</dd>
+      <dt>Opened</dt><dd class="td-m" style="font-size:9px">${esc((c.opened_at||'—').slice(0,19))}</dd>
+    </div>
+    <div class="kv">
+      <dt>SIU Team</dt><dd>${esc(c.siu_team||'—')}</dd>
+      <dt>Investigator</dt><dd>${esc(c.investigator?.name||'—')}</dd>
+      <dt>ID</dt><dd class="td-m">${esc(c.investigator?.investigator_id||'—')}</dd>
+      <dt>Specialty</dt><dd style="font-size:9.5px;color:var(--g6)">${esc((c.investigator?.specialty||'—').slice(0,60))}</dd>
+    </div>
+  </div>
+  ${sigHtml}
+  ${evHtml}
+  <div class="card" style="margin-bottom:0">
+    <div class="card-hd"><div class="eyebrow">Adjuster Actions</div></div>
+    <div class="card-bd" style="display:flex;flex-direction:column;gap:13px">
+
+      <div>
+        <div class="eyebrow" style="margin-bottom:5px">Add Evidence Item</div>
+        <div class="g2" style="margin-bottom:6px">
+          <div class="fld"><label>Type</label>
+            <select id="siu-ev-type" class="fi">
+              <option value="DOCUMENT" selected>DOCUMENT</option>
+              <option value="DATABASE">DATABASE</option>
+              <option value="PHOTO">PHOTO</option>
+              <option value="STATEMENT">STATEMENT</option>
+              <option value="ANALYSIS">ANALYSIS</option>
+            </select>
+          </div>
+          <div class="fld"><label>Source</label><input id="siu-ev-src" class="fi" placeholder="ISO API · Field investigator…" value="ADJUSTER"/></div>
+        </div>
+        <div class="fld" style="margin-bottom:6px"><label>Description</label><textarea id="siu-ev-desc" class="fi" rows="2" placeholder="Describe the evidence item…"></textarea></div>
+        <button class="btn btn-s" onclick="doSiuAddEvidence('${cid}')">+ Add Evidence</button>
+      </div>
+
+      <div>
+        <div class="eyebrow" style="margin-bottom:5px">Adjuster Notes</div>
+        <textarea id="siu-notes" class="fi" rows="3" placeholder="Enter adjuster notes…">${esc(c.adjuster_notes||'')}</textarea>
+        <button class="btn btn-s" style="margin-top:5px" onclick="doSiuSaveNotes('${cid}')">💾 Save Notes</button>
+      </div>
+
+      <div>
+        <button class="btn btn-p" onclick="doSiuReferral('${cid}')">📄 Generate SIU Referral Memo</button>
+        <span style="font-family:var(--mono);font-size:8px;color:var(--g5);margin-left:8px">LLM-drafted · deterministic fallback · NAIC §IV</span>
+      </div>
+
+      <div>
+        <div class="eyebrow" style="margin-bottom:5px">Close Case — Disposition</div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <select id="siu-disp" class="fi" style="width:auto">
+            <option value="">— select disposition —</option>
+            ${dispOpts}
+          </select>
+          <input id="siu-disp-notes" class="fi" placeholder="Investigator notes…" style="flex:1;min-width:160px"/>
+          <button class="btn btn-s" onclick="doSiuClose('${cid}')">✓ Close Case</button>
+        </div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--g5);margin-top:4px">CLEARED releases payment hold · CONFIRMED_FRAUD triggers FCRA §615 adverse action</div>
+      </div>
+
+    </div>
+  </div>`;
+}
+
+async function doSiuReferral(caseId) {
+  toast('Generating referral memo…','info',3000);
+  try {
+    const c=await api('/api/v1/fnol/siu/referral',{method:'POST',body:JSON.stringify({case_id:caseId})});
+    S.selSiu=c;
+    if(c.referral_memo){
+      $('#siu-ref').innerHTML=`
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap">
+          <span class="b bg">Generated</span>
+          <span class="td-m" style="font-size:8.5px">${esc(c.referral_reference||'')}</span>
+          <span class="b ${c.fraud_band==='CRITICAL'?'br':'ba'}">${esc(c.fraud_band)}</span>
+          <button class="btn btn-s" style="margin-left:auto;font-size:10px"
+            onclick="navigator.clipboard.writeText(document.getElementById('siu-memo-txt').textContent).then(()=>toast('Copied','ok'))">
+            Copy
+          </button>
+        </div>
+        <div class="letter-box" id="siu-memo-txt">${esc(c.referral_memo)}</div>`;
+      goVTab($('#siu-vnav'),'siu-referral');
+    }
+    renderSiuDetPanel(c);
+    toast('Referral memo ready — '+c.referral_reference,'ok');
+  } catch(e){ toast('Referral failed: '+e.message,'err'); }
+}
+
+async function doSiuAddEvidence(caseId) {
+  const desc=($('#siu-ev-desc').value||'').trim();
+  if(!desc){ toast('Enter evidence description.','err'); return; }
+  try {
+    const c=await api('/api/v1/fnol/siu/evidence',{method:'POST',body:JSON.stringify({
+      case_id:caseId,
+      evidence_type:$('#siu-ev-type').value||'DOCUMENT',
+      description:desc,
+      source:($('#siu-ev-src').value||'ADJUSTER').trim()
+    })});
+    S.selSiu=c; renderSiuDetPanel(c); await loadSiuList();
+    toast('Evidence added','ok');
+    $('#siu-ev-desc').value='';
+  } catch(e){ toast('Add evidence failed: '+e.message,'err'); }
+}
+
+async function doSiuSaveNotes(caseId) {
+  const notes=($('#siu-notes').value||'').trim();
+  try {
+    const c=await api('/api/v1/fnol/siu/notes',{method:'POST',body:JSON.stringify({case_id:caseId,notes})});
+    S.selSiu=c; renderSiuDetPanel(c);
+    toast('Notes saved','ok');
+  } catch(e){ toast('Save notes failed: '+e.message,'err'); }
+}
+
+async function doSiuClose(caseId) {
+  const disp=$('#siu-disp').value;
+  const notes=($('#siu-disp-notes').value||'').trim();
+  if(!disp){ toast('Select a disposition.','err'); return; }
+  try {
+    const c=await api('/api/v1/fnol/siu/close',{method:'POST',body:JSON.stringify({
+      case_id:caseId, disposition:disp, investigator_notes:notes||null
+    })});
+    S.selSiu=c; renderSiuDetPanel(c); await loadSiuList();
+    const msg=disp==='CLEARED'?'✅ Case cleared — payment hold released'
+              :disp==='CONFIRMED_FRAUD'?'🚨 Fraud confirmed — claim denied + FCRA §615 notice queued'
+              :'ℹ️ Case closed inconclusive — adjuster decision required';
+    toast(msg,'ok',6000);
+  } catch(e){ toast('Close failed: '+e.message,'err'); }
+}
+
+/* ═══ TOTAL LOSS ═════════════════════════════════════════ */
+function goVTab(nav, tab) {
+  const content=nav.nextElementSibling;
+  nav.querySelectorAll('.vtab-btn').forEach(b=>b.classList.toggle('on',b.dataset.vt===tab));
+  content.querySelectorAll('.vpanel').forEach(p=>p.classList.toggle('on',p.dataset.vp===tab));
+}
+
+async function loadTlList() {
+  $('#tl-list').innerHTML='<div class="ctr" style="padding:36px"><span class="spin spin-lg"></span></div>';
+  try {
+    const r=await api('/api/v1/fnol/total-loss');
+    S.tlEvals=r.evaluations||[]; renderTlList();
+  } catch(e){ toast('TL list failed: '+e.message,'err'); }
+}
+
+$('#tl-run').onclick=async()=>{
+  const cid=S.claims[0]?.claim_id;
+  if(!cid){ toast('Submit a claim first.','err'); return; }
+  $('#tl-run-st').innerHTML='<span class="spin"></span> Evaluating…';
+  try {
+    const ev=await api('/api/v1/fnol/total-loss/evaluate',{method:'POST',body:JSON.stringify({claim_id:cid})});
+    await loadTlList(); openTlDet(ev.evaluation_id);
+    toast('A11 evaluation complete','ok');
+  } catch(e){ toast('A11 failed: '+e.message,'err'); }
+  finally{ $('#tl-run-st').innerHTML=''; }
+};
+
+function renderTlList() {
+  if(!S.tlEvals.length){ $('#tl-list').innerHTML='<div class="empty" style="padding:36px"><p>No evaluations yet. Submit the Total Loss demo, then click "Run A11 Evaluation".</p></div>'; return; }
+  let h='<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Evaluation ID</th><th>Claim ID</th><th>Determination</th><th>State TLT</th><th>Observed %</th><th>Salvage</th><th>HITL</th></tr></thead><tbody>';
+  S.tlEvals.forEach(ev => {
+    const det=ev.determination||'—', dc=det==='TOTAL_LOSS'?'br':det==='BORDERLINE'?'ba':'bg';
+    h+=`<tr onclick="openTlDet('${esc(ev.evaluation_id||'')}')">
+      <td class="td-id">${esc((ev.evaluation_id||'—').slice(0,18))}</td>
+      <td class="td-m">${esc(ev.claim_id||'—')}</td>
+      <td><span class="b ${dc}">${esc(det)}</span></td>
+      <td class="td-m">${ev.state_tlt_threshold!=null?(ev.state_tlt_threshold*100).toFixed(0)+'%':'—'}</td>
+      <td class="td-m">${ev.observed_tlt_pct!=null?(ev.observed_tlt_pct*100).toFixed(1)+'%':'—'}</td>
+      <td><span class="b ${ev.salvage_assignment?'bt':'bx'}">${esc(ev.salvage_assignment?.vendor||'Unassigned')}</span></td>
+      <td>${ev.hitl_required?'<span class="b ba">⚑ HITL</span>':'<span class="b bx">Auto</span>'}</td>
+    </tr>`;
+  });
+  h+='</tbody></table></div>';
+  $('#tl-list').innerHTML=h;
+}
+
+async function openTlDet(evId) {
+  try {
+    const ev=await api('/api/v1/fnol/total-loss/'+evId);
+    S.selEval=ev;
+    goVTab($('#tl-vnav'),'tl-detail');
+    renderTlDetPanel(ev);
+  } catch(e){ toast('TL detail failed: '+e.message,'err'); }
+}
+
+function renderTlDetPanel(ev) {
+  const det=ev.determination||'—', dc=det==='TOTAL_LOSS'?'br':det==='BORDERLINE'?'ba':'bg';
+  const pct=ev.observed_tlt_pct!=null?(ev.observed_tlt_pct*100).toFixed(1):'—';
+  const tlt=ev.state_tlt_threshold!=null?(ev.state_tlt_threshold*100).toFixed(0):'—';
+  const fw=Math.min(100,(ev.observed_tlt_pct||0)*100);
+  const fc=fw>=75?'d':fw>=60?'w':'';
+  const ml=(ev.state_tlt_threshold||0)*100;
+  const eid=esc(ev.evaluation_id||'');
+
+  $('#tl-det').innerHTML=`
+    <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px">
+      <span class="b ${dc}" style="font-size:9.5px;padding:2px 8px">${esc(det)}</span>
+      <span class="td-id" style="font-size:9.5px">${esc(ev.evaluation_id||'—')}</span>
+      ${ev.hitl_required?'<span class="b ba">⚑ HITL Required</span>':''}
+    </div>
+    <div style="margin-bottom:11px">
+      <div style="display:flex;align-items:baseline;gap:7px;margin-bottom:4px">
+        <span style="font-family:var(--serif);font-size:24px;font-weight:700">${pct}%</span>
+        <span style="font-size:11px;color:var(--g6)">observed vs <strong>${tlt}%</strong> state TLT threshold (${esc(ev.state||'—')})</span>
+      </div>
+      <div class="rbar"><div class="rfill ${fc}" style="width:${fw}%"></div><div class="rmark" style="left:${ml}%"></div></div>
+    </div>
+    <div class="g3" style="gap:6px;margin-bottom:13px">
+      ${[['Claim ID',ev.claim_id],['State',ev.state],['ACV Refined',fmtUsd(ev.acv_refined_usd)],['Repair Est.',fmtUsd(ev.repair_estimate_usd)],['Prior Damage',fmtUsd(ev.prior_damage_usd)],['Branded Title',ev.branded_title?'⚠️ Yes':'No']].map(([k,v])=>`<div style="padding:6px 8px;background:var(--w1);border-radius:var(--r)"><div style="font-family:var(--mono);font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--g5)">${esc(k)}</div><div style="font-size:12.5px;font-weight:600;color:var(--g9);margin-top:2px">${esc(String(v??'—'))}</div></div>`).join('')}
+    </div>
+    ${ev.salvage_assignment?`<div style="margin-bottom:12px;padding:10px;background:var(--w1);border:1px solid var(--rule);border-radius:var(--r)"><div style="font-weight:600;font-size:11.5px">🏭 ${esc(ev.salvage_assignment.vendor?.toUpperCase()||'—')}</div><div class="td-m" style="margin-top:3px">Bid: ${fmtUsd(ev.salvage_assignment.salvage_bid_usd)} · Net: ${fmtUsd(ev.salvage_assignment.net_recovery_usd)}</div>${ev.salvage_assignment.yard_location?`<div class="td-m" style="margin-top:2px">📍 ${esc(ev.salvage_assignment.yard_location)}</div>`:''}</div>`:''}
+    <div style="border-top:1px solid var(--rule);padding-top:12px">
+      <div style="font-family:var(--mono);font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--g5);margin-bottom:6px">Assign Salvage Vendor</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">
+        ${['auto','copart','iaa','mock'].map(v=>`<button class="btn btn-s" onclick="doSalvage('${eid}','${v}')">${v.toUpperCase()}</button>`).join('')}
+      </div>
+      <div style="font-family:var(--mono);font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--g5);margin-bottom:6px">Owner Decision</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="btn btn-s" onclick="doOwner('${eid}','carrier_retains_salvage')">Carrier Retains</button>
+        <button class="btn btn-s" onclick="doOwner('${eid}','owner_retains_salvage')">Owner Retains</button>
+      </div>
+      <div style="font-family:var(--mono);font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--g5);margin-bottom:6px">Owner Letter</div>
+      <button class="btn btn-p" onclick="doLetter('${eid}')">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Generate Owner Letter
+      </button>
+    </div>`;
+}
+
+async function doSalvage(evId,vendor) {
+  try{ const ev=await api('/api/v1/fnol/total-loss/assign-salvage',{method:'POST',body:JSON.stringify({evaluation_id:evId,vendor})}); S.selEval=ev; renderTlDetPanel(ev); await loadTlList(); toast('Salvage assigned: '+vendor.toUpperCase(),'ok'); }
+  catch(e){ toast('Assign failed: '+e.message,'err'); }
+}
+async function doOwner(evId,choice) {
+  try{ const ev=await api('/api/v1/fnol/total-loss/owner-decision',{method:'POST',body:JSON.stringify({evaluation_id:evId,choice})}); S.selEval=ev; renderTlDetPanel(ev); toast('Decision recorded','ok'); }
+  catch(e){ toast('Decision failed: '+e.message,'err'); }
+}
+async function doLetter(evId) {
+  try{
+    const r=await api('/api/v1/fnol/total-loss/letter',{method:'POST',body:JSON.stringify({evaluation_id:evId})});
+    $('#tl-let').innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span class="b bg">Generated</span><span class="td-m" style="font-size:8.5px">${esc(evId.slice(0,20))}</span><button class="btn btn-s" style="margin-left:auto;font-size:10px" onclick="navigator.clipboard.writeText(document.getElementById('ltr-c').textContent).then(()=>toast('Copied','ok'))">Copy</button></div><div class="letter-box" id="ltr-c">${esc(r.letter||'(empty)')}</div>`;
+    goVTab($('#tl-vnav'),'tl-letter');
+    toast('Letter generated','ok');
+  } catch(e){ toast('Letter failed: '+e.message,'err'); }
+}
+
+/* ═══ SYSTEM ════════════════════════════════════════════ */
+async function loadSys() {
+  try {
+    const [h,c]=await Promise.all([api('/api/v1/health'),api('/api/v1/config')]);
+    S.health=h; S.cfg=c;
+    $('#sys-body').innerHTML=`
+      <div class="sys-g">
+        ${[{l:'LLM Provider',v:(c.llm_provider||'—').toUpperCase(),s:h.llm_active?'Active':'Inactive'},
+           {l:'SOR Backend',v:(c.sor_type||'—').toUpperCase(),s:h.sor_connected?'Connected':'Disconnected'},
+           {l:'Version',v:h.version||c.version||'—',s:'Operational'},
+           {l:'Policies Seeded',v:String(c.policies?.length??0),s:'POC Dataset'},
+           {l:'Pipeline Stages',v:String(c.pipeline_stages?.length??0),s:'Registered'},
+        ].map(m=>`<div class="sys-card"><div class="sys-lb">${esc(m.l)}</div><div class="sys-val">${esc(m.v)}</div><div class="sys-sub">${esc(m.s)}</div></div>`).join('')}
+      </div>
+      <div class="g2" style="gap:11px">
+        <div class="card"><div class="card-hd"><div class="card-title" style="font-size:13px">Pipeline Stage Registry</div></div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>ID</th><th>Stage Name</th><th>Type</th></tr></thead>
+          <tbody>${(c.pipeline_stages||[]).map(s=>`<tr><td><span class="b bv" style="font-size:7px">${esc(s.id)}</span></td><td style="font-size:11px">${esc(s.name)}</td><td><span class="b ${s.conditional?'ba':'bx'}" style="font-size:7px">${s.conditional?'Conditional':'Standard'}</span></td></tr>`).join('')}</tbody>
+          </table></div>
+        </div>
+        <div class="card"><div class="card-hd"><div class="card-title" style="font-size:13px">POC Test Policies</div></div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Policy #</th><th>State</th><th>Best For</th></tr></thead>
+          <tbody>
+            <tr><td class="td-id">POC-POL-00123</td><td>TX</td><td style="font-size:10.5px;color:var(--g6)">Rear-end demo</td></tr>
+            <tr><td class="td-id">POC-POL-00456</td><td>GA</td><td style="font-size:10.5px;color:var(--g6)">Fraud signal demo</td></tr>
+            <tr><td class="td-id">POC-POL-00789</td><td>TX</td><td style="font-size:10.5px;color:var(--g6)">Total loss / A11 trigger</td></tr>
+            <tr><td class="td-id">POC-POL-00999</td><td>—</td><td style="font-size:10.5px;color:var(--g6)">Coverage denial path</td></tr>
+          </tbody></table></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:11px"><div class="card-hd"><div class="card-title" style="font-size:13px">Runtime Configuration</div></div>
+        <div class="tbl-wrap"><table class="tbl">
+          ${[['Service',h.service],['Version',h.version||c.version],['API Base',API],['LLM Provider',(c.llm_provider||'—').toUpperCase()],['LLM Active',String(h.llm_active??'—')],['SOR Type',(c.sor_type||'—').toUpperCase()],['SOR Connected',String(h.sor_connected??'—')],['Active API Key','…'+getK().slice(-6)+' (set in sidebar)']].map(([k,v])=>`<tr><td style="font-family:var(--mono);font-size:8.5px;color:var(--g5);letter-spacing:.08em;text-transform:uppercase;width:170px;padding:5px 10px">${esc(k)}</td><td style="padding:5px 10px;font-size:11.5px;font-weight:500;color:var(--g9)">${esc(String(v??'—'))}</td></tr>`).join('')}
+        </table></div>
+      </div>`;
+  } catch(e){ $('#sys-body').innerHTML=`<div class="al al-er"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg><div>System info failed: ${esc(e.message)}</div></div>`; }
+}
+
+/* ═══ INIT ══════════════════════════════════════════════ */
+boot();
+</script>
+</body>
+</html>
