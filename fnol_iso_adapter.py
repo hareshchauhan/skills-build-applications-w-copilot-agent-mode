@@ -77,7 +77,8 @@ import datetime as dt
 from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, List, Optional, Tuple
 
-from fnol_runtime import BoundedStore
+from fnol_settings import settings
+from fnol_state_backend import make_store, StateBackend
 
 log = logging.getLogger("fnol.iso")
 
@@ -212,9 +213,10 @@ class ISOClaimSearchResponse:
 # Response cache — PII-free keying
 # ───────────────────────────────────────────────────────────────────────────
 
-_ISO_CACHE: BoundedStore = BoundedStore(
+_ISO_CACHE: StateBackend = make_store(
+    "iso_cache",
     max_size=4096,
-    ttl_seconds=int(os.getenv("ISO_CACHE_TTL_SECONDS", "900")),
+    ttl_seconds=settings.iso_cache_ttl_seconds,
 )
 
 

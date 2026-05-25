@@ -108,7 +108,8 @@ import datetime as dt
 from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, List, Optional, Tuple
 
-from fnol_runtime import BoundedStore
+from fnol_settings import settings
+from fnol_state_backend import make_store, StateBackend
 
 log = logging.getLogger("fnol.network_graph")
 
@@ -248,9 +249,10 @@ class NetworkGraphResponse:
 # Cache
 # ───────────────────────────────────────────────────────────────────────────
 
-_CACHE: BoundedStore = BoundedStore(
+_CACHE: StateBackend = make_store(
+    "network_graph_cache",
     max_size=4096,
-    ttl_seconds=int(os.getenv("NETWORK_GRAPH_CACHE_TTL", "1800")),
+    ttl_seconds=settings.network_graph_cache_ttl_seconds,
 )
 
 

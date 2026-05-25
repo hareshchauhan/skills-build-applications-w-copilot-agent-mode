@@ -56,7 +56,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from fnol_llm_adapter import complete as llm_complete, resolve_provider
 from fnol_sor_adapter import get_sor_adapter, CANONICAL_POLICIES
-from fnol_runtime import BoundedStore, redact_claim_dict
+from fnol_runtime import redact_claim_dict
+from fnol_state_backend import make_store, StateBackend
 from fnol_claim import Claim, TelematicsPayload
 from fnol_settings import settings
 from fnol_workflow_engine import run_pipeline
@@ -153,7 +154,8 @@ class ConvoSession:
 # Bounded session store — size + TTL eviction. Sessions hold full PII
 # (names, phones, free-text loss descriptions); leaving them in an unbounded
 # dict is both an OOM vector and a GDPR/CCPA retention failure.
-_SESSIONS: BoundedStore = BoundedStore(
+_SESSIONS: StateBackend = make_store(
+    "sessions",
     max_size=settings.fnol_session_max,
     ttl_seconds=settings.fnol_session_ttl_seconds,
 )

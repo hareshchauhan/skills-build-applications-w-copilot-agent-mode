@@ -37,7 +37,7 @@ from pydantic import BaseModel
 from fnol_llm_adapter import health as llm_health, resolve_provider
 from fnol_sor_adapter import get_sor_adapter, CANONICAL_POLICIES
 from fnol_workflow_engine import run_pipeline, PIPELINE_VERSION, THRESHOLDS
-from fnol_runtime import BoundedStore
+from fnol_state_backend import make_store, StateBackend
 from fnol_claim import Claim, TelematicsPayload
 from fnol_settings import settings
 from fnol_api_deps import (
@@ -107,16 +107,19 @@ app.include_router(_v3_routes.router)            # L3 LangGraph orchestration
 app.include_router(_lg_live_routes.router)       # L3 LangGraph Live (RSK-03)
 
 
-# Bounded in-memory pipeline trace store (POC). Size + TTL prevent unbounded
-# growth (DoS / PII retention failure). Production: persist to event store.
-_PIPELINE_TRACES = BoundedStore(
+# Pipeline trace store — Phase 0: BoundedStore. Phase 1: Redis Hash.
+# Size + TTL prevent unbounded growth (DoS / PII retention failure).
+_PIPELINE_TRACES: StateBackend = make_store(
+    "pipeline_traces",
     max_size=settings.fnol_trace_max,
     ttl_seconds=settings.fnol_trace_ttl_seconds,
 )
 
-# Idempotency: when a client repeats `Idempotency-Key` within the window we
-# return the previous result instead of re-running the pipeline.
-_IDEMPOTENCY_STORE = BoundedStore(
+# Idempotency store — CRITICAL for multi-worker correctness.
+# When a client repeats Idempotency-Key within the window, return the
+# cached result instead of re-running the pipeline.
+_IDEMPOTENCY_STORE: StateBackend = make_store(
+    "idempotency",
     max_size=settings.fnol_trace_max,
     ttl_seconds=settings.fnol_trace_ttl_seconds,
 )

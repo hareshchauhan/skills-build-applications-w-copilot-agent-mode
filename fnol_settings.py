@@ -86,9 +86,41 @@ class Settings(BaseSettings):
     fnol_tl_eval_max: int = Field(default=2048, ge=1)
     fnol_tl_eval_ttl_seconds: int = Field(default=7 * 24 * 3600, ge=60)
 
-    # ── Rate limiting ───────────────────────────────────────────────────
+    # ── State backend (Phase 0 → Phase 1 Redis migration) ───────────────
+    # Phase 0: state_backend="local"  → BoundedStore (in-process, no deps).
+    # Phase 1: state_backend="redis"  → RedisStateBackend (multi-worker).
+    state_backend: str = Field(
+        default="local",
+        description=(
+            "'local' = BoundedStore (POC / single-worker dev). "
+            "'redis' = Redis Hash backend (multi-worker production). "
+            "See fnol_state_backend.make_store() for the migration guide."
+        ),
+    )
+    redis_url: str = Field(
+        default="redis://localhost:6379/0",
+        description=(
+            "Redis connection URL. Only used when state_backend='redis'. "
+            "Supports redis://, rediss:// (TLS), and unix:// socket paths."
+        ),
+    )
+    redis_key_prefix: str = Field(
+        default="fnol:",
+        description=(
+            "Namespace prefix for every Redis key (e.g. 'fnol:pipeline_traces:…'). "
+            "Change per environment to isolate dev/staging/prod on a shared cluster."
+        ),
+    )
+
+    # ── Rate limiting ────────────────────────────────────────────────────
     fnol_rate_limit_max: int = Field(default=60, ge=1)
     fnol_rate_limit_window_seconds: int = Field(default=60, ge=1)
+
+    # ── Network graph cache TTL ──────────────────────────────────────────
+    network_graph_cache_ttl_seconds: int = Field(
+        default=1800, ge=60,
+        description="Network graph adapter response cache TTL in seconds (default 30 min).",
+    )
 
     # ── LLM provider (selection + credentials) ──────────────────────────
     fnol_llm_provider: str = Field(default="auto",
