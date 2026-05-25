@@ -485,6 +485,145 @@ def stage_s1a_doc_assist(claim: Claim, context: Dict[str, Any]) -> StageResult:
     )
 
 
+
+# ───────────────────────────────────────────────────────────────────────────
+# Stage S1B — Vendor Report Trigger (VIN, Police, Court Records, ISO)
+# ───────────────────────────────────────────────────────────────────────────
+
+def stage_s1b_vendor_report(claim: Claim, context: Dict[str, Any]) -> StageResult:
+    """S1-B: Vendor Report Trigger — VIN Decode / NHTSA Recall / Vehicle History
+    / Police Report / Court Records / ISO ClaimSearch / NICB Supplement.
+
+    Runs after S1-A Doc Assist.  Triggers all applicable vendor report pulls,
+    applies decision rules, emits downstream triggers (fraud re-score, subro,
+    BI fault inject, legal team), and persists results for async status tracking.
+    """
+    try:
+        import sys as _sys, pathlib as _pl
+        _da = str(_pl.Path(__file__).parent / "agents" / "doc_assist")
+        if _da not in _sys.path:
+            _sys.path.insert(0, _da)
+        from agents.doc_assist import fnol_vendor_report_agent as _vra  # type: ignore[import]
+    except Exception as _ie:
+        return StageResult(
+            "S1B", "Vendor Report Trigger", "Vendor Report Agent",
+            "error", _utcnow_iso(), _utcnow_iso(), 0,
+            {}, [], [f"s1b_import_failed: {_ie}"], error=str(_ie),
+        )
+
+    t0 = time.time()
+    started = _utcnow_iso()
+    advisories: List[str] = []
+
+    s1_out  = context.get("S1", {}) or {}
+    s1a_out = context.get("S1A", {}) or {}
+
+    # Extract jurisdiction state from policy snapshot or loss_location
+    policy_snap = s1_out.get("policy_snapshot") or {}
+    jurisdiction_state: Optional[str] = (
+        policy_snap.get("jurisdiction_state")
+        or _extract_state_from_location(getattr(claim, "loss_location", None) or "")
+    )
+
+    # Litigation indicator: S1-A litigation flag OR attorney_represented
+    litigation_indicator = bool(
+        s1a_out.get("litigation_flag")
+        or getattr(claim, "attorney_represented", False)
+    )
+
+    req = _vra.VendorReportRequest(
+        claim_id             = claim.claim_id or "UNKNOWN",
+        vin                  = getattr(claim, "vin", None),
+        police_report_number = None,   # not captured at FNOL intake
+        jurisdiction_state   = jurisdiction_state,
+        litigation_indicator = litigation_indicator,
+        claimant_names       = [claim.reporter_name] if claim.reporter_name else [],
+        claimant_dobs        = [],
+        accident_date        = (claim.loss_date_time or "")[:10] or None,
+        accident_location    = getattr(claim, "loss_location", None),
+        loss_cause           = getattr(claim, "loss_cause", None),
+        injury_reported      = bool(getattr(claim, "injury_reported", False)),
+        source_channel       = "PIPELINE",
+    )
+
+    try:
+        result = _vra.trigger_vendor_reports(claim.claim_id or "UNKNOWN", req)
+    except Exception as exc:
+        return StageResult(
+            "S1B", "Vendor Report Trigger", "Vendor Report Agent",
+            "error", started, _utcnow_iso(), int((time.time() - t0) * 1000),
+            {}, [], [f"s1b_trigger_failed: {type(exc).__name__}"],
+            error=f"{type(exc).__name__}",
+        )
+
+    outputs: Dict[str, Any] = {
+        "result_id":              result.result_id,
+        "vehicle_recall_indicator": result.vehicle_recall_indicator,
+        "salvage_title_flag":     result.salvage_title_flag,
+        "fault_data_available":   result.fault_data_available,
+        "litigation_data_available": result.litigation_data_available,
+        "fraud_signal_delta":     result.fraud_signal_delta,
+        "downstream_trigger_count": len(result.downstream_triggers),
+        "adjuster_task_count":    len(result.adjuster_tasks),
+        "sla_met":                result.sla_met,
+        "report_statuses": {
+            s.report_type: s.status
+            for s in result.vendor_report_statuses
+        },
+    }
+
+    if result.vehicle_recall_indicator:
+        advisories.append(
+            "Active NHTSA recall matches loss mechanism — subrogation & legal team notified."
+        )
+    if result.salvage_title_flag:
+        advisories.append(
+            "Salvage title detected — ACV adjustment required; fraud signal weight +0.10."
+        )
+    if result.fault_data_available:
+        advisories.append("Police report fault data available — BI agent re-score triggered.")
+    if litigation_indicator and result.litigation_data_available:
+        advisories.append("Court records retrieved — litigation history score applied.")
+    if not getattr(claim, "vin", None):
+        advisories.append(
+            "No VIN in intake payload — VIN decode / recall / vehicle history skipped; "
+            "provide VIN via PUT claim update or S1-B Trigger form."
+        )
+
+    decisions: List[DecisionRecord] = [DecisionRecord(
+        stage_id    = "S1B",
+        stage_name  = "Vendor Report Trigger",
+        agent       = "Vendor Report Agent",
+        decision    = "VR_TRIGGERED",
+        confidence  = result.sla_met * 1.0,
+        rationale   = (
+            f"recall={result.vehicle_recall_indicator}, salvage={result.salvage_title_flag}, "
+            f"fault={result.fault_data_available}, triggers={len(result.downstream_triggers)}"
+        ),
+        inputs_hash   = _hash(claim.model_dump()),
+        model_version = "vendor-report-v1.0-poc",
+        timestamp     = _utcnow_iso(),
+        hitl_required = result.vehicle_recall_indicator or result.salvage_title_flag,
+    )]
+
+    stage_status = (
+        "hitl" if (result.vehicle_recall_indicator or result.salvage_title_flag)
+        else "stp"
+    )
+    return StageResult(
+        "S1B", "Vendor Report Trigger", "Vendor Report Agent",
+        stage_status, started, _utcnow_iso(), int((time.time() - t0) * 1000),
+        outputs, decisions, advisories,
+    )
+
+
+def _extract_state_from_location(loc: str) -> Optional[str]:
+    """Best-effort 2-letter US state code extraction from a location string."""
+    import re as _re
+    m = _re.search(r'\b([A-Z]{2})\b', loc.upper())
+    return m.group(1) if m else None
+
+
 # ───────────────────────────────────────────────────────────────────────────
 # Stage 2 — Coverage Verification & Reservation
 # ───────────────────────────────────────────────────────────────────────────
@@ -1207,7 +1346,7 @@ def stage_s7_subrogation(claim: Claim, context: Dict[str, Any]) -> StageResult:
 # Pipeline orchestrator
 # ───────────────────────────────────────────────────────────────────────────
 
-PIPELINE_VERSION = "4.3.0-S1A-doc-assist"
+PIPELINE_VERSION = "4.4.0-S1B-vendor-report"
 
 # ───────────────────────────────────────────────────────────────────────────
 # A11 — Total-Loss & Salvage Orchestrator (conditional stage)
@@ -1419,6 +1558,7 @@ PIPELINE_STAGES: List[StageDef] = [
     StageDef("S0",  stage_s0_pre_fnol,       "FNOL Intake Agent"),
     StageDef("S1",  stage_s1_fnol_capture,   "FNOL Intake Agent"),
     StageDef("S1A", stage_s1a_doc_assist,    "Document Assist Agent"),
+    StageDef("S1B", stage_s1b_vendor_report, "Vendor Report Agent"),
     StageDef("S2",  stage_s2_coverage,       "Coverage & Liability Agent"),
     StageDef("S3",  stage_s3_triage,         "Triage & Assignment Agent"),
     StageDef("S4A", stage_s4a_fraud,         "Fraud Detection Agent",   parallel_group="S4"),

@@ -390,6 +390,7 @@ textarea.fi{resize:vertical;min-height:58px}
 
     <div class="sb-sect">Document Processing</div>
     <button class="sb-btn" data-to="docassist"><span class="ico">📄</span><span class="lbl">Doc Assist</span><span class="sb-tag" style="background:var(--acc-s);color:var(--acc)">S1-A</span></button>
+    <button class="sb-btn" data-to="vendorreport"><span class="ico">🔎</span><span class="lbl">Vendor Reports</span><span class="sb-tag" style="background:var(--acc-s);color:var(--acc)">S1-B</span></button>
 
     <div class="sb-sect">AI Agents</div>
     <button class="sb-btn" data-to="copilot"><span class="ico">🤖</span><span class="lbl">Adjuster Co-Pilot</span><span class="sb-tag">A9</span></button>
@@ -583,6 +584,7 @@ textarea.fi{resize:vertical;min-height:58px}
               <button class="btn btn-s" id="r-pipe">📊 Inspect Pipeline</button>
               <button class="btn btn-s" id="r-cop">🤖 Open Co-Pilot</button>
               <button class="btn btn-s" id="r-docassist" style="display:none">📄 View Documents</button>
+              <button class="btn btn-s" id="r-vr" style="display:none">🔎 Vendor Reports</button>
               <button class="btn btn-s" id="r-siu" style="display:none;background:var(--re-s);color:var(--re);border-color:var(--re-m)">🔴 View SIU Case</button>
               <button class="btn btn-g" id="r-new">+ New FNOL</button>
             </div>
@@ -917,6 +919,119 @@ textarea.fi{resize:vertical;min-height:58px}
     </div><!-- /vtab-wrap -->
   </div><!-- /docassist panel -->
 
+  <!-- ── 11 VENDOR REPORT TRIGGER (S1-B) ── -->
+  <div class="panel" data-p="vendorreport">
+    <div class="eyebrow" style="margin-bottom:3px">Section 11</div>
+    <h2 style="font-family:var(--serif);font-size:16px;font-weight:700;margin:0 0 13px">
+      🔎 S1-B · Vendor Report Trigger — VIN / Police / Court Records / ISO
+    </h2>
+
+    <div class="vtab-wrap">
+      <nav class="vtab-nav" id="vr-vnav">
+        <button class="vtab-btn on" data-vt="vr-status">📊 Report Status</button>
+        <button class="vtab-btn" data-vt="vr-trigger">⚡ Trigger Reports</button>
+        <button class="vtab-btn" data-vt="vr-downstream">🔔 Downstream Triggers</button>
+      </nav>
+
+      <div class="vtab-content">
+
+        <!-- ── sub-tab: Report Status ── -->
+        <div class="vpanel on" data-vp="vr-status">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:11px;flex-wrap:wrap">
+            <button class="btn btn-s" onclick="loadVrStatus()">↻ Refresh</button>
+            <span style="font-family:var(--mono);font-size:8px;color:var(--g5)">Uses selected claim (Claims Register)</span>
+          </div>
+          <div id="vr-status-body"><div class="empty" style="padding:36px"><p>No vendor reports yet.<br>Submit any FNOL — S1-B triggers automatically. Then click <em>🔎 Vendor Reports</em> from the result box, or use <em>⚡ Trigger Reports</em> to run manually.</p></div></div>
+        </div>
+
+        <!-- ── sub-tab: Trigger Reports ── -->
+        <div class="vpanel" data-vp="vr-trigger">
+          <div class="card" style="max-width:620px">
+            <div class="card-hd">
+              <div class="card-title">Trigger All Vendor Reports for a Claim</div>
+            </div>
+            <div style="display:grid;gap:9px;padding:0 0 4px">
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+                <div class="fld">
+                  <label>Claim ID <span style="color:var(--re)">*</span></label>
+                  <input class="fi" id="vr-claim-id" placeholder="CLAIM-XXXX"/>
+                </div>
+                <div class="fld">
+                  <label>VIN (17 chars)</label>
+                  <input class="fi" id="vr-vin" placeholder="4T1BF1FK2MU123456" maxlength="17"/>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+                <div class="fld">
+                  <label>Jurisdiction State</label>
+                  <input class="fi" id="vr-state" placeholder="TX" maxlength="2"/>
+                </div>
+                <div class="fld">
+                  <label>Loss Cause</label>
+                  <select class="fi" id="vr-cause">
+                    <option value="">— optional —</option>
+                    <option value="COLLISION">COLLISION</option>
+                    <option value="REAR_END">REAR_END</option>
+                    <option value="COMPREHENSIVE">COMPREHENSIVE</option>
+                    <option value="THEFT">THEFT</option>
+                    <option value="FIRE">FIRE</option>
+                    <option value="HAIL">HAIL</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+                <div class="fld">
+                  <label>Claimant Names (comma-sep)</label>
+                  <input class="fi" id="vr-names" placeholder="Jane Doe, John Smith"/>
+                </div>
+                <div class="fld">
+                  <label>Accident Date</label>
+                  <input class="fi" type="date" id="vr-date"/>
+                </div>
+              </div>
+
+              <div class="fld">
+                <label>Accident Location</label>
+                <input class="fi" id="vr-loc" placeholder="I-35 &amp; 183, Austin TX"/>
+              </div>
+
+              <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+                <label style="display:flex;align-items:center;gap:6px;font-size:11.5px;cursor:pointer">
+                  <input type="checkbox" id="vr-litg"/> Litigation indicator
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:11.5px;cursor:pointer">
+                  <input type="checkbox" id="vr-injury"/> Injury reported
+                </label>
+              </div>
+
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+                <button class="btn btn-p" onclick="doTriggerVr()">🔎 Trigger Vendor Reports</button>
+                <button class="btn btn-s" onclick="vrAutoFill()">⬇ Auto-fill from Claim</button>
+                <button class="btn btn-s" onclick="doTriggerVrDemo('standard')">Demo: Standard</button>
+                <button class="btn btn-s" onclick="doTriggerVrDemo('recall')">Demo: Recall</button>
+                <button class="btn btn-s" onclick="doTriggerVrDemo('litg')">Demo: Litigation</button>
+              </div>
+            </div>
+          </div>
+          <div id="vr-trigger-result" style="margin-top:13px"></div>
+        </div>
+
+        <!-- ── sub-tab: Downstream Triggers ── -->
+        <div class="vpanel" data-vp="vr-downstream">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:11px;flex-wrap:wrap">
+            <button class="btn btn-s" onclick="loadVrTriggers()">↻ Refresh</button>
+            <span style="font-family:var(--mono);font-size:8px;color:var(--g5)">Uses selected claim (Claims Register)</span>
+          </div>
+          <div id="vr-trigger-list"><div class="empty" style="padding:36px"><p>No downstream triggers yet. Trigger vendor reports to generate FRAUD_RESCORE, SUBRO_NOTIFY, BI_FAULT_INJECT, and LEGAL_TEAM_NOTIFY actions.</p></div></div>
+        </div>
+
+      </div><!-- /vtab-content -->
+    </div><!-- /vtab-wrap -->
+  </div><!-- /vendorreport panel -->
+
   </div><!-- /scroll -->
 </div><!-- /main -->
 </div><!-- /shell -->
@@ -968,9 +1083,10 @@ const NAV_TITLES = {
   copilot:'04 · A9 · Adjuster Co-Pilot', convo:'05 · A10 · Conversational FNOL',
   totalloss:'06 · A11 · Total Loss & Salvage', siu:'07 · A12 · SIU Case Builder',
   gov:'08 · Governance', sys:'09 · System',
-  docassist:'10 · S1-A · Document Assist & Classification'
+  docassist:'10 · S1-A · Document Assist & Classification',
+  vendorreport:'11 · S1-B · Vendor Report Trigger'
 };
-const STC = {S0:'📡',S1:'📋',S1A:'📄',S2:'🛡️',S3:'🎯',S4A:'🔍',S4B:'🔧',A11:'🚗',A12:'🔴',S5:'⚖️',S6:'💰',S7:'↩️',A9:'🤖',A10:'💬'};
+const STC = {S0:'📡',S1:'📋',S1A:'📄',S1B:'🔎',S2:'🛡️',S3:'🎯',S4A:'🔍',S4B:'🔧',A11:'🚗',A12:'🔴',S5:'⚖️',S6:'💰',S7:'↩️',A9:'🤖',A10:'💬'};
 
 /* ═══ DOM HELPERS ═══════════════════════════════════════ */
 const $ = s => document.querySelector(s);
@@ -1079,6 +1195,7 @@ const S = {
   tlEvals: [], selEval: null,
   siuCases: [], selSiu: null,
   docDocs: [], docAlerts: [], selDoc: null,
+  vrResult: null, vrTriggers: [],
 };
 
 /* ═══ SIDEBAR NAVIGATION ════════════════════════════════ */
@@ -1093,8 +1210,9 @@ function go(tab) {
   if(tab==='copilot')   renderCopList();
   if(tab==='totalloss') loadTlList();
   if(tab==='siu')       loadSiuList();
-  if(tab==='docassist') loadDocAssistDocs();
-  if(tab==='sys')       loadSys();
+  if(tab==='docassist')   loadDocAssistDocs();
+  if(tab==='vendorreport') loadVrStatus();
+  if(tab==='sys')          loadSys();
 }
 
 /* ═══ VERTICAL SUB-TABS ════════════════════════════════= */
@@ -1166,6 +1284,9 @@ async function boot() {
 
   // Step 7: Pre-load doc assist documents silently (S1-A may have docs from prior runs)
   try { await loadDocAssistDocs(); } catch(e) {}
+
+  // Step 8: Pre-load vendor report status silently (S1-B runs on every claim)
+  try { await loadVrStatus(); } catch(e) {}
 }
 
 /* ═══ POLICY DROPDOWN ═══════════════════════════════════ */
@@ -1292,7 +1413,7 @@ function renderResult(out,wall) {
   $('#r-track').innerHTML=mkTrack(out.pipeline);
   $('#r-pipe').onclick=()=>{ S.sel=out.claim_id; go('pipeline'); renderPipeFor(out.claim_id); };
   $('#r-cop').onclick=()=>{ S.sel=out.claim_id; go('copilot'); openCop(out.claim_id); };
-  // S1A — Document Assist: always show button (S1A runs on every claim)
+  // S1A — Document Assist: show button when S1A ran
   const s1a=(out.pipeline?.stages||[]).find(s=>s.stage_id==='S1A');
   const daBtn=$('#r-docassist');
   if(s1a && s1a.status!=='error') {
@@ -1302,6 +1423,18 @@ function renderResult(out,wall) {
       toast('⚖️ Litigation document detected — legal team alert dispatched (S1-A).','err',7000);
     }
   } else { daBtn.style.display='none'; }
+  // S1B — Vendor Report Trigger: show button when S1B ran
+  const s1b=(out.pipeline?.stages||[]).find(s=>s.stage_id==='S1B');
+  const vrBtn=$('#r-vr');
+  if(s1b && s1b.status!=='error') {
+    vrBtn.style.display='';
+    vrBtn.onclick=()=>{ S.sel=out.claim_id; go('vendorreport'); };
+    if(s1b.outputs?.vehicle_recall_indicator) {
+      toast('🔧 NHTSA recall matches loss mechanism — subrogation & legal notified (S1-B).','warn',6000);
+    } else if(s1b.outputs?.salvage_title_flag) {
+      toast('⚠ Salvage title detected — ACV adjustment + fraud signal flagged (S1-B).','warn',5000);
+    }
+  } else { vrBtn.style.display='none'; }
   // A12 — SIU Case Builder: show button + payment-hold badge when stage ran
   const a12=(out.pipeline?.stages||[]).find(s=>s.stage_id==='A12');
   const siuBtn=$('#r-siu');
@@ -1944,6 +2077,319 @@ async function loadSys() {
         </table></div>
       </div>`;
   } catch(e){ $('#sys-body').innerHTML=`<div class="al al-er"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg><div>System info failed: ${esc(e.message)}</div></div>`; }
+}
+
+/* ═══ VENDOR REPORT TRIGGER (S1-B) ══════════════════════ */
+
+const VR_DEMOS = {
+  standard: {
+    vin: '4T1BF1FK2MU123456', state: 'TX', cause: 'COLLISION',
+    names: 'Jane Doe', loc: 'I-35 & 183, Austin TX',
+    date: '2026-05-10', litg: false, injury: false,
+  },
+  recall: {
+    vin: '1HGBH41JXMN109186', state: 'CA', cause: 'COLLISION',
+    names: 'Michael Torres', loc: 'Hwy 101, San Jose CA',
+    date: '2026-04-28', litg: false, injury: false,
+  },
+  litg: {
+    vin: '1FTFW1E59KFA12345', state: 'FL', cause: 'REAR_END',
+    names: 'Robert Smith', loc: 'I-95 N, Miami FL',
+    date: '2026-03-15', litg: true, injury: true,
+  },
+};
+
+function vrAutoFill() {
+  const pipe = S.pipes[S.sel];
+  const cp = pipe?.claim_payload;
+  if(!cp) { toast('No claim selected — submit an FNOL first or select a claim.','warn'); return; }
+  if(!$('#vr-claim-id').value) $('#vr-claim-id').value = S.sel || '';
+  $('#vr-vin').value    = cp.vin || '';
+  // Try to extract 2-letter state from loss_location
+  const stMatch = (cp.loss_location||'').match(/\b([A-Z]{2})\b/g);
+  const knownSt = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+  const st = (stMatch||[]).find(s=>knownSt.includes(s));
+  if(st) $('#vr-state').value = st;
+  $('#vr-names').value  = cp.reporter_name || '';
+  $('#vr-date').value   = (cp.loss_date_time||'').slice(0,10) || '';
+  $('#vr-loc').value    = cp.loss_location || '';
+  $('#vr-cause').value  = cp.loss_cause || '';
+  $('#vr-injury').checked = !!cp.injury_reported;
+  $('#vr-litg').checked   = !!cp.attorney_represented;
+  toast('Auto-filled from claim payload.','ok',2500);
+}
+
+async function loadVrStatus() {
+  const cid = (S.sel||'').trim();
+  const el = $('#vr-status-body');
+  if(!cid) {
+    el.innerHTML = '<div class="empty" style="padding:36px"><p>No claim selected. Submit an FNOL first, then return here to view vendor report status.</p></div>';
+    S.vrResult = null;
+    return;
+  }
+  el.innerHTML = '<div class="ctr" style="padding:36px"><span class="spin spin-lg"></span></div>';
+  try {
+    const r = await api('/api/v1/fnol/vendor-report/status/'+encodeURIComponent(cid));
+    S.vrResult = r;
+    renderVrStatus(r);
+  } catch(e) {
+    if(e.message && e.message.includes('404')) {
+      el.innerHTML = '<div class="empty" style="padding:36px"><p>No vendor reports triggered for this claim yet.<br>Use <em>⚡ Trigger Reports</em> or re-submit the FNOL to run S1-B automatically.</p></div>';
+    } else {
+      el.innerHTML = `<div class="al al-er"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg><div>Load failed: ${esc(e.message)}</div></div>`;
+    }
+  }
+}
+
+function renderVrStatus(r) {
+  const el = $('#vr-status-body');
+  if(!r) { el.innerHTML = ''; return; }
+
+  const stCls = s => s==='RECEIVED'?'bg':s==='PENDING'?'bb':s==='ERROR'?'br':s==='MANUAL_REQUIRED'?'ba':'bx';
+  const boolBadge = (v, trueLabel='YES', falseLabel='—', trueCls='br', falseCls='') =>
+    v ? `<span class="b ${trueCls}">${trueLabel}</span>` : `<span style="color:var(--g5)">${falseLabel}</span>`;
+
+  // ── Report statuses table ──
+  let statusHtml = '';
+  if((r.vendor_report_statuses||[]).length) {
+    statusHtml = '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Report Type</th><th>Status</th><th>Triggered</th><th>Received</th><th>SLA Deadline</th><th>SLA Met</th></tr></thead><tbody>';
+    r.vendor_report_statuses.forEach(s => {
+      statusHtml += `<tr>
+        <td><span class="b bv" style="font-size:8.5px">${esc(s.report_type)}</span></td>
+        <td><span class="b ${stCls(s.status)}">${esc(s.status)}</span></td>
+        <td style="font-family:var(--mono);font-size:8.5px">${esc((s.triggered_at||'').slice(11,19))}</td>
+        <td style="font-family:var(--mono);font-size:8.5px">${s.received_at?esc((s.received_at||'').slice(11,19)):'—'}</td>
+        <td style="font-family:var(--mono);font-size:8.5px">${esc((s.sla_deadline||'').slice(11,19)||'—')}</td>
+        <td>${s.sla_met===null?'<span style="color:var(--g5)">—</span>':s.sla_met?'<span class="b bg">✓</span>':'<span class="b br">✗</span>'}</td>
+      </tr>`;
+    });
+    statusHtml += '</tbody></table></div>';
+  }
+
+  // ── VIN Decode card ──
+  let vinHtml = '';
+  if(r.vin_decode) {
+    const v = r.vin_decode;
+    vinHtml = `<div class="card" style="margin-bottom:9px">
+      <div class="card-hd" style="display:flex;gap:8px;align-items:center">
+        <div class="card-title">🚗 VIN Decode</div>
+        <span class="b ${v.valid?'bg':'br'}">${v.valid?'VALID':'INVALID'}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px 14px;padding:4px 0">
+        ${[['VIN',v.vin],['Year',v.year],['Make',v.make],['Model',v.model],
+           ['Trim',v.trim||'—'],['Engine',v.engine||'—'],['Body',v.body_style||'—'],
+           ['Source',v.decode_source],['Confidence',((v.decode_confidence||0)*100).toFixed(0)+'%']
+          ].map(([k,vv])=>`<div><div style="font-family:var(--mono);font-size:7.5px;color:var(--g5);text-transform:uppercase">${esc(k)}</div><div style="font-size:11px;font-weight:500;color:var(--g9)">${esc(String(vv??'—'))}</div></div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── NHTSA Recall card ──
+  let recallHtml = '';
+  if(r.nhtsa_recall) {
+    const rc = r.nhtsa_recall;
+    recallHtml = `<div class="card" style="margin-bottom:9px">
+      <div class="card-hd" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div class="card-title">🔧 NHTSA Recall</div>
+        ${rc.recall_active?'<span class="b br">ACTIVE RECALL</span>':'<span class="b bg">No Active Recalls</span>'}
+        ${rc.vehicle_recall_indicator?'<span class="b ba">⚠ MATCHES LOSS</span>':''}
+        ${rc.subro_trigger?'<span class="b bv">SUBRO TRIGGERED</span>':''}
+        ${rc.legal_flag?'<span class="b br">LEGAL FLAGGED</span>':''}
+      </div>
+      ${rc.recalls.length?'<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Campaign</th><th>Component</th><th>Summary</th><th>Matches Loss</th></tr></thead><tbody>'
+        + rc.recalls.map(r=>`<tr><td class="td-id">${esc(r.campaign_number)}</td><td><span class="b bo" style="font-size:8.5px">${esc(r.component)}</span></td><td style="font-size:10.5px;max-width:240px">${esc(r.summary)}</td><td>${r.related_to_loss_mechanism?'<span class="b br">YES</span>':'<span style="color:var(--g5)">—</span>'}</td></tr>`).join('')
+        + '</tbody></table></div>':'<p style="font-size:11px;color:var(--g5);padding:4px 0">No recalls found for this VIN.</p>'}
+    </div>`;
+  }
+
+  // ── Vehicle History card ──
+  let histHtml = '';
+  if(r.vehicle_history) {
+    const vh = r.vehicle_history;
+    histHtml = `<div class="card" style="margin-bottom:9px">
+      <div class="card-hd" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div class="card-title">📋 Vehicle History</div>
+        ${vh.salvage_title?'<span class="b br">SALVAGE TITLE</span>':''}
+        ${vh.odometer_rollback_flag?'<span class="b ba">ODO ROLLBACK</span>':''}
+        ${vh.total_loss_prior?'<span class="b ba">PRIOR TOTAL LOSS</span>':''}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px 14px;padding:4px 0">
+        ${[['Salvage Title',vh.salvage_title?'YES':'NO'],
+           ['Prior Accidents',vh.prior_accidents],
+           ['Odometer Rollback',vh.odometer_rollback_flag?'YES':'NO'],
+           ['Lemon Law Buyback',vh.lemon_law_buyback?'YES':'NO'],
+           ['Fraud Signal Δ',vh.fraud_signal_weight_delta?'+'+vh.fraud_signal_weight_delta.toFixed(2):'0'],
+           ['Source',vh.source]
+          ].map(([k,vv])=>`<div><div style="font-family:var(--mono);font-size:7.5px;color:var(--g5);text-transform:uppercase">${esc(k)}</div><div style="font-size:11px;font-weight:500;color:var(--g9)">${esc(String(vv??'—'))}</div></div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── Police Report card ──
+  let policeHtml = '';
+  if(r.police_report) {
+    const pr = r.police_report;
+    policeHtml = `<div class="card" style="margin-bottom:9px">
+      <div class="card-hd" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div class="card-title">👮 Police Report</div>
+        <span class="b ${stCls(pr.status)}">${esc(pr.status)}</span>
+        ${pr.bi_fault_inject_ready?'<span class="b bv">BI FAULT INJECT READY</span>':''}
+        ${pr.manual_request_initiated?'<span class="b ba">MANUAL REQUEST</span>':''}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px 14px;padding:4px 0">
+        ${[['Report #',pr.report_number||'—'],['State',pr.jurisdiction_state||'—'],
+           ['Electronic',pr.electronic_available?'YES':'NO'],
+           ['Fault Party',pr.fault_party||'—'],['Officer',pr.officer_name||'—'],
+           ['Date',pr.report_date||'—'],['14-Day Diary',pr.diary_14day_set?'SET':'—']
+          ].map(([k,vv])=>`<div><div style="font-family:var(--mono);font-size:7.5px;color:var(--g5);text-transform:uppercase">${esc(k)}</div><div style="font-size:11px;font-weight:500;color:var(--g9)">${esc(String(vv??'—'))}</div></div>`).join('')}
+      </div>
+      ${pr.fault_notes?`<div style="margin-top:7px"><span style="font-family:var(--mono);font-size:7.5px;color:var(--g5);text-transform:uppercase">Fault Notes (LLM-enriched)</span><p style="font-size:11px;color:var(--g7);margin:4px 0 0;line-height:1.5">${esc(pr.fault_notes)}</p></div>`:''}
+      ${pr.citations_issued.length?`<div style="margin-top:6px"><span style="font-family:var(--mono);font-size:7.5px;color:var(--g5)">Citations: </span>${pr.citations_issued.map(c=>`<span class="b bo" style="font-size:8.5px;margin:0 2px">${esc(c)}</span>`).join('')}</div>`:''}
+    </div>`;
+  }
+
+  // ── ISO ClaimSearch card ──
+  let isoHtml = '';
+  if(r.iso_claim_search) {
+    const iso = r.iso_claim_search;
+    isoHtml = `<div class="card" style="margin-bottom:9px">
+      <div class="card-hd" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div class="card-title">🔍 ISO ClaimSearch</div>
+        <span class="b ${stCls(iso.status)}">${esc(iso.status)}</span>
+        ${iso.prior_claims_found>0?`<span class="b ba">${iso.prior_claims_found} PRIOR CLAIMS</span>`:''}
+        ${iso.fraud_signal_weight_delta>0?`<span class="b br">Fraud Δ +${iso.fraud_signal_weight_delta.toFixed(2)}</span>`:''}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px 14px;padding:4px 0">
+        ${[['Claimants Searched',iso.claimants_searched],
+           ['Prior Claims Found',iso.prior_claims_found],
+           ['Fraud Signal Δ',iso.fraud_signal_weight_delta?'+'+iso.fraud_signal_weight_delta.toFixed(2):'0'],
+           ['Source',iso.source]
+          ].map(([k,vv])=>`<div><div style="font-family:var(--mono);font-size:7.5px;color:var(--g5);text-transform:uppercase">${esc(k)}</div><div style="font-size:11px;font-weight:500;color:var(--g9)">${esc(String(vv??'—'))}</div></div>`).join('')}
+      </div>
+      ${iso.suspicious_patterns.length?`<div style="margin-top:6px">${iso.suspicious_patterns.map(p=>`<span class="b ba" style="font-size:8px;margin:0 2px">${esc(p)}</span>`).join('')}</div>`:''}
+    </div>`;
+  }
+
+  // ── Summary KPIs ──
+  const smrFlags = [
+    r.vehicle_recall_indicator ? '<span class="b br">🔧 RECALL MATCH</span>' : '',
+    r.salvage_title_flag ? '<span class="b br">SALVAGE TITLE</span>' : '',
+    r.fault_data_available ? '<span class="b bg">FAULT DATA ✓</span>' : '',
+    r.litigation_data_available ? '<span class="b bv">COURT RECORDS ✓</span>' : '',
+    r.fraud_signal_delta ? `<span class="b ba">Fraud Δ +${(r.fraud_signal_delta||0).toFixed(2)}</span>` : '',
+  ].filter(Boolean).join(' ');
+
+  el.innerHTML = `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:11px;align-items:center">
+      <span style="font-family:var(--mono);font-size:8px;color:var(--g5)">Result: ${esc(r.result_id||'—')}</span>
+      <span class="b ${r.sla_met?'bg':'ba'}">${r.sla_met?'SLA MET':'SLA MISS'}</span>
+      ${smrFlags}
+    </div>
+    <div style="margin-bottom:11px">${statusHtml}</div>
+    ${vinHtml}${recallHtml}${histHtml}${policeHtml}${isoHtml}
+    <div style="display:flex;gap:7px;margin-top:9px;flex-wrap:wrap">
+      <button class="btn btn-s" onclick="loadVrTriggers(); goVTab($('#vr-vnav'),'vr-downstream')">🔔 View Downstream Triggers</button>
+    </div>`;
+}
+
+async function doTriggerVr() {
+  const cid = ($('#vr-claim-id').value||'').trim();
+  if(!cid) { toast('Claim ID is required.','warn'); return; }
+  const body = {
+    vin:                   ($('#vr-vin').value||'').trim() || null,
+    jurisdiction_state:    ($('#vr-state').value||'').trim().toUpperCase() || null,
+    loss_cause:            $('#vr-cause').value || null,
+    claimant_names:        ($('#vr-names').value||'').split(',').map(s=>s.trim()).filter(Boolean),
+    accident_date:         $('#vr-date').value || null,
+    accident_location:     ($('#vr-loc').value||'').trim() || null,
+    litigation_indicator:  $('#vr-litg').checked,
+    injury_reported:       $('#vr-injury').checked,
+    source_channel:        'UI',
+  };
+  $('#vr-trigger-result').innerHTML = '<div class="ctr" style="padding:24px"><span class="spin spin-lg"></span><span style="margin-left:9px;font-size:11px;color:var(--g5)">Triggering vendor reports…</span></div>';
+  try {
+    const r = await api('/api/v1/fnol/vendor-report/trigger/'+encodeURIComponent(cid), {
+      method:'POST', body:JSON.stringify(body)
+    });
+    S.vrResult = r;
+    S.sel = cid;
+    $('#vr-trigger-result').innerHTML = '';
+    renderVrStatus(r);
+    goVTab($('#vr-vnav'),'vr-status');
+    toast('✓ Vendor reports triggered — '+((r.vendor_report_statuses||[]).length)+' report types','ok',5000);
+    if(r.vehicle_recall_indicator) toast('🔧 NHTSA recall matches loss — subro & legal triggered.','warn',6000);
+    if(r.salvage_title_flag) toast('⚠ Salvage title — ACV adjustment + fraud signal flagged.','warn',5000);
+    await loadVrTriggers();
+  } catch(e) {
+    $('#vr-trigger-result').innerHTML = `<div class="al al-er"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg><div>Trigger failed: ${esc(e.message)}</div></div>`;
+  }
+}
+
+function doTriggerVrDemo(key) {
+  const d = VR_DEMOS[key];
+  if(!d) return;
+  if(!$('#vr-claim-id').value) $('#vr-claim-id').value = S.sel || '';
+  $('#vr-vin').value    = d.vin;
+  $('#vr-state').value  = d.state;
+  $('#vr-cause').value  = d.cause;
+  $('#vr-names').value  = d.names;
+  $('#vr-date').value   = d.date;
+  $('#vr-loc').value    = d.loc;
+  $('#vr-litg').checked   = d.litg;
+  $('#vr-injury').checked = d.injury;
+  goVTab($('#vr-vnav'),'vr-trigger');
+  toast('Demo loaded: '+key+' — click Trigger Vendor Reports.','info',3500);
+}
+
+async function loadVrTriggers() {
+  const cid = (S.sel||'').trim();
+  const el = $('#vr-trigger-list');
+  if(!cid) { el.innerHTML='<div class="empty" style="padding:36px"><p>No claim selected.</p></div>'; return; }
+  try {
+    const r = await api('/api/v1/fnol/vendor-report/triggers/'+encodeURIComponent(cid));
+    S.vrTriggers = r.triggers || [];
+    renderVrTriggers();
+  } catch(e) {
+    el.innerHTML = `<div class="al al-er"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg><div>Load failed: ${esc(e.message)}</div></div>`;
+  }
+}
+
+function renderVrTriggers() {
+  const el = $('#vr-trigger-list');
+  if(!S.vrTriggers.length) {
+    el.innerHTML = '<div class="empty" style="padding:36px"><p>No downstream triggers yet. Trigger vendor reports with a VIN that has an active recall, or enable litigation indicator.</p></div>';
+    return;
+  }
+  const priCls = {HIGH:'br', MEDIUM:'ba', LOW:'bb', CRITICAL:'br'};
+  const typCls = {
+    FRAUD_RESCORE:'bv', SUBRO_NOTIFY:'bo', BI_FAULT_INJECT:'bb',
+    LEGAL_TEAM_NOTIFY:'br', ADJUSTER_DIARY_UPDATE:'bg', MANUAL_RETRIEVAL_TASK:'ba'
+  };
+  let h = '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Trigger ID</th><th>Type</th><th>Priority</th><th>Source Report</th><th>Description</th><th>Ack</th><th>Fired</th></tr></thead><tbody>';
+  S.vrTriggers.forEach(t => {
+    const ack = t.acknowledged
+      ? '<span class="b bg" style="font-size:8px">ACK</span>'
+      : `<button class="btn btn-s" style="font-size:8.5px;padding:2px 8px" onclick="doAckVrTrigger('${esc(t.trigger_id||'')}')">Ack</button>`;
+    h += `<tr>
+      <td class="td-id">${esc((t.trigger_id||'—').slice(0,16))}</td>
+      <td><span class="b ${typCls[t.trigger_type]||'bx'}" style="font-size:8px">${esc(t.trigger_type||'—')}</span></td>
+      <td><span class="b ${priCls[t.priority]||'bx'}">${esc(t.priority||'—')}</span></td>
+      <td><span class="b bv" style="font-size:8px">${esc(t.source_report||'—')}</span></td>
+      <td style="font-size:10.5px;max-width:220px">${esc(t.description||'—')}</td>
+      <td>${ack}</td>
+      <td style="font-family:var(--mono);font-size:8.5px">${esc((t.fired_at||'').slice(11,19))}</td>
+    </tr>`;
+  });
+  h += '</tbody></table></div>';
+  el.innerHTML = h;
+}
+
+async function doAckVrTrigger(triggerId) {
+  try {
+    await api('/api/v1/fnol/vendor-report/triggers/'+encodeURIComponent(triggerId)+'/ack', {method:'PUT'});
+    toast('Trigger acknowledged','ok');
+    await loadVrTriggers();
+  } catch(e) { toast('Ack failed: '+e.message,'err'); }
 }
 
 /* ═══ DOCUMENT ASSIST (S1-A) ════════════════════════════ */
