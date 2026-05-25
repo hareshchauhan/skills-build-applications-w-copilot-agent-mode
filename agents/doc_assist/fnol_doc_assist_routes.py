@@ -30,7 +30,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from . import fnol_doc_assist_agent as doc_assist
-from fnol_api_deps import require_api_key as _require_api_key
+from fnol_rbac import require_roles, Role, CLAIMS_ROLES
 
 router = APIRouter(prefix="/api/v1/fnol/doc-assist", tags=["S1-A Document Assist"])
 
@@ -75,7 +75,7 @@ def doc_assist_health():
 @router.post("/classify")
 def classify_single(
     req: DocumentClassifyRequest,
-    _key: str = Depends(_require_api_key),
+    _key: str = Depends(require_roles(*CLAIMS_ROLES)),
 ):
     """
     Classify a single document. Accepts file as base64 or raw text.
@@ -105,7 +105,7 @@ def classify_single(
 def classify_batch(
     claim_id: str,
     req: DocumentBatchRequest,
-    _key: str = Depends(_require_api_key),
+    _key: str = Depends(require_roles(*CLAIMS_ROLES)),
 ):
     """
     Process a batch of documents for a single FNOL claim (S1-A full run).
@@ -128,7 +128,7 @@ def classify_batch(
 @router.get("/claims/{claim_id}/documents")
 def list_claim_documents(
     claim_id: str,
-    _key: str = Depends(_require_api_key),
+    _key: str = Depends(require_roles(*CLAIMS_ROLES)),
 ):
     """List all classified documents for a claim."""
     docs = doc_assist.get_documents_for_claim(claim_id)
@@ -138,7 +138,7 @@ def list_claim_documents(
 @router.get("/claims/{claim_id}/alerts")
 def list_claim_alerts(
     claim_id: str,
-    _key: str = Depends(_require_api_key),
+    _key: str = Depends(require_roles(*CLAIMS_ROLES)),
 ):
     """List all dispatched alerts for a claim."""
     alerts = doc_assist.list_alerts(claim_id)
@@ -149,7 +149,7 @@ def list_claim_alerts(
 def check_missing_documents(
     claim_id: str,
     req: MissingDocsRequest,
-    _key: str = Depends(_require_api_key),
+    _key: str = Depends(require_roles(*CLAIMS_ROLES)),
 ):
     """Check which required documents are missing for a claim."""
     from dataclasses import asdict
@@ -160,7 +160,7 @@ def check_missing_documents(
 @router.get("/documents/{document_id}")
 def get_document(
     document_id: str,
-    _key: str = Depends(_require_api_key),
+    _key: str = Depends(require_roles(*CLAIMS_ROLES)),
 ):
     """Retrieve a single document record."""
     doc = doc_assist.get_document(document_id)
@@ -172,7 +172,7 @@ def get_document(
 @router.put("/alerts/{alert_id}/acknowledge")
 def acknowledge_alert(
     alert_id: str,
-    _key: str = Depends(_require_api_key),
+    _key: str = Depends(require_roles(*CLAIMS_ROLES)),
 ):
     """Mark an alert as acknowledged by an adjuster."""
     updated = doc_assist.acknowledge_alert(alert_id)

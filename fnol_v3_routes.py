@@ -27,7 +27,8 @@ from pydantic import BaseModel
 
 import fnol_langgraph_engine as lg
 from fnol_claim import Claim
-from fnol_api_deps import require_api_key, rate_limited, client_error, server_error
+from fnol_api_deps import client_error, server_error
+from fnol_rbac import require_roles, require_roles_rate_limited, Role, CLAIMS_ROLES, READ_ROLES, SUPERVISOR_UP
 
 
 log = logging.getLogger("fnol.v3.routes")
@@ -48,7 +49,7 @@ def _require_langgraph() -> None:
 # ── Routes ──────────────────────────────────────────────────────────────
 
 @router.get("/health")
-def v3_health(_: str = Depends(require_api_key)):
+def v3_health(_: str = Depends(require_roles(*READ_ROLES))):
     # /health intentionally does NOT raise on LANGGRAPH_AVAILABLE=False —
     # the body itself returns `l3_enabled` so smoke tests can detect the
     # missing-dependency case without a 503.
@@ -56,7 +57,7 @@ def v3_health(_: str = Depends(require_api_key)):
 
 
 @router.get("/claims")
-def list_threads(limit: int = 50, _: str = Depends(require_api_key)):
+def list_threads(limit: int = 50, _: str = Depends(require_roles(*SUPERVISOR_UP, Role.READONLY))):
     if not getattr(lg, "LANGGRAPH_AVAILABLE", False):
         return {"threads": [], "l3_enabled": False}
     limit = max(1, min(limit, 200))
@@ -68,7 +69,7 @@ def list_threads(limit: int = 50, _: str = Depends(require_api_key)):
 
 
 @router.post("/claims", status_code=status.HTTP_201_CREATED)
-def submit_claim(claim: Claim, _: str = Depends(rate_limited)):
+def submit_claim(claim: Claim, _: str = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
     """Run a Claim through the L3 LangGraph engine. Rate-limited because the
     graph invokes LLM-backed nodes (SIU memo, ROR draft, etc.)."""
     _require_langgraph()
@@ -80,7 +81,7 @@ def submit_claim(claim: Claim, _: str = Depends(rate_limited)):
 
 
 @router.get("/claims/{thread_id}")
-def get_thread(thread_id: str, _: str = Depends(require_api_key)):
+def get_thread(thread_id: str, _: str = Depends(require_roles(*READ_ROLES))):
     _require_langgraph()
     try:
         state = lg.get_thread_state(thread_id)
@@ -107,7 +108,7 @@ class ResumeRequest(BaseModel):
 def resume_thread(
     thread_id: str,
     body: ResumeRequest,
-    _: str = Depends(require_api_key),
+    _: str = Depends(require_roles(*SUPERVISOR_UP)),
 ):
     """
     Resume a graph thread suspended at a HITL interrupt gate.

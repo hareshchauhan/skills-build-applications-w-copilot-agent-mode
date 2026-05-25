@@ -18,7 +18,7 @@ from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from . import fnol_line_creation_agent as lca
-from fnol_api_deps import require_api_key as _auth
+from fnol_rbac import require_roles, Role, CLAIMS_ROLES
 
 log = logging.getLogger("fnol.line_creation.routes")
 router = APIRouter(prefix="/api/v1/fnol/line-creation", tags=["S1-C Line Creation"])
@@ -60,7 +60,7 @@ class CreateLinesRequest(BaseModel):
 def lc_health(): return lca.health()
 
 @router.post("/create/{claim_id}")
-def create_lines(claim_id: str, body: CreateLinesRequest, _: str = Depends(_auth)):
+def create_lines(claim_id: str, body: CreateLinesRequest, _: str = Depends(require_roles(*CLAIMS_ROLES))):
     from dataclasses import asdict
     req = lca.LineCreationRequest(
         claim_id=claim_id,
@@ -82,17 +82,17 @@ def create_lines(claim_id: str, body: CreateLinesRequest, _: str = Depends(_auth
     return asdict(lca.create_claim_lines(claim_id, req))
 
 @router.get("/claim/{claim_id}")
-def get_claim_lines(claim_id: str, _: str = Depends(_auth)):
+def get_claim_lines(claim_id: str, _: str = Depends(require_roles(*CLAIMS_ROLES))):
     r = lca.get_lines_for_claim(claim_id)
     if not r: raise HTTPException(404, f"No lines for claim {claim_id}")
     return r
 
 @router.get("/line/{line_id}")
-def get_line(line_id: str, _: str = Depends(_auth)):
+def get_line(line_id: str, _: str = Depends(require_roles(*CLAIMS_ROLES))):
     r = lca.get_line(line_id)
     if not r: raise HTTPException(404, f"Line {line_id} not found")
     return r
 
 @router.get("/col-codes")
-def get_col_codes(_: str = Depends(_auth)):
+def get_col_codes(_: str = Depends(require_roles(*CLAIMS_ROLES))):
     return {"sor_targets": {k: v for k, v in lca.SOR_COL_MAP.items()}}

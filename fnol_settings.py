@@ -116,6 +116,75 @@ class Settings(BaseSettings):
     fnol_rate_limit_max: int = Field(default=60, ge=1)
     fnol_rate_limit_window_seconds: int = Field(default=60, ge=1)
 
+    # ── JWT / OAuth2 (inbound API authentication) ────────────────────────
+    # Phase 0 (dev):  set JWT_SECRET for HS256 self-signed tokens.
+    # Phase 1 (prod): set JWT_JWKS_URL to your IdP's JWKS endpoint (RS256).
+    #                 JWT_SECRET is ignored when JWT_JWKS_URL is present.
+    jwt_secret: Optional[str] = Field(
+        default=None,
+        description=(
+            "HS256 signing secret for dev-mode JWT issuance and validation. "
+            "Generate with: python -c \"import secrets; print(secrets.token_urlsafe(48))\". "
+            "Required for dev-mode POST /auth/token. "
+            "Leave unset when JWT_JWKS_URL is configured (RS256 / external IdP)."
+        ),
+    )
+    jwt_algorithm: str = Field(
+        default="HS256",
+        description=(
+            "JWT signing algorithm. "
+            "'HS256' for dev (uses jwt_secret). "
+            "'RS256' for production (requires jwt_jwks_url)."
+        ),
+    )
+    jwt_jwks_url: Optional[str] = Field(
+        default=None,
+        description=(
+            "JWKS endpoint URL for RS256 token validation via external IdP. "
+            "Example: 'https://login.microsoftonline.com/{tenant}/discovery/v2.0/keys'. "
+            "When set, overrides HS256 jwt_secret path and disables dev issuer."
+        ),
+    )
+    jwt_issuer: Optional[str] = Field(
+        default="fnol-dev",
+        description=(
+            "Expected 'iss' claim in incoming JWTs. "
+            "Must match IdP issuer exactly. "
+            "Dev default: 'fnol-dev'."
+        ),
+    )
+    jwt_audience: Optional[str] = Field(
+        default="fnol-intelligence",
+        description=(
+            "Expected 'aud' claim in incoming JWTs. "
+            "Dev default: 'fnol-intelligence'. "
+            "For Azure AD: 'api://<app-id>'."
+        ),
+    )
+    jwt_roles_claim: str = Field(
+        default="roles",
+        description=(
+            "JWT claim key that contains the caller's role list. "
+            "Standard: 'roles'. Okta: 'groups'. Azure AD app roles: 'roles'. "
+            "Set to match your IdP's token schema."
+        ),
+    )
+    jwt_access_token_expire_minutes: int = Field(
+        default=60, ge=1, le=1440,
+        description=(
+            "Dev-mode token TTL in minutes (1–1440, default 60). "
+            "Production tokens use the IdP-configured TTL (this setting ignored)."
+        ),
+    )
+    jwt_dev_issuer_enabled: bool = Field(
+        default=True,
+        description=(
+            "Enable the POST /auth/token dev-fixture endpoint. "
+            "Set false in production. "
+            "Automatically overridden to false when jwt_jwks_url is configured."
+        ),
+    )
+
     # ── Network graph cache TTL ──────────────────────────────────────────
     network_graph_cache_ttl_seconds: int = Field(
         default=1800, ge=60,

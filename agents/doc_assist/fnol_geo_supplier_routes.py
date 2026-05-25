@@ -15,7 +15,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from . import fnol_geo_supplier_agent as gsa
-from fnol_api_deps import require_api_key
+from fnol_rbac import require_roles, Role, CLAIMS_ROLES, READ_ROLES
 
 log = logging.getLogger("fnol.geo_supplier.routes")
 router = APIRouter(prefix="/api/v1/fnol/geo-supplier", tags=["S1-D Geo Supplier"])
@@ -46,7 +46,7 @@ class AssignRequest(BaseModel):
 def geo_health(): return gsa.health()
 
 @router.post("/assign/{claim_id}")
-def assign(claim_id: str, body: AssignRequest, _: str = Depends(require_api_key)):
+def assign(claim_id: str, body: AssignRequest, _: str = Depends(require_roles(*CLAIMS_ROLES))):
     from dataclasses import asdict
     req = gsa.GeoAssignmentRequest(
         claim_id=claim_id,
@@ -62,15 +62,15 @@ def assign(claim_id: str, body: AssignRequest, _: str = Depends(require_api_key)
     return asdict(gsa.assign_supplier(claim_id, req))
 
 @router.get("/assignment/{claim_id}")
-def get_assignment(claim_id: str, _: str = Depends(require_api_key)):
+def get_assignment(claim_id: str, _: str = Depends(require_roles(*READ_ROLES))):
     r = gsa.get_assignment(claim_id)
     if not r: raise HTTPException(404, f"No assignment for {claim_id}")
     return r
 
 @router.get("/drp-network")
-def drp_network(_: str = Depends(require_api_key)):
+def drp_network(_: str = Depends(require_roles(*READ_ROLES))):
     return {"shops": gsa._DRP_NETWORK, "count": len(gsa._DRP_NETWORK)}
 
 @router.get("/field-adjusters")
-def field_adjusters(_: str = Depends(require_api_key)):
+def field_adjusters(_: str = Depends(require_roles(*READ_ROLES))):
     return {"adjusters": gsa._FIELD_ADJUSTER_ROSTER, "count": len(gsa._FIELD_ADJUSTER_ROSTER)}

@@ -24,7 +24,8 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
 import fnol_iso_adapter as iso
-from fnol_api_deps import require_api_key, rate_limited, client_error, server_error
+from fnol_api_deps import client_error, server_error
+from fnol_rbac import require_roles, require_roles_rate_limited, Role, READ_ROLES, ADMIN_ONLY
 
 
 log = logging.getLogger("fnol.iso.routes")
@@ -55,12 +56,12 @@ class ISOQueryRequest(BaseModel):
 # ── Routes ──────────────────────────────────────────────────────────────
 
 @router.get("/health")
-def iso_health(_: str = Depends(require_api_key)):
+def iso_health(_: str = Depends(require_roles(*READ_ROLES))):
     return iso.health()
 
 
 @router.post("/query")
-def iso_query(req: ISOQueryRequest, _: str = Depends(rate_limited)):
+def iso_query(req: ISOQueryRequest, _: str = Depends(require_roles_rate_limited(Role.ADJUSTER, Role.SUPERVISOR, Role.SIU_INVESTIGATOR, Role.ADMIN))):
     """ISO query is billed per inquiry — rate-limited per API key."""
     try:
         request_obj = iso.ISOClaimSearchRequest(**req.model_dump(exclude_none=True))
@@ -74,11 +75,11 @@ def iso_query(req: ISOQueryRequest, _: str = Depends(rate_limited)):
 
 
 @router.get("/cache")
-def iso_cache(_: str = Depends(require_api_key)):
+def iso_cache(_: str = Depends(require_roles(*READ_ROLES))):
     return iso.cache_stats()
 
 
 @router.delete("/cache/{claim_id}")
-def iso_cache_delete(claim_id: str, _: str = Depends(require_api_key)):
+def iso_cache_delete(claim_id: str, _: str = Depends(require_roles(*ADMIN_ONLY))):
     removed = iso.invalidate_cache(claim_id)
     return {"claim_id": claim_id, "removed": bool(removed)}

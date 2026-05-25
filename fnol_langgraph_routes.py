@@ -55,10 +55,8 @@ from pydantic import BaseModel
 
 import fnol_langgraph_engine as lg
 from fnol_claim import Claim
-from fnol_api_deps import (
-    require_api_key, rate_limited, client_error, server_error,
-    _check_api_key,
-)
+from fnol_api_deps import client_error, server_error, _check_api_key
+from fnol_rbac import require_roles, require_roles_rate_limited, Role, CLAIMS_ROLES, READ_ROLES, SUPERVISOR_UP
 
 log = logging.getLogger("fnol.lg.live")
 
@@ -248,7 +246,7 @@ async def _ws_ping_loop(ws: WebSocket) -> None:
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 @router.get("/status")
-def langgraph_status(_: str = Depends(require_api_key)):
+def langgraph_status(_: str = Depends(require_roles(*READ_ROLES))):
     """
     System-level L3 status — RSK-03 completion.
 
@@ -293,7 +291,7 @@ def langgraph_status(_: str = Depends(require_api_key)):
 
 
 @router.post("/run", status_code=202)
-async def async_run(body: RunRequest, _: str = Depends(rate_limited)):
+async def async_run(body: RunRequest, _: str = Depends(require_roles_rate_limited(*CLAIMS_ROLES))):
     """
     Async L3 claim submission.
 
@@ -491,7 +489,7 @@ async def ws_stream(websocket: WebSocket, thread_id: str):
 
 
 @router.get("/hitl")
-def list_hitl(limit: int = 50, _: str = Depends(require_api_key)):
+def list_hitl(limit: int = 50, _: str = Depends(require_roles(*SUPERVISOR_UP, Role.SIU_INVESTIGATOR))):
     """
     Return all threads currently suspended at a HITL interrupt gate.
     Used by the Live Pipeline UI to surface pending adjuster actions.
@@ -515,7 +513,7 @@ def list_hitl(limit: int = 50, _: str = Depends(require_api_key)):
 def resolve_hitl(
     thread_id: str,
     decision: HitlDecision,
-    _: str = Depends(require_api_key),
+    _: str = Depends(require_roles(*SUPERVISOR_UP)),
 ):
     """
     Submit a HITL decision to resume a suspended L3 graph thread.
