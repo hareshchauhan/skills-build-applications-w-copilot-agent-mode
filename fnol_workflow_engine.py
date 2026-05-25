@@ -1346,7 +1346,7 @@ def stage_s7_subrogation(claim: Claim, context: Dict[str, Any]) -> StageResult:
 # Pipeline orchestrator
 # ───────────────────────────────────────────────────────────────────────────
 
-PIPELINE_VERSION = "4.4.0-S1B-vendor-report"
+PIPELINE_VERSION = "4.5.0-A9-telematics"
 
 # ───────────────────────────────────────────────────────────────────────────
 # A11 — Total-Loss & Salvage Orchestrator (conditional stage)

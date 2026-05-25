@@ -78,7 +78,8 @@ from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, List, Optional, Tuple
 
 from fnol_llm_adapter import complete as llm_complete, resolve_provider
-from fnol_runtime import BoundedStore, redact_text
+from fnol_runtime import redact_text
+from fnol_state_backend import make_store, StateBackend
 from fnol_settings import settings
 
 AGENT_ID = "A12"
@@ -301,7 +302,8 @@ class SIUCase:
 # In-memory store (POC). Production: replace with SIU platform write-through.
 # ───────────────────────────────────────────────────────────────────────────
 
-_STORE: BoundedStore = BoundedStore(
+_STORE: StateBackend = make_store(
+    "siu_cases",
     max_size=settings.fnol_tl_eval_max,        # reuse TL eval limits (POC)
     ttl_seconds=settings.fnol_tl_eval_ttl_seconds,
 )

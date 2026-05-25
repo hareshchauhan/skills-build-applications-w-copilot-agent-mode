@@ -32,7 +32,8 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field, confloat
 
 import fnol_governance_agent as gov
-from fnol_api_deps import require_api_key, client_error, server_error
+from fnol_api_deps import client_error, server_error
+from fnol_rbac import require_roles, Role, ADMIN_ONLY
 
 
 log = logging.getLogger("fnol.governance.routes")
@@ -73,18 +74,18 @@ class AdverseActionRequest(BaseModel):
 # ── Routes ──────────────────────────────────────────────────────────────
 
 @router.get("/health")
-def governance_health(_: str = Depends(require_api_key)):
+def governance_health(_ = Depends(require_roles(*ADMIN_ONLY))):
     return gov.governance_health()
 
 
 @router.get("/decisions")
-def list_decisions(limit: int = 100, _: str = Depends(require_api_key)):
+def list_decisions(limit: int = 100, _ = Depends(require_roles(*ADMIN_ONLY))):
     limit = max(1, min(limit, 1000))
     return {"decisions": gov.get_all_decisions(limit=limit)}
 
 
 @router.get("/decisions/{claim_id}")
-def get_chain(claim_id: str, _: str = Depends(require_api_key)):
+def get_chain(claim_id: str, _ = Depends(require_roles(*ADMIN_ONLY))):
     result = gov.get_chain(claim_id, validate=True)
     if not result or result.get("count", 0) == 0:
         # Some agents return an empty result instead of None on miss — surface
@@ -95,7 +96,7 @@ def get_chain(claim_id: str, _: str = Depends(require_api_key)):
 
 
 @router.post("/decisions")
-def log_decision(req: DecisionRequest, _: str = Depends(require_api_key)):
+def log_decision(req: DecisionRequest, _ = Depends(require_roles(*ADMIN_ONLY))):
     try:
         entry = gov.log_decision(
             claim_id=req.claim_id,
@@ -115,12 +116,12 @@ def log_decision(req: DecisionRequest, _: str = Depends(require_api_key)):
 
 
 @router.get("/bias")
-def get_bias(_: str = Depends(require_api_key)):
+def get_bias(_ = Depends(require_roles(*ADMIN_ONLY))):
     return gov.get_bias_report()
 
 
 @router.post("/bias")
-def record_bias(req: BiasProxyRequest, _: str = Depends(require_api_key)):
+def record_bias(req: BiasProxyRequest, _ = Depends(require_roles(*ADMIN_ONLY))):
     try:
         # record_bias_proxy takes keyword args (not a dict). The smoke test
         # field `age_decade` maps to the agent's `dob_decade` parameter.
@@ -139,7 +140,7 @@ def record_bias(req: BiasProxyRequest, _: str = Depends(require_api_key)):
 
 
 @router.get("/bias/evaluation")
-def bias_evaluation(_: str = Depends(require_api_key)):
+def bias_evaluation(_ = Depends(require_roles(*ADMIN_ONLY))):
     # The CO Reg 10-1-1 §VII evaluation is exposed as `complete_bias_evaluation`.
     fn = (getattr(gov, "complete_bias_evaluation", None)
           or getattr(gov, "run_bias_evaluation", None)
@@ -153,13 +154,13 @@ def bias_evaluation(_: str = Depends(require_api_key)):
 
 
 @router.get("/model-cards")
-def list_model_cards(_: str = Depends(require_api_key)):
+def list_model_cards(_ = Depends(require_roles(*ADMIN_ONLY))):
     cards = gov.list_model_cards()
     return {"model_cards": cards, "total": len(cards)}
 
 
 @router.get("/model-cards/{agent_id}")
-def get_model_card(agent_id: str, _: str = Depends(require_api_key)):
+def get_model_card(agent_id: str, _ = Depends(require_roles(*ADMIN_ONLY))):
     card = gov.get_model_card(agent_id)
     if not card:
         raise client_error(f"Model card '{agent_id}' not found", 404)
@@ -167,13 +168,13 @@ def get_model_card(agent_id: str, _: str = Depends(require_api_key)):
 
 
 @router.get("/state-addenda")
-def list_state_addenda(_: str = Depends(require_api_key)):
+def list_state_addenda(_ = Depends(require_roles(*ADMIN_ONLY))):
     items = gov.list_state_addenda()
     return {"state_addenda": items, "total": len(items)}
 
 
 @router.get("/state-addenda/{state}")
-def get_state_addendum(state: str, _: str = Depends(require_api_key)):
+def get_state_addendum(state: str, _ = Depends(require_roles(*ADMIN_ONLY))):
     addendum = gov.get_state_addendum(state.upper())
     if not addendum:
         raise client_error(f"No state addendum for '{state}'", 404)
@@ -181,7 +182,7 @@ def get_state_addendum(state: str, _: str = Depends(require_api_key)):
 
 
 @router.post("/adverse-action")
-def generate_adverse_action(req: AdverseActionRequest, _: str = Depends(require_api_key)):
+def generate_adverse_action(req: AdverseActionRequest, _ = Depends(require_roles(*ADMIN_ONLY))):
     # Allow-list template_key to prevent format-string injection through
     # gov.generate_adverse_action_notice's downstream .format() call.
     allowed = {"COVERAGE_DENIAL", "STP_DENIAL", "FRAUD_HOLD"}

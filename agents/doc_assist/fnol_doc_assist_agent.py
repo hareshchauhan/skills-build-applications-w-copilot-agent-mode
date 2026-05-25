@@ -58,7 +58,8 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 from fnol_llm_adapter import complete as llm_complete, resolve_provider
-from fnol_runtime import BoundedStore, redact_text
+from fnol_runtime import redact_text
+from fnol_state_backend import make_store, StateBackend
 from fnol_settings import settings
 
 log = logging.getLogger("fnol.doc_assist")
@@ -292,9 +293,9 @@ class DocAssistResult:
 # In-Memory Stores (POC — swap for Redis / event store in production)
 # ───────────────────────────────────────────────────────────────────────────
 
-_DOC_STORE:   BoundedStore = BoundedStore(max_size=4096, ttl_seconds=86400)
-_TASK_STORE:  BoundedStore = BoundedStore(max_size=4096, ttl_seconds=86400)
-_ALERT_STORE: BoundedStore = BoundedStore(max_size=4096, ttl_seconds=86400)
+_DOC_STORE:   StateBackend = make_store("doc_store",  max_size=4096, ttl_seconds=86400)
+_TASK_STORE:  StateBackend = make_store("doc_tasks",  max_size=4096, ttl_seconds=86400)
+_ALERT_STORE: StateBackend = make_store("doc_alerts", max_size=4096, ttl_seconds=86400)
 
 # Per-claim document index: claim_id → List[document_id]
 _CLAIM_DOC_INDEX: Dict[str, List[str]] = {}

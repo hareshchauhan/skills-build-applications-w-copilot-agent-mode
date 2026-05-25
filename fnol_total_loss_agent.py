@@ -57,9 +57,9 @@ from fnol_salvage_adapter import (
     get_salvage_adapter,
     best_vendor_for,
 )
-from fnol_runtime import BoundedStore
 from fnol_claim import Claim
 from fnol_settings import settings
+from fnol_state_backend import make_store, StateBackend
 
 AGENT_ID = "A11"
 AGENT_NAME = "Total-Loss & Salvage Orchestrator"
@@ -185,7 +185,8 @@ class TotalLossEvaluation:
 # In-memory store (POC). Production: Redis / DynamoDB / Duck Creek custom table.
 # ───────────────────────────────────────────────────────────────────────────
 
-_STORE: BoundedStore = BoundedStore(
+_STORE: StateBackend = make_store(
+    "tl_evals",
     max_size=settings.fnol_tl_eval_max,
     ttl_seconds=settings.fnol_tl_eval_ttl_seconds,
 )

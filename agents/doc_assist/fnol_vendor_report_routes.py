@@ -15,14 +15,14 @@ Endpoints (prefix /api/v1/fnol/vendor-report):
 """
 from __future__ import annotations
 
-import hmac
 import logging
 from typing import List, Optional
 
-from fastapi import APIRouter, Header, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
 from . import fnol_vendor_report_agent as vra
+from fnol_rbac import require_roles, Role, CLAIMS_ROLES
 
 log = logging.getLogger("fnol.vendor_report.routes")
 
@@ -30,9 +30,6 @@ router = APIRouter(
     prefix="/api/v1/fnol/vendor-report",
     tags=["S1-B Vendor Report Trigger"],
 )
-
-# ── Auth ─────────────────────────────────────────────────────────────────
-from fnol_api_deps import require_api_key as _require_api_key
 
 # ── Request / Response models ─────────────────────────────────────────────
 
@@ -59,9 +56,8 @@ def vendor_report_health():
 def trigger_vendor_reports(
     claim_id: str,
     body: TriggerRequest,
-    _api_key: str = Header(default=None),
+    _ = Depends(require_roles(*CLAIMS_ROLES)),
 ):
-    _require_api_key(_api_key)
     req = vra.VendorReportRequest(
         claim_id=claim_id,
         vin=body.vin,
@@ -83,9 +79,8 @@ def trigger_vendor_reports(
 @router.get("/status/{claim_id}")
 def get_report_status(
     claim_id: str,
-    _api_key: str = Header(default=None),
+    _ = Depends(require_roles(*CLAIMS_ROLES)),
 ):
-    _require_api_key(_api_key)
     result = vra.get_report_status(claim_id)
     if not result:
         raise HTTPException(status_code=404, detail=f"No vendor report result for claim {claim_id}")
@@ -94,9 +89,8 @@ def get_report_status(
 @router.get("/report/{report_id}")
 def get_report(
     report_id: str,
-    _api_key: str = Header(default=None),
+    _ = Depends(require_roles(*CLAIMS_ROLES)),
 ):
-    _require_api_key(_api_key)
     r = vra.get_report(report_id)
     if not r:
         raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
@@ -105,17 +99,15 @@ def get_report(
 @router.get("/triggers/{claim_id}")
 def list_triggers(
     claim_id: str,
-    _api_key: str = Header(default=None),
+    _ = Depends(require_roles(*CLAIMS_ROLES)),
 ):
-    _require_api_key(_api_key)
     return {"claim_id": claim_id, "triggers": vra.list_downstream_triggers(claim_id)}
 
 @router.put("/triggers/{trigger_id}/ack")
 def ack_trigger(
     trigger_id: str,
-    _api_key: str = Header(default=None),
+    _ = Depends(require_roles(*CLAIMS_ROLES)),
 ):
-    _require_api_key(_api_key)
     t = vra.acknowledge_trigger(trigger_id)
     if not t:
         raise HTTPException(status_code=404, detail=f"Trigger {trigger_id} not found")

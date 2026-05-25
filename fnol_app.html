@@ -356,6 +356,49 @@ textarea.fi{resize:vertical;min-height:58px}
 .modal-box p{font-size:11.5px;color:var(--g6);margin-bottom:12px;line-height:1.5}
 .modal-foot{display:flex;gap:6px;justify-content:flex-end;margin-top:12px}
 
+/* ── L3 LANGGRAPH LIVE (RSK-03) ─────────────────────────── */
+.ws-row{display:flex;align-items:center;gap:6px;margin-bottom:9px}
+.ws-dot{width:8px;height:8px;border-radius:50%;background:var(--g5);flex-shrink:0}
+.ws-dot.ok{background:var(--em-m);animation:pulse .8s infinite}
+.ws-dot.connecting{background:var(--am-m);animation:blink .7s infinite}
+.ws-dot.error{background:var(--re-m)}
+.ws-lbl{font-family:var(--mono);font-size:8.5px;color:var(--g6)}
+.l3-track{display:flex;align-items:center;padding:16px 0 8px;overflow-x:auto;gap:0}
+.l3-node{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:56px}
+.l3-nd{width:30px;height:30px;border-radius:50%;border:2px solid var(--rule2);background:var(--w2);
+       display:flex;align-items:center;justify-content:center;font-size:10px;
+       transition:background .2s,border-color .2s}
+.l3-nd.ok{background:var(--em-s);border-color:var(--em-m)}
+.l3-nd.running{background:var(--am-s);border-color:var(--am-m);animation:pulse .7s infinite}
+.l3-nd.hitl{background:var(--am-s);border-color:var(--am)}
+.l3-nd.err{background:var(--re-s);border-color:var(--re-m)}
+.l3-nl{font-family:var(--mono);font-size:7px;color:var(--g6);text-align:center;max-width:52px;
+       word-break:break-word;line-height:1.3}
+.l3-cn{flex:1;height:2px;background:var(--rule2);min-width:8px;transition:background .2s}
+.l3-cn.ok{background:var(--em-m)}
+.l3-evt{background:var(--w2);border:1px solid var(--rule);border-radius:var(--r);
+        padding:8px 10px;font-family:var(--mono);font-size:8.5px;height:160px;
+        overflow-y:auto;scrollbar-width:thin;color:var(--g7);line-height:1.6}
+.l3-evt .eo{color:var(--em)}.l3-evt .ew{color:var(--am)}.l3-evt .ee{color:var(--re)}
+.l3-evt .es{color:var(--sk)}.l3-evt .ec{color:var(--acc)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.12)}}
+
+/* ── TELEMATICS CONTEXT BAR (A9 Co-Pilot) ───────────────── */
+#cop-tel-bar{padding:6px 11px 5px;border-bottom:1px solid var(--rule);background:var(--sk-s);flex-shrink:0;display:none}
+#cop-tel-bar.high-sev{background:var(--re-s);border-bottom-color:#fca5a5}
+.tel-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-height:18px}
+.tel-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:8px;font-family:var(--mono);font-size:7.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.tel-badge.sev-hi{background:var(--re-m);color:#fff}
+.tel-badge.sev-med{background:var(--am-m);color:#fff}
+.tel-badge.sev-ok{background:var(--sk);color:#fff}
+.tel-kv{font-family:var(--mono);font-size:8px;color:var(--g6);white-space:nowrap}
+.tel-kv b{color:var(--g9);font-weight:600}
+.tel-quick{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.q-chip{padding:2px 8px;border-radius:10px;border:1px solid var(--acc-m);background:var(--acc-s);color:var(--acc-m);font-size:8px;font-family:var(--mono);cursor:pointer;transition:background .12s,color .12s;line-height:1.5}
+.q-chip:hover{background:var(--acc-m);color:#fff}
+.chip{padding:1px 6px;border-radius:6px;border:1px solid var(--rule2);background:var(--w0);font-size:8.5px;color:var(--g6);font-family:var(--mono);cursor:pointer;transition:background .1s}
+.chip:hover{background:var(--acc-s);border-color:var(--acc-m);color:var(--acc)}
+
 /* ── RESPONSIVE ───────────────────────────────────────── */
 @media(max-width:1100px){.hero{grid-template-columns:1fr}.hero-r{border-top:1px solid var(--rule);border-left:none}.rkpis{grid-template-columns:1fr 1fr}}
 @media(max-width:900px){.cop-split{grid-template-columns:1fr}.cv-split{grid-template-columns:1fr}.g3,.g4{grid-template-columns:1fr 1fr}}
@@ -387,6 +430,7 @@ textarea.fi{resize:vertical;min-height:58px}
     <div class="sb-sect">Analysis</div>
     <button class="sb-btn" data-to="pipeline"><span class="ico">🔬</span><span class="lbl">Pipeline Trace</span></button>
     <button class="sb-btn" data-to="claims"><span class="ico">📂</span><span class="lbl">Claims Register</span></button>
+    <button class="sb-btn" data-to="l3"><span class="ico">📡</span><span class="lbl">L3 LangGraph Live</span><span class="sb-tag a">RSK-03</span></button>
 
     <div class="sb-sect">Document Processing</div>
     <button class="sb-btn" data-to="docassist"><span class="ico">📄</span><span class="lbl">Doc Assist</span><span class="sb-tag" style="background:var(--acc-s);color:var(--acc)">S1-A</span></button>
@@ -451,6 +495,7 @@ textarea.fi{resize:vertical;min-height:58px}
       <button class="btn btn-s" id="d1">🚗 Rear-end · TX</button>
       <button class="btn btn-s" id="d2">⚠️ Fraud · GA</button>
       <button class="btn btn-s" id="d3">💥 Total Loss · TX</button>
+      <button class="btn btn-s" id="d4">📡 OEM Crash · Full Tel</button>
     </div>
 
     <div id="sub-banner"></div>
@@ -551,14 +596,60 @@ textarea.fi{resize:vertical;min-height:58px}
             <div class="fld"><label>3rd Party Policy #</label><input class="fi" type="text" id="f-tpp"/></div>
           </div>
 
-          <div class="ssep"><span class="si">📡</span><span class="sl">Telematics (S0)</span><span class="sln"></span></div>
+          <div class="ssep"><span class="si">📡</span><span class="sl">Telematics (S0) · ACORD Gap 6</span><span class="sln"></span></div>
+          <!-- Core signals -->
           <div class="g4">
             <div class="ck"><input type="checkbox" id="t-cr"/><label for="t-cr">Crash Alert</label></div>
             <div class="fld"><label>Delta-V (mph)</label><input class="fi" type="number" id="t-dv" min="0" max="200" step="0.1" value="0"/></div>
-            <div class="fld"><label>Impact Severity (0-10)</label><input class="fi" type="number" id="t-is" min="0" max="10" step="0.1" value="0"/></div>
+            <div class="fld"><label>Impact Severity (0–10)</label><input class="fi" type="number" id="t-is" min="0" max="10" step="0.1" value="0"/></div>
             <div style="display:flex;gap:6px">
               <div class="ck" style="flex:1"><input type="checkbox" id="t-ab"/><label for="t-ab">Airbag</label></div>
               <div class="ck" style="flex:1"><input type="checkbox" id="t-cn"/><label for="t-cn">Consent</label></div>
+            </div>
+          </div>
+          <!-- ACORD Gap 6 extended fields -->
+          <div class="g4" style="margin-top:7px">
+            <div class="fld">
+              <label>Notification Source</label>
+              <select class="fi" id="t-src">
+                <option value="UNKNOWN">UNKNOWN</option>
+                <option value="OEM">OEM (OnStar / FordPass / Tesla)</option>
+                <option value="TELEMATICS_APP">Telematics App (Arity / CMT)</option>
+                <option value="IVR">IVR Self-Report</option>
+                <option value="MANUAL">Manual Entry</option>
+                <option value="API">API / Machine-to-Machine</option>
+              </select>
+            </div>
+            <div class="fld">
+              <label>Data Scope</label>
+              <select class="fi" id="t-scope">
+                <option value="NONE">NONE — no consent</option>
+                <option value="FULL">FULL — all signals permitted</option>
+                <option value="IMPACT_ONLY">IMPACT_ONLY — no location</option>
+                <option value="LOCATION_ONLY">LOCATION_ONLY — no impact</option>
+              </select>
+            </div>
+            <div class="fld">
+              <label>Speed at Impact (mph)</label>
+              <input class="fi" type="number" id="t-spd" min="0" max="200" step="0.1" placeholder="45.0"/>
+            </div>
+            <div class="ck" style="align-self:flex-end;padding-bottom:4px">
+              <input type="checkbox" id="t-sb"/>
+              <label for="t-sb">Seatbelt Deployed</label>
+            </div>
+          </div>
+          <div class="g4" style="margin-top:7px">
+            <div class="fld">
+              <label>GPS Latitude</label>
+              <input class="fi" type="number" id="t-lat" step="0.000001" placeholder="30.267153"/>
+            </div>
+            <div class="fld">
+              <label>GPS Longitude</label>
+              <input class="fi" type="number" id="t-lon" step="0.000001" placeholder="-97.743061"/>
+            </div>
+            <div class="fld" style="grid-column:span 2">
+              <label>OEM Event ID</label>
+              <input class="fi" id="t-oem" placeholder="ONSTAR-20260519-001234"/>
             </div>
           </div>
 
@@ -585,6 +676,7 @@ textarea.fi{resize:vertical;min-height:58px}
               <button class="btn btn-s" id="r-cop">🤖 Open Co-Pilot</button>
               <button class="btn btn-s" id="r-docassist" style="display:none">📄 View Documents</button>
               <button class="btn btn-s" id="r-vr" style="display:none">🔎 Vendor Reports</button>
+              <button class="btn btn-s" id="r-s0-badge" style="display:none;background:var(--re-s);color:var(--re);border-color:var(--re-m)">🚨 High-Severity Crash</button>
               <button class="btn btn-s" id="r-siu" style="display:none;background:var(--re-s);color:var(--re);border-color:var(--re-m)">🔴 View SIU Case</button>
               <button class="btn btn-g" id="r-new">+ New FNOL</button>
             </div>
@@ -646,6 +738,11 @@ textarea.fi{resize:vertical;min-height:58px}
         <div class="card-hd" style="padding:8px 13px;flex-shrink:0">
           <div><div class="eyebrow">A9 · Adjuster Co-Pilot</div><div class="card-title" id="cop-ttl" style="font-size:13px">Select a claim</div></div>
           <div class="card-acts"><button class="btn btn-g" id="cop-alrt" style="display:none">🔔 Alerts</button></div>
+        </div>
+        <!-- S0 Telematics context bar — populated by openCop() -->
+        <div id="cop-tel-bar">
+          <div class="tel-row" id="cop-tel-row"></div>
+          <div class="tel-quick" id="cop-tel-chips"></div>
         </div>
         <div class="chat-body" id="cop-body"><div class="empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>Select a claim to start.</p></div></div>
         <div class="chat-foot">
@@ -1032,6 +1129,151 @@ textarea.fi{resize:vertical;min-height:58px}
     </div><!-- /vtab-wrap -->
   </div><!-- /vendorreport panel -->
 
+  <!-- ── 12 L3 LANGGRAPH LIVE (RSK-03) ── -->
+  <div class="panel" data-p="l3">
+    <div class="eyebrow" style="margin-bottom:3px">Section 12</div>
+    <h2 style="font-family:var(--serif);font-size:16px;font-weight:700;margin:0 0 9px">
+      📡 L3 · LangGraph Live Pipeline
+    </h2>
+    <div class="al al-in" style="margin-bottom:11px">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>LangGraph StateGraph orchestration with durable checkpoints, true HITL pause/resume, and conditional routing edges. <strong>RSK-03 resolved</strong> — <code>/langgraph/status</code> complete · WebSocket streaming live.</span>
+    </div>
+
+    <div class="card">
+      <div class="vtab-wrap">
+        <nav class="vtab-nav" id="l3-vnav">
+          <button class="vtab-btn on" data-vt="l3-status"><span class="vi">🏥</span>Engine Status</button>
+          <button class="vtab-btn" data-vt="l3-stream"><span class="vi">📡</span>Live Stream</button>
+          <button class="vtab-btn" data-vt="l3-submit"><span class="vi">🚀</span>Submit L3</button>
+        </nav>
+
+        <div class="vtab-content">
+
+          <!-- ── Tab 1: Engine Status ── -->
+          <div class="vpanel on" data-vp="l3-status">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:11px;flex-wrap:wrap">
+              <button class="btn btn-s" onclick="loadL3Status()">↻ Refresh</button>
+              <span id="l3-hitl-badge" style="display:none;padding:2px 8px;border-radius:8px;background:var(--am-s);color:var(--am);font-family:var(--mono);font-size:8px;font-weight:700">⚑ HITL Pending: <span id="l3-hitl-n">0</span></span>
+              <span id="l3-ver" style="font-family:var(--mono);font-size:8px;color:var(--g5)"></span>
+            </div>
+            <!-- Health KV row -->
+            <div id="l3-health" style="margin-bottom:13px">
+              <div class="ctr" style="padding:16px"><span class="spin"></span></div>
+            </div>
+            <!-- Threads table -->
+            <div style="font-family:var(--mono);font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--g5);margin-bottom:5px">Checkpointed Threads</div>
+            <div id="l3-threads"><div class="empty" style="padding:18px 8px"><p>No threads yet — submit a claim via L3.</p></div></div>
+          </div>
+
+          <!-- ── Tab 2: Live Stream ── -->
+          <div class="vpanel" data-vp="l3-stream">
+            <!-- WS controls -->
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:11px;flex-wrap:wrap">
+              <div class="ws-row" style="margin:0">
+                <span class="ws-dot" id="ws-dot"></span>
+                <span class="ws-lbl" id="ws-lbl">Disconnected</span>
+              </div>
+              <select class="fi" id="l3-tid-sel" style="font-size:11px;padding:3px 6px;width:220px">
+                <option value="">— select thread —</option>
+              </select>
+              <button class="btn btn-p" id="l3-ws-btn" onclick="l3WsConnect()">🔌 Connect</button>
+              <button class="btn btn-g" id="l3-ws-disc" style="display:none" onclick="l3WsDisconnect()">✕ Disconnect</button>
+            </div>
+            <!-- Node progress track -->
+            <div style="font-family:var(--mono);font-size:7.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--g5);margin-bottom:0">Pipeline · Node Track</div>
+            <div class="l3-track" id="l3-track">
+              <!-- Populated by renderL3Track() -->
+            </div>
+            <!-- Event log -->
+            <div style="font-family:var(--mono);font-size:7.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--g5);margin-bottom:4px">Live Event Log</div>
+            <div class="l3-evt" id="l3-evt"><span style="color:var(--g5)">Connect to a thread to start streaming…</span></div>
+            <!-- HITL Decision form (hidden until hitl_required event) -->
+            <div id="l3-hitl-form" class="hidden" style="margin-top:11px;padding:11px;background:var(--am-s);border:1px solid #fcd34d;border-radius:var(--r)">
+              <div style="font-weight:600;font-size:11.5px;margin-bottom:7px">⚑ HITL Decision Required</div>
+              <div class="g2" style="margin-bottom:7px">
+                <div class="fld"><label>Decision</label>
+                  <select class="fi" id="l3-hitl-dec">
+                    <option value="APPROVED">APPROVED</option>
+                    <option value="DENIED">DENIED</option>
+                    <option value="ESCALATE">ESCALATE</option>
+                    <option value="ADJUST_OFFER">ADJUST_OFFER</option>
+                    <option value="CLEARED">CLEARED (SIU)</option>
+                  </select>
+                </div>
+                <div class="fld"><label>Adjuster ID</label>
+                  <input class="fi" type="text" id="l3-hitl-adj" placeholder="ADJ-001"/>
+                </div>
+              </div>
+              <div class="fld" style="margin-bottom:7px"><label>Notes</label>
+                <input class="fi" type="text" id="l3-hitl-note" placeholder="Optional adjuster notes…"/>
+              </div>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-p" onclick="l3SubmitHitl()">✓ Submit Decision</button>
+                <span id="l3-hitl-st" style="font-family:var(--mono);font-size:9px;color:var(--g5);align-self:center"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Tab 3: Submit L3 Async ── -->
+          <div class="vpanel" data-vp="l3-submit">
+            <div class="al al-in" style="margin-bottom:11px">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>Submits a claim through the L3 LangGraph engine asynchronously. Returns <code>thread_id</code> immediately (HTTP 202); use the Live Stream tab to watch node completions in real time.</span>
+            </div>
+            <div class="g2" style="margin-bottom:9px">
+              <div class="fld">
+                <label>Policy</label>
+                <select class="fi" id="l3-pol">
+                  <option value="">— select policy —</option>
+                </select>
+              </div>
+              <div class="fld">
+                <label>Loss Cause</label>
+                <select class="fi" id="l3-lc">
+                  <option value="COLLISION">COLLISION</option>
+                  <option value="REAR_END_COLLISION">REAR-END COLLISION</option>
+                  <option value="HEAD_ON_COLLISION">HEAD-ON COLLISION</option>
+                  <option value="SINGLE_VEHICLE_ACCIDENT">SINGLE VEHICLE</option>
+                  <option value="WEATHER_HAIL">WEATHER / HAIL</option>
+                  <option value="THEFT">THEFT</option>
+                </select>
+              </div>
+            </div>
+            <div class="g2" style="margin-bottom:9px">
+              <div class="fld"><label>Damage Est. ($)</label>
+                <input class="fi" type="number" id="l3-est" value="8500" min="0" step="100"/>
+              </div>
+              <div class="fld"><label>Injury Severity</label>
+                <select class="fi" id="l3-isv">
+                  <option value="">None</option>
+                  <option value="MINOR">MINOR</option>
+                  <option value="MODERATE">MODERATE</option>
+                  <option value="SERIOUS">SERIOUS</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:9px">
+              <div class="ck"><input type="checkbox" id="l3-inj"/><label for="l3-inj">Injury Reported</label></div>
+              <div class="ck"><input type="checkbox" id="l3-lib"/><label for="l3-lib">Liability Admitted</label></div>
+              <div class="ck"><input type="checkbox" id="l3-cr"/><label for="l3-cr">Crash Alert</label></div>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <button class="btn btn-p" id="l3-run-btn" onclick="l3AsyncSubmit()">🚀 Run L3 Async</button>
+              <span id="l3-run-st" style="font-family:var(--mono);font-size:9px;color:var(--g5)"></span>
+            </div>
+            <div id="l3-run-result" style="display:none;margin-top:11px;padding:10px;background:var(--em-s);border:1px solid #6ee7b7;border-radius:var(--r)">
+              <div style="font-family:var(--mono);font-size:9px;color:var(--em);font-weight:700;margin-bottom:4px">✓ Submitted — thread running</div>
+              <dl class="kv" id="l3-run-kv"></dl>
+              <button class="btn btn-s" style="margin-top:7px" id="l3-run-ws-btn">📡 Watch Live Stream</button>
+            </div>
+          </div>
+
+        </div><!-- /vtab-content -->
+      </div><!-- /vtab-wrap -->
+    </div><!-- /card -->
+  </div><!-- /l3 panel -->
+
   </div><!-- /scroll -->
 </div><!-- /main -->
 </div><!-- /shell -->
@@ -1084,7 +1326,8 @@ const NAV_TITLES = {
   totalloss:'06 · A11 · Total Loss & Salvage', siu:'07 · A12 · SIU Case Builder',
   gov:'08 · Governance', sys:'09 · System',
   docassist:'10 · S1-A · Document Assist & Classification',
-  vendorreport:'11 · S1-B · Vendor Report Trigger'
+  vendorreport:'11 · S1-B · Vendor Report Trigger',
+  l3:'12 · L3 · LangGraph Live Pipeline'
 };
 const STC = {S0:'📡',S1:'📋',S1A:'📄',S1B:'🔎',S2:'🛡️',S3:'🎯',S4A:'🔍',S4B:'🔧',A11:'🚗',A12:'🔴',S5:'⚖️',S6:'💰',S7:'↩️',A9:'🤖',A10:'💬'};
 
@@ -1213,6 +1456,7 @@ function go(tab) {
   if(tab==='docassist')   loadDocAssistDocs();
   if(tab==='vendorreport') loadVrStatus();
   if(tab==='sys')          loadSys();
+  if(tab==='l3')         { loadL3Status(); l3PopulatePolSel(); }
 }
 
 /* ═══ VERTICAL SUB-TABS ════════════════════════════════= */
@@ -1321,6 +1565,8 @@ $('#d1').onclick = () => {
   sf('f-drv',1); sf('f-inj',1); sf('f-isv','MINOR'); sf('f-lib',1); sf('f-rby',1);
   sf('f-tpc','ACME Mutual'); sf('f-tpp','ACM-7782-99');
   sf('t-cr',1); sf('t-dv','9.5'); sf('t-is','3.2'); sf('t-cn',1); sf('f-sfd',0);
+  sf('t-src','TELEMATICS_APP'); sf('t-scope','IMPACT_ONLY'); sf('t-spd','28'); sf('t-sb',0);
+  sf('t-lat',''); sf('t-lon',''); sf('t-oem','');
   toast('Demo loaded.','info');
 };
 $('#d2').onclick = () => {
@@ -1330,6 +1576,8 @@ $('#d2').onclick = () => {
   sf('f-est','9200'); sf('f-acv','12000'); sf('f-vcl','STANDARD'); sf('f-pc','1'); sf('f-pq','0.41');
   sf('f-drv',0); sf('f-iso',1); sf('f-att',1); sf('f-lib',1); sf('f-inj',0);
   sf('t-cr',0); sf('t-dv','0'); sf('t-is','0'); sf('t-cn',0); sf('f-sfd',1);
+  sf('t-src','UNKNOWN'); sf('t-scope','NONE'); sf('t-spd',''); sf('t-sb',0);
+  sf('t-lat',''); sf('t-lon',''); sf('t-oem','');
   toast('Fraud demo loaded — triggers A12 SIU Case Builder (CRITICAL band).','info',5000);
 };
 $('#d3').onclick = () => {
@@ -1340,7 +1588,21 @@ $('#d3').onclick = () => {
   sf('f-drv',0); sf('f-inj',1); sf('f-isv','SERIOUS'); sf('f-lib',1); sf('f-rby',1);
   sf('f-tpc','Statewide Auto'); sf('f-tpp','SWA-101-22');
   sf('t-cr',1); sf('t-dv','28.4'); sf('t-is','8.7'); sf('t-ab',1); sf('t-cn',1); sf('f-sfd',0);
-  toast('Total loss demo loaded — triggers A11.','info');
+  sf('t-src','OEM'); sf('t-scope','FULL'); sf('t-spd','62'); sf('t-sb',1);
+  sf('t-lat','30.2672'); sf('t-lon','-97.7431'); sf('t-oem','ONSTAR-20260519-009871');
+  toast('Total loss demo loaded — triggers A11. OEM telematics with FULL scope set.','info',5000);
+};
+$('#d4').onclick = () => {
+  sf('f-pol','POC-POL-00123'); sf('f-dt',nowL()); sf('f-cause','HEAD_ON_COLLISION');
+  sf('f-loc','US-290 E, Austin TX'); sf('f-desc','OEM crash alert received. Vehicle struck centre barrier at highway speed. Multiple airbag deployment. Both occupants transported to ER. Vehicle inoperable.');
+  sf('f-rn','Carlos Medina'); sf('f-rp','+1-512-555-0244'); sf('f-ten','1080'); sf('f-pri','0');
+  sf('f-est','38000'); sf('f-acv','41000'); sf('f-vcl','STANDARD'); sf('f-pc','14'); sf('f-pq','0.93');
+  sf('f-drv',0); sf('f-inj',1); sf('f-isv','SERIOUS'); sf('f-lib',1); sf('f-rby',0);
+  sf('f-tpc',''); sf('f-tpp','');
+  sf('t-cr',1); sf('t-dv','34.2'); sf('t-is','9.1'); sf('t-ab',1); sf('t-cn',1); sf('f-sfd',0);
+  sf('t-src','OEM'); sf('t-scope','FULL'); sf('t-spd','67'); sf('t-sb',1);
+  sf('t-lat','30.3215'); sf('t-lon','-97.6489'); sf('t-oem','FORDPASS-20260519-002847');
+  toast('OEM Crash demo — FULL telematics, high severity (9.1/10), triggers S0 high-severity + A9 field-dispatch recommendation.','info',6000);
 };
 
 /* ═══ SUBMIT ════════════════════════════════════════════ */
@@ -1383,6 +1645,13 @@ $('#fnol-form').onsubmit = async e => {
       impact_severity_score: +$('#t-is').value||0,
       airbag_deployed: $('#t-ab').checked,
       consent_given: $('#t-cn').checked,
+      crash_notification_source_cd: $('#t-src').value||'UNKNOWN',
+      telematics_data_scope: $('#t-scope').value||'NONE',
+      vehicle_speed_mph: +$('#t-spd').value||null,
+      seatbelt_deployed: $('#t-sb').checked,
+      location_lat: +$('#t-lat').value||null,
+      location_lon: +$('#t-lon').value||null,
+      oem_event_id: $('#t-oem').value.trim()||null,
     },
   };
   const btn=$('#sub-btn'); btn.disabled=true;
@@ -1435,6 +1704,19 @@ function renderResult(out,wall) {
       toast('⚠ Salvage title detected — ACV adjustment + fraud signal flagged (S1-B).','warn',5000);
     }
   } else { vrBtn.style.display='none'; }
+  // S0 — Telematics: show high-severity badge when crash data was captured
+  const s0=(out.pipeline?.stages||[]).find(s=>s.stage_id==='S0');
+  const s0Btn=$('#r-s0-badge');
+  if(s0 && s0.status!=='error') {
+    const highSev=!!s0.outputs?.high_severity_flag;
+    const hasCrash=s0.outputs?.delta_v_mph>0||s0.outputs?.impact_severity_score>0;
+    if(highSev||hasCrash) {
+      s0Btn.style.display='';
+      s0Btn.textContent=highSev?'🚨 High-Severity Crash':'📡 Telematics Captured';
+      s0Btn.onclick=()=>{ S.sel=out.claim_id; go('copilot'); openCop(out.claim_id); };
+      if(highSev) toast('🚨 HIGH-SEVERITY crash detected — field adjuster dispatch recommended (S0 Telematics).','err',8000);
+    } else { s0Btn.style.display='none'; }
+  } else { s0Btn.style.display='none'; }
   // A12 — SIU Case Builder: show button + payment-hold badge when stage ran
   const a12=(out.pipeline?.stages||[]).find(s=>s.stage_id==='A12');
   const siuBtn=$('#r-siu');
@@ -1594,7 +1876,14 @@ async function openCop(cid) {
   $('#cop-inp').disabled=false; $('#cop-snd').disabled=false;
   $('#cop-alrt').style.display='';
   if(!S.copMsgs[cid]) S.copMsgs[cid]=[];
+  $('#cop-tel-bar').style.display='none';  // hide until data loaded
   renderCopMsgs(cid);
+  // Load S0 telematics context bar
+  try {
+    const tel=await api('/api/v1/fnol/copilot/telematics/'+cid);
+    renderTelBar(cid,tel);
+  } catch(e){ /* server may not have telematics for this claim yet */ }
+  // Load proactive alerts
   try {
     const a=await api('/api/v1/fnol/copilot/alerts/'+cid);
     (a.alerts||[]).forEach(al => {
@@ -1605,13 +1894,64 @@ async function openCop(cid) {
   } catch(e){}
 }
 
+function renderTelBar(cid, tel) {
+  const bar=$('#cop-tel-bar');
+  const s0out=tel.s0_outputs||{};
+  const tp=tel.telematics_payload||{};
+  const dv=+(s0out.delta_v_mph||0), imp=+(s0out.impact_severity_score||0);
+  const hasTel=dv>0||imp>0||s0out.high_severity_flag||
+    (tp.crash_notification_source_cd&&tp.crash_notification_source_cd!=='UNKNOWN');
+  if(!hasTel){ bar.style.display='none'; return; }
+  const highSev=!!s0out.high_severity_flag;
+  bar.className=highSev?'high-sev':'';
+  bar.style.display='';
+  const src=tp.crash_notification_source_cd||'—';
+  const scope=tp.telematics_data_scope||'—';
+  const airbag=tp.airbag_deployed?'Yes':'No';
+  const seatbelt=tp.seatbelt_deployed?'Yes':'No';
+  // Severity badge
+  let sevLabel,sevCls;
+  if(highSev){ sevLabel='🚨 HIGH SEV'; sevCls='sev-hi'; }
+  else if(imp>=5){ sevLabel='⚠ MOD SEV'; sevCls='sev-med'; }
+  else { sevLabel='📡 TELEMATICS'; sevCls='sev-ok'; }
+  // KV pairs
+  const kvParts=[
+    `<span class="tel-kv">Src: <b>${esc(src)}</b></span>`,
+    `<span class="tel-kv">Scope: <b>${esc(scope)}</b></span>`,
+    `<span class="tel-kv">Δv: <b>${dv} mph</b></span>`,
+    `<span class="tel-kv">Impact: <b>${imp}/10</b></span>`,
+    `<span class="tel-kv">Airbag: <b>${airbag}</b></span>`,
+    `<span class="tel-kv">Seatbelt: <b>${seatbelt}</b></span>`,
+  ];
+  if(tel.s1b_recall_flag) kvParts.push(`<span class="tel-kv" style="color:var(--am)">Recall: <b>⚠ NHTSA</b></span>`);
+  if(tel.s1b_salvage_flag) kvParts.push(`<span class="tel-kv" style="color:var(--am)">Salvage: <b>⚠ Flag</b></span>`);
+  if(tp.oem_event_id) kvParts.push(`<span class="tel-kv">OEM ID: <b>${esc(tp.oem_event_id)}</b></span>`);
+  $('#cop-tel-row').innerHTML=`<span class="tel-badge ${sevCls}">${sevLabel}</span>${kvParts.join('')}`;
+  // Quick-prompt chips
+  const chips=[];
+  if(highSev){ chips.push('Summarise crash severity','Dispatch field adjuster','Request medical authorisation'); }
+  else { chips.push('Summarise telematics data','Review impact data'); }
+  if(tel.s1b_recall_flag) chips.push('Open subro referral — NHTSA recall');
+  if(tel.s1b_salvage_flag) chips.push('ACV adjustment — salvage title');
+  chips.push('What are the next recommended actions?');
+  $('#cop-tel-chips').innerHTML=chips.map(c=>`<button class="q-chip" onclick="doQuickPrompt('${esc(c)}')">${esc(c)}</button>`).join('');
+  // Inject a pinned system context message for high-severity if chat is fresh
+  if(highSev && !(S.copMsgs[cid]||[]).find(m=>m.role==='system')) {
+    if(!S.copMsgs[cid]) S.copMsgs[cid]=[];
+    const oemNote=tp.oem_event_id?` · OEM: ${tp.oem_event_id}`:'';
+    S.copMsgs[cid].unshift({role:'system',
+      text:`🚨 HIGH-SEVERITY CRASH DETECTED · Δv ${dv} mph · Impact ${imp}/10 · Airbag: ${airbag} · Seatbelt: ${seatbelt} · Source: ${src} · Scope: ${scope}${oemNote}`});
+    renderCopMsgs(cid);
+  }
+}
+
 function renderCopMsgs(cid) {
   const msgs=S.copMsgs[cid]||[], el=$('#cop-body');
   if(!msgs.length){ el.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>Ask anything about ${esc(cid)}</p></div>`; return; }
   el.innerHTML=msgs.map(m => {
     const r=m.role==='user'?'user':m.role==='alert'?'alert':m.role==='system'?'system':'bot';
     const l=r==='user'?'You':r==='alert'?'⚡ Alert':r==='system'?'System':'Co-Pilot (A9)';
-    const chips=(m.suggested_actions||[]).map(a=>`<div class="chip">${esc(a.label||a)}</div>`).join('');
+    const chips=(m.suggested_actions||[]).map(a=>`<button class="chip" onclick="doQuickPrompt('${esc(a.label||a)}')">${esc(a.label||a)}</button>`).join('');
     return `<div class="msg ${r}"><div class="msg-role">${esc(l)}</div><div class="bbl">${esc(m.text||'…')}</div>${chips?`<div class="msg-chips">${chips}</div>`:''}</div>`;
   }).join('');
   el.scrollTop=el.scrollHeight;
@@ -1630,6 +1970,14 @@ async function sendCop() {
   } catch(e){ msgs[msgs.length-1]={role:'bot',text:'Error: '+e.message}; }
   renderCopMsgs(cid);
 }
+function doQuickPrompt(text) {
+  if(!S.sel){ toast('Select a claim first.','warn'); return; }
+  const inp=$('#cop-inp');
+  inp.value=text;
+  inp.focus();
+  sendCop();
+}
+
 $('#cop-snd').onclick=sendCop;
 $('#cop-inp').onkeydown=e=>{ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){e.preventDefault();sendCop();} };
 $('#cop-alrt').onclick=()=>{ if(S.sel) openCop(S.sel); };
@@ -2686,6 +3034,368 @@ async function doDocMissing() {
   } catch(e) {
     el.innerHTML = `<div class="al al-er"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg><div>Check failed: ${esc(e.message)}</div></div>`;
   }
+}
+
+/* ═══ L3 LANGGRAPH LIVE (RSK-03) ═══════════════════════ */
+
+// Node topology for the visual track (matches _NODE_STAGE in backend)
+const L3_NODES = [
+  {id:'S0/S1',  lbl:'S0·S1\nIntake',   icon:'📋'},
+  {id:'S2',     lbl:'S2\nCoverage',    icon:'🛡️'},
+  {id:'S3',     lbl:'S3\nTriage',      icon:'⚖️'},
+  {id:'S4A/S4B',lbl:'S4A·S4B\nFraud/Dmg',icon:'🔍'},
+  {id:'A11',    lbl:'A11\nTotal Loss', icon:'🚗', optional:true},
+  {id:'S5',     lbl:'S5\nBI',          icon:'🏥'},
+  {id:'S6',     lbl:'S6\nSettlement',  icon:'💰'},
+  {id:'S7',     lbl:'S7\nSubro',       icon:'♻️'},
+];
+const L3_HITL_NODES = new Set(['HITL·TRIAGE','HITL·BI','SIU·HOLD']);
+
+// Per-session L3 state
+S.l3 = {
+  ws:       null,           // active WebSocket
+  threadId: null,           // thread currently subscribed
+  nodes:    {},             // stage_id → {status}
+  hitlTid:  null,           // thread awaiting HITL decision
+};
+
+// ── Status tab ──────────────────────────────────────────
+
+async function loadL3Status() {
+  $('#l3-health').innerHTML='<div class="ctr" style="padding:16px"><span class="spin"></span></div>';
+  $('#l3-threads').innerHTML='<div class="ctr" style="padding:16px"><span class="spin"></span></div>';
+  try {
+    const r = await api('/api/v1/fnol/langgraph/status');
+    // Health card
+    const ena = r.l3_enabled;
+    const nodes = (r.graph_nodes||[]).join(', ') || '—';
+    const db = (r.checkpoint_db||'—').replace(/.*[/\\]/,'');
+    $('#l3-health').innerHTML = `
+      <div class="kv-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:4px">
+        <div class="card" style="padding:8px 11px">
+          <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:.18em;color:var(--g5);margin-bottom:3px">L3 Engine</div>
+          <span class="b ${ena?'bg':'br'}">${ena?'Enabled':'Disabled'}</span>
+        </div>
+        <div class="card" style="padding:8px 11px">
+          <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:.18em;color:var(--g5);margin-bottom:3px">Status</div>
+          <span style="font-family:var(--mono);font-size:9px;font-weight:600;color:${r.status==='ok'?'var(--em)':'var(--re)'}">${esc(r.status||'—')}</span>
+        </div>
+        <div class="card" style="padding:8px 11px">
+          <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:.18em;color:var(--g5);margin-bottom:3px">Threads</div>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:700">${r.active_threads||0}</span>
+        </div>
+        <div class="card" style="padding:8px 11px">
+          <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:.18em;color:var(--g5);margin-bottom:3px">HITL Queue</div>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:${r.hitl_queue_depth>0?'var(--am)':'var(--g8)'}">${r.hitl_queue_depth||0}</span>
+        </div>
+        <div class="card" style="padding:8px 11px">
+          <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:.18em;color:var(--g5);margin-bottom:3px">Checkpoint DB</div>
+          <span style="font-family:var(--mono);font-size:8.5px">${esc(db)}</span>
+        </div>
+        <div class="card" style="padding:8px 11px">
+          <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:.18em;color:var(--g5);margin-bottom:3px">In-Flight</div>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:700">${r.in_flight_count||0}</span>
+        </div>
+      </div>`;
+    $('#l3-ver').textContent = r.pipeline_version ? 'v ' + r.pipeline_version : '';
+    // HITL badge
+    if(r.hitl_queue_depth > 0) {
+      $('#l3-hitl-badge').style.display='';
+      $('#l3-hitl-n').textContent = r.hitl_queue_depth;
+    } else {
+      $('#l3-hitl-badge').style.display='none';
+    }
+    // Threads table
+    const threads = [...(r.threads||[]), ...(r.in_flight||[])];
+    if(!threads.length) {
+      $('#l3-threads').innerHTML='<div class="empty" style="padding:18px 8px"><p>No threads yet — submit via L3 tab.</p></div>';
+    } else {
+      $('#l3-threads').innerHTML=`<div class="tbl-wrap"><table class="tbl"><thead><tr>
+        <th>Thread ID</th><th>Claim ID</th><th>Status</th><th>HITL</th><th>Completed</th><th>Actions</th>
+      </tr></thead><tbody>
+      ${threads.map(t=>{
+        const tid=t.thread_id||'—';
+        const cid=t.claim_id||'—';
+        const st=t.final_status||t.status||'OPEN';
+        const hitl=(t.pending_hitl||[]).length;
+        const comp=t.completed_at?t.completed_at.replace('T',' ').replace('Z',''):'—';
+        return `<tr>
+          <td class="td-id" style="font-size:9px">${esc(tid)}</td>
+          <td class="td-m">${esc(cid)}</td>
+          <td><span class="b ${scl(st)}">${esc(st)}</span></td>
+          <td>${hitl>0?`<span class="b ba">⚑ ${hitl}</span>`:'—'}</td>
+          <td class="td-m">${esc(comp)}</td>
+          <td><button class="btn btn-s" style="font-size:9px" onclick="l3OpenStream('${esc(tid)}')">📡 Stream</button></td>
+        </tr>`;
+      }).join('')}
+      </tbody></table></div>`;
+      // Populate thread selector in Live Stream tab
+      l3PopulateSel(threads.map(t=>t.thread_id).filter(Boolean));
+    }
+  } catch(e) { $('#l3-health').innerHTML=`<div class="al al-er"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg><div>Status load failed: ${esc(e.message)}</div></div>`; }
+}
+
+function l3PopulateSel(ids) {
+  const sel = $('#l3-tid-sel');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— select thread —</option>' +
+    ids.map(id => `<option value="${esc(id)}">${esc(id)}</option>`).join('');
+  if(cur && ids.includes(cur)) sel.value = cur;
+}
+
+function l3OpenStream(tid) {
+  goVTab('l3-vnav','l3-stream');
+  $('#l3-tid-sel').value = tid;
+  l3WsConnect();
+}
+
+// ── Live Stream tab ─────────────────────────────────────
+
+function renderL3Track() {
+  const nodes = S.l3.nodes;
+  let h = '';
+  L3_NODES.forEach((n,i) => {
+    if(i>0) {
+      const prevOk = L3_NODES.slice(0,i).some(p => nodes[p.id]==='ok');
+      h += `<div class="l3-cn ${prevOk?'ok':''}"></div>`;
+    }
+    const st = nodes[n.id] || '';
+    let cls = '', icon = n.icon;
+    if(st==='ok')      { cls='ok';      icon='✓'; }
+    else if(st==='running') cls='running';
+    else if(st==='hitl')    { cls='hitl'; icon='⚑'; }
+    else if(st==='err')     { cls='err';  icon='✕'; }
+    h += `<div class="l3-node">
+      <div class="l3-nd ${cls}">${icon}</div>
+      <div class="l3-nl">${esc(n.lbl)}</div>
+    </div>`;
+  });
+  // Add a HITL node if one is pending
+  const hitlPending = Object.entries(S.l3.nodes).find(([k,v]) => L3_HITL_NODES.has(k) || v==='hitl');
+  if(hitlPending) {
+    h += `<div class="l3-cn"></div>
+    <div class="l3-node">
+      <div class="l3-nd hitl">⚑</div>
+      <div class="l3-nl">HITL\nPending</div>
+    </div>`;
+  }
+  $('#l3-track').innerHTML = h || '<span style="font-family:var(--mono);font-size:8.5px;color:var(--g5)">Connect to a thread to start…</span>';
+}
+
+function l3Log(msg, cls='') {
+  const el = $('#l3-evt');
+  const ts = new Date().toISOString().slice(11,23);
+  el.innerHTML += `<div class="${cls}">[${ts}] ${esc(msg)}</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+function l3SetWs(state) {
+  const dot=$('#ws-dot'), lbl=$('#ws-lbl');
+  dot.className='ws-dot';
+  if(state==='ok'){dot.classList.add('ok');lbl.textContent='Connected';}
+  else if(state==='connecting'){dot.classList.add('connecting');lbl.textContent='Connecting…';}
+  else if(state==='error'){dot.classList.add('error');lbl.textContent='Error';}
+  else{lbl.textContent='Disconnected';}
+  const connected = state==='ok';
+  $('#l3-ws-btn').style.display = connected?'none':'';
+  $('#l3-ws-disc').style.display = connected?'':'none';
+}
+
+function l3WsConnect() {
+  const tid = $('#l3-tid-sel').value.trim();
+  if(!tid){ toast('Select a thread first.','warn'); return; }
+  if(S.l3.ws){ S.l3.ws.close(); S.l3.ws=null; }
+  S.l3.threadId = tid;
+  S.l3.nodes    = {};
+  $('#l3-hitl-form').classList.add('hidden');
+  $('#l3-evt').innerHTML = '';
+  renderL3Track();
+  l3SetWs('connecting');
+  l3Log(`Connecting to thread ${tid}…`, 'es');
+  const proto = location.protocol==='https:'?'wss:':'ws:';
+  const url   = `${proto}//${location.host}/api/v1/fnol/langgraph/ws/${encodeURIComponent(tid)}?api_key=${encodeURIComponent(S.key||'')}`;
+  const ws    = new WebSocket(url);
+  S.l3.ws     = ws;
+
+  ws.onopen = () => {
+    l3SetWs('ok');
+    l3Log('WebSocket connected.', 'ec');
+  };
+
+  ws.onmessage = e => {
+    let msg;
+    try { msg = JSON.parse(e.data); } catch { return; }
+    const t = msg.type || '';
+
+    if(t === 'connected') {
+      l3Log(`Session active — thread ${msg.thread_id}`, 'ec');
+
+    } else if(t === 'node_complete') {
+      const sid = msg.stage_id || msg.node;
+      S.l3.nodes[sid] = 'ok';
+      renderL3Track();
+      l3Log(`✓ ${esc(sid)} · ${msg.elapsed_ms||0} ms`, 'eo');
+      if(msg.stage_meta) {
+        Object.entries(msg.stage_meta).forEach(([k,v]) => {
+          S.l3.nodes[k] = v.status==='ok'?'ok':'err';
+        });
+        renderL3Track();
+      }
+
+    } else if(t === 'hitl_required') {
+      S.l3.hitlTid = msg.thread_id || S.l3.threadId;
+      const pend = (msg.pending||msg.interrupt||[]);
+      l3Log(`⚑ HITL required — gates: ${JSON.stringify(pend)}`, 'ew');
+      // Mark HITL nodes
+      (Array.isArray(pend)?pend:[pend]).forEach(g => { S.l3.nodes[String(g)]='hitl'; });
+      renderL3Track();
+      $('#l3-hitl-form').classList.remove('hidden');
+      toast('⚑ HITL decision required — see Live Stream panel.','warn',6000);
+
+    } else if(t === 'graph_complete') {
+      const st = msg.final_status || '—';
+      l3Log(`■ Graph complete — ${st} · ${msg.total_ms||0} ms`, st==='STP'?'eo':'ec');
+      l3SetWs('');
+      if(msg.state) {
+        // Mark all stages from the final state
+        Object.keys(msg.state.stage_meta||{}).forEach(k => { S.l3.nodes[k]='ok'; });
+        renderL3Track();
+      }
+      toast(`L3 complete — ${st}`,'ok');
+      loadL3Status();
+
+    } else if(t === 'state_update') {
+      Object.keys(msg.state?.stage_meta||{}).forEach(k => { S.l3.nodes[k]='ok'; });
+      renderL3Track();
+
+    } else if(t === 'ping') {
+      // Silently handle keepalive
+
+    } else if(t === 'error') {
+      l3Log(`✕ Error: ${esc(msg.message||'unknown')}`, 'ee');
+      l3SetWs('error');
+      toast('L3 stream error — see event log.','err');
+
+    } else {
+      l3Log(JSON.stringify(msg), '');
+    }
+  };
+
+  ws.onerror = () => {
+    l3SetWs('error');
+    l3Log('WebSocket error — check API key and server.', 'ee');
+  };
+
+  ws.onclose = ev => {
+    S.l3.ws = null;
+    l3SetWs('');
+    l3Log(`Disconnected (code ${ev.code})`, 'es');
+  };
+}
+
+function l3WsDisconnect() {
+  if(S.l3.ws){ S.l3.ws.close(); S.l3.ws=null; }
+  l3SetWs('');
+}
+
+// ── HITL decision submission ────────────────────────────
+
+async function l3SubmitHitl() {
+  const tid = S.l3.hitlTid || S.l3.threadId;
+  if(!tid){ toast('No active HITL thread.','warn'); return; }
+  const dec  = $('#l3-hitl-dec').value;
+  const adj  = $('#l3-hitl-adj').value.trim();
+  const note = $('#l3-hitl-note').value.trim();
+  const body = {decision: dec};
+  if(adj)  body.adjuster_id = adj;
+  if(note) body.adjuster_notes = note;
+  $('#l3-hitl-st').textContent = 'Submitting…';
+  try {
+    const r = await api(`/api/v1/fnol/langgraph/hitl/${encodeURIComponent(tid)}`,
+      {method:'PUT', body:JSON.stringify(body)});
+    $('#l3-hitl-form').classList.add('hidden');
+    $('#l3-hitl-st').textContent = '';
+    l3Log(`✓ HITL decision submitted: ${dec}`, 'eo');
+    toast(`HITL decision (${dec}) submitted — graph resuming.`,'ok');
+    if(r.final_status) l3Log(`■ Resumed — final status: ${r.final_status}`, 'ec');
+    loadL3Status();
+  } catch(e) {
+    $('#l3-hitl-st').textContent = 'Failed: ' + e.message;
+    toast('HITL submit failed: '+e.message,'err');
+  }
+}
+
+// ── Submit L3 tab ───────────────────────────────────────
+
+async function l3AsyncSubmit() {
+  const pol = $('#l3-pol').value;
+  if(!pol){ toast('Select a policy.','warn'); return; }
+  const btn = $('#l3-run-btn');
+  btn.disabled = true;
+  $('#l3-run-st').textContent = 'Submitting…';
+  $('#l3-run-result').style.display = 'none';
+  try {
+    // Build a minimal Claim compatible with the Claim pydantic model
+    const claim = {
+      policy_id:              pol,
+      loss_cause:             $('#l3-lc').value||'COLLISION',
+      estimated_damage_usd:   +$('#l3-est').value||8500,
+      injury_reported:        $('#l3-inj').checked,
+      injury_severity:        $('#l3-isv').value||null,
+      liability_admitted:     $('#l3-lib').checked,
+      telematics: {
+        crash_alert_received:  $('#l3-cr').checked,
+        delta_v_mph:           0,
+        impact_severity_score: 0,
+        airbag_deployed:       false,
+        consent_given:         false,
+        crash_notification_source_cd: 'UNKNOWN',
+        telematics_data_scope: 'NONE',
+        vehicle_speed_mph:     null,
+        seatbelt_deployed:     false,
+        location_lat:          null,
+        location_lon:          null,
+        oem_event_id:          null,
+      },
+    };
+    const r = await api('/api/v1/fnol/langgraph/run',
+      {method:'POST', body:JSON.stringify({claim})});
+    $('#l3-run-st').textContent = '';
+    $('#l3-run-result').style.display = '';
+    $('#l3-run-kv').innerHTML = `
+      <dt>Thread ID</dt><dd class="td-id" style="font-size:9px">${esc(r.thread_id)}</dd>
+      <dt>Claim ID</dt><dd class="td-m">${esc(r.claim_id||'—')}</dd>
+      <dt>Status</dt><dd><span class="b ba">${esc(r.status||'RUNNING')}</span></dd>
+      <dt>WS URL</dt><dd class="td-m" style="word-break:break-all">${esc(r.ws_url||'—')}</dd>`;
+    // Populate thread selector and pre-select this thread
+    const existingSel = [...$('#l3-tid-sel').options].map(o=>o.value);
+    if(!existingSel.includes(r.thread_id)) {
+      const opt = document.createElement('option');
+      opt.value = r.thread_id; opt.textContent = r.thread_id;
+      $('#l3-tid-sel').appendChild(opt);
+    }
+    $('#l3-tid-sel').value = r.thread_id;
+    $('#l3-run-ws-btn').onclick = () => {
+      goVTab('l3-vnav','l3-stream');
+      l3WsConnect();
+    };
+    S.l3.threadId = r.thread_id;
+    toast(`L3 thread ${r.thread_id} running — connect WS to stream.`,'ok',5000);
+    loadL3Status();
+  } catch(e) {
+    $('#l3-run-st').textContent = 'Failed: '+e.message;
+    toast('L3 submit failed: '+e.message,'err');
+  } finally { btn.disabled=false; }
+}
+
+// Populate policy selector in Submit tab (mirrors main form)
+function l3PopulatePolSel() {
+  const pol = $('#f-pol');
+  const l3  = $('#l3-pol');
+  if(!pol || !l3) return;
+  const cur = l3.value;
+  l3.innerHTML = pol.innerHTML;
+  if(cur) l3.value = cur;
 }
 
 /* ═══ INIT ══════════════════════════════════════════════ */

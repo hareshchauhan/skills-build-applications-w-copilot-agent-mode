@@ -47,8 +47,8 @@ import datetime as dt
 from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, List, Optional
 
-from fnol_runtime import BoundedStore
 from fnol_settings import settings
+from fnol_state_backend import make_store, StateBackend
 
 AGENT_ID      = "GOV"
 AGENT_NAME    = "Governance Layer"
@@ -150,14 +150,16 @@ class StateAddendum:
 # In-memory stores
 # ───────────────────────────────────────────────────────────────────────────
 
-_DECISION_LOG: BoundedStore = BoundedStore(
+_DECISION_LOG: StateBackend = make_store(
+    "decision_log",
     max_size=20_000,
     ttl_seconds=90 * 24 * 3600,   # 90 days — exceeds most state exam cycles
 )
 # Maps claim_id → list of entry_ids (ordered)
 _CLAIM_INDEX: Dict[str, List[str]] = {}
 
-_BIAS_STORE: BoundedStore = BoundedStore(
+_BIAS_STORE: StateBackend = make_store(
+    "bias_store",
     max_size=10_000,
     ttl_seconds=365 * 24 * 3600,
 )

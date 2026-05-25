@@ -53,7 +53,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 from fnol_llm_adapter import complete as llm_complete, resolve_provider
-from fnol_runtime import BoundedStore
+from fnol_state_backend import make_store, StateBackend
 from fnol_settings import settings
 
 log = logging.getLogger("fnol.geo_supplier")
@@ -418,8 +418,8 @@ def _llm_assignment_rationale(
 # ───────────────────────────────────────────────────────────────────────────
 # Stores
 # ───────────────────────────────────────────────────────────────────────────
-_RESULT_STORE: BoundedStore = BoundedStore(max_size=2048, ttl_seconds=86400)
-_CLAIM_IDX:    BoundedStore = BoundedStore(max_size=2048, ttl_seconds=86400)
+_RESULT_STORE: StateBackend = make_store("geo_results",  max_size=2048, ttl_seconds=86400)
+_CLAIM_IDX:    StateBackend = make_store("geo_claim_idx", max_size=2048, ttl_seconds=86400)
 
 # ───────────────────────────────────────────────────────────────────────────
 # Main Entry Point
