@@ -356,6 +356,22 @@ textarea.fi{resize:vertical;min-height:58px}
 .modal-box p{font-size:11.5px;color:var(--g6);margin-bottom:12px;line-height:1.5}
 .modal-foot{display:flex;gap:6px;justify-content:flex-end;margin-top:12px}
 
+/* ── TELEMATICS CONTEXT BAR (A9 Co-Pilot) ───────────────── */
+#cop-tel-bar{padding:6px 11px 5px;border-bottom:1px solid var(--rule);background:var(--sk-s);flex-shrink:0;display:none}
+#cop-tel-bar.high-sev{background:var(--re-s);border-bottom-color:#fca5a5}
+.tel-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-height:18px}
+.tel-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:8px;font-family:var(--mono);font-size:7.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.tel-badge.sev-hi{background:var(--re-m);color:#fff}
+.tel-badge.sev-med{background:var(--am-m);color:#fff}
+.tel-badge.sev-ok{background:var(--sk);color:#fff}
+.tel-kv{font-family:var(--mono);font-size:8px;color:var(--g6);white-space:nowrap}
+.tel-kv b{color:var(--g9);font-weight:600}
+.tel-quick{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.q-chip{padding:2px 8px;border-radius:10px;border:1px solid var(--acc-m);background:var(--acc-s);color:var(--acc-m);font-size:8px;font-family:var(--mono);cursor:pointer;transition:background .12s,color .12s;line-height:1.5}
+.q-chip:hover{background:var(--acc-m);color:#fff}
+.chip{padding:1px 6px;border-radius:6px;border:1px solid var(--rule2);background:var(--w0);font-size:8.5px;color:var(--g6);font-family:var(--mono);cursor:pointer;transition:background .1s}
+.chip:hover{background:var(--acc-s);border-color:var(--acc-m);color:var(--acc)}
+
 /* ── RESPONSIVE ───────────────────────────────────────── */
 @media(max-width:1100px){.hero{grid-template-columns:1fr}.hero-r{border-top:1px solid var(--rule);border-left:none}.rkpis{grid-template-columns:1fr 1fr}}
 @media(max-width:900px){.cop-split{grid-template-columns:1fr}.cv-split{grid-template-columns:1fr}.g3,.g4{grid-template-columns:1fr 1fr}}
@@ -451,6 +467,7 @@ textarea.fi{resize:vertical;min-height:58px}
       <button class="btn btn-s" id="d1">🚗 Rear-end · TX</button>
       <button class="btn btn-s" id="d2">⚠️ Fraud · GA</button>
       <button class="btn btn-s" id="d3">💥 Total Loss · TX</button>
+      <button class="btn btn-s" id="d4">📡 OEM Crash · Full Tel</button>
     </div>
 
     <div id="sub-banner"></div>
@@ -551,14 +568,60 @@ textarea.fi{resize:vertical;min-height:58px}
             <div class="fld"><label>3rd Party Policy #</label><input class="fi" type="text" id="f-tpp"/></div>
           </div>
 
-          <div class="ssep"><span class="si">📡</span><span class="sl">Telematics (S0)</span><span class="sln"></span></div>
+          <div class="ssep"><span class="si">📡</span><span class="sl">Telematics (S0) · ACORD Gap 6</span><span class="sln"></span></div>
+          <!-- Core signals -->
           <div class="g4">
             <div class="ck"><input type="checkbox" id="t-cr"/><label for="t-cr">Crash Alert</label></div>
             <div class="fld"><label>Delta-V (mph)</label><input class="fi" type="number" id="t-dv" min="0" max="200" step="0.1" value="0"/></div>
-            <div class="fld"><label>Impact Severity (0-10)</label><input class="fi" type="number" id="t-is" min="0" max="10" step="0.1" value="0"/></div>
+            <div class="fld"><label>Impact Severity (0–10)</label><input class="fi" type="number" id="t-is" min="0" max="10" step="0.1" value="0"/></div>
             <div style="display:flex;gap:6px">
               <div class="ck" style="flex:1"><input type="checkbox" id="t-ab"/><label for="t-ab">Airbag</label></div>
               <div class="ck" style="flex:1"><input type="checkbox" id="t-cn"/><label for="t-cn">Consent</label></div>
+            </div>
+          </div>
+          <!-- ACORD Gap 6 extended fields -->
+          <div class="g4" style="margin-top:7px">
+            <div class="fld">
+              <label>Notification Source</label>
+              <select class="fi" id="t-src">
+                <option value="UNKNOWN">UNKNOWN</option>
+                <option value="OEM">OEM (OnStar / FordPass / Tesla)</option>
+                <option value="TELEMATICS_APP">Telematics App (Arity / CMT)</option>
+                <option value="IVR">IVR Self-Report</option>
+                <option value="MANUAL">Manual Entry</option>
+                <option value="API">API / Machine-to-Machine</option>
+              </select>
+            </div>
+            <div class="fld">
+              <label>Data Scope</label>
+              <select class="fi" id="t-scope">
+                <option value="NONE">NONE — no consent</option>
+                <option value="FULL">FULL — all signals permitted</option>
+                <option value="IMPACT_ONLY">IMPACT_ONLY — no location</option>
+                <option value="LOCATION_ONLY">LOCATION_ONLY — no impact</option>
+              </select>
+            </div>
+            <div class="fld">
+              <label>Speed at Impact (mph)</label>
+              <input class="fi" type="number" id="t-spd" min="0" max="200" step="0.1" placeholder="45.0"/>
+            </div>
+            <div class="ck" style="align-self:flex-end;padding-bottom:4px">
+              <input type="checkbox" id="t-sb"/>
+              <label for="t-sb">Seatbelt Deployed</label>
+            </div>
+          </div>
+          <div class="g4" style="margin-top:7px">
+            <div class="fld">
+              <label>GPS Latitude</label>
+              <input class="fi" type="number" id="t-lat" step="0.000001" placeholder="30.267153"/>
+            </div>
+            <div class="fld">
+              <label>GPS Longitude</label>
+              <input class="fi" type="number" id="t-lon" step="0.000001" placeholder="-97.743061"/>
+            </div>
+            <div class="fld" style="grid-column:span 2">
+              <label>OEM Event ID</label>
+              <input class="fi" id="t-oem" placeholder="ONSTAR-20260519-001234"/>
             </div>
           </div>
 
@@ -585,6 +648,7 @@ textarea.fi{resize:vertical;min-height:58px}
               <button class="btn btn-s" id="r-cop">🤖 Open Co-Pilot</button>
               <button class="btn btn-s" id="r-docassist" style="display:none">📄 View Documents</button>
               <button class="btn btn-s" id="r-vr" style="display:none">🔎 Vendor Reports</button>
+              <button class="btn btn-s" id="r-s0-badge" style="display:none;background:var(--re-s);color:var(--re);border-color:var(--re-m)">🚨 High-Severity Crash</button>
               <button class="btn btn-s" id="r-siu" style="display:none;background:var(--re-s);color:var(--re);border-color:var(--re-m)">🔴 View SIU Case</button>
               <button class="btn btn-g" id="r-new">+ New FNOL</button>
             </div>
@@ -646,6 +710,11 @@ textarea.fi{resize:vertical;min-height:58px}
         <div class="card-hd" style="padding:8px 13px;flex-shrink:0">
           <div><div class="eyebrow">A9 · Adjuster Co-Pilot</div><div class="card-title" id="cop-ttl" style="font-size:13px">Select a claim</div></div>
           <div class="card-acts"><button class="btn btn-g" id="cop-alrt" style="display:none">🔔 Alerts</button></div>
+        </div>
+        <!-- S0 Telematics context bar — populated by openCop() -->
+        <div id="cop-tel-bar">
+          <div class="tel-row" id="cop-tel-row"></div>
+          <div class="tel-quick" id="cop-tel-chips"></div>
         </div>
         <div class="chat-body" id="cop-body"><div class="empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>Select a claim to start.</p></div></div>
         <div class="chat-foot">
@@ -1321,6 +1390,8 @@ $('#d1').onclick = () => {
   sf('f-drv',1); sf('f-inj',1); sf('f-isv','MINOR'); sf('f-lib',1); sf('f-rby',1);
   sf('f-tpc','ACME Mutual'); sf('f-tpp','ACM-7782-99');
   sf('t-cr',1); sf('t-dv','9.5'); sf('t-is','3.2'); sf('t-cn',1); sf('f-sfd',0);
+  sf('t-src','TELEMATICS_APP'); sf('t-scope','IMPACT_ONLY'); sf('t-spd','28'); sf('t-sb',0);
+  sf('t-lat',''); sf('t-lon',''); sf('t-oem','');
   toast('Demo loaded.','info');
 };
 $('#d2').onclick = () => {
@@ -1330,6 +1401,8 @@ $('#d2').onclick = () => {
   sf('f-est','9200'); sf('f-acv','12000'); sf('f-vcl','STANDARD'); sf('f-pc','1'); sf('f-pq','0.41');
   sf('f-drv',0); sf('f-iso',1); sf('f-att',1); sf('f-lib',1); sf('f-inj',0);
   sf('t-cr',0); sf('t-dv','0'); sf('t-is','0'); sf('t-cn',0); sf('f-sfd',1);
+  sf('t-src','UNKNOWN'); sf('t-scope','NONE'); sf('t-spd',''); sf('t-sb',0);
+  sf('t-lat',''); sf('t-lon',''); sf('t-oem','');
   toast('Fraud demo loaded — triggers A12 SIU Case Builder (CRITICAL band).','info',5000);
 };
 $('#d3').onclick = () => {
@@ -1340,7 +1413,21 @@ $('#d3').onclick = () => {
   sf('f-drv',0); sf('f-inj',1); sf('f-isv','SERIOUS'); sf('f-lib',1); sf('f-rby',1);
   sf('f-tpc','Statewide Auto'); sf('f-tpp','SWA-101-22');
   sf('t-cr',1); sf('t-dv','28.4'); sf('t-is','8.7'); sf('t-ab',1); sf('t-cn',1); sf('f-sfd',0);
-  toast('Total loss demo loaded — triggers A11.','info');
+  sf('t-src','OEM'); sf('t-scope','FULL'); sf('t-spd','62'); sf('t-sb',1);
+  sf('t-lat','30.2672'); sf('t-lon','-97.7431'); sf('t-oem','ONSTAR-20260519-009871');
+  toast('Total loss demo loaded — triggers A11. OEM telematics with FULL scope set.','info',5000);
+};
+$('#d4').onclick = () => {
+  sf('f-pol','POC-POL-00123'); sf('f-dt',nowL()); sf('f-cause','HEAD_ON_COLLISION');
+  sf('f-loc','US-290 E, Austin TX'); sf('f-desc','OEM crash alert received. Vehicle struck centre barrier at highway speed. Multiple airbag deployment. Both occupants transported to ER. Vehicle inoperable.');
+  sf('f-rn','Carlos Medina'); sf('f-rp','+1-512-555-0244'); sf('f-ten','1080'); sf('f-pri','0');
+  sf('f-est','38000'); sf('f-acv','41000'); sf('f-vcl','STANDARD'); sf('f-pc','14'); sf('f-pq','0.93');
+  sf('f-drv',0); sf('f-inj',1); sf('f-isv','SERIOUS'); sf('f-lib',1); sf('f-rby',0);
+  sf('f-tpc',''); sf('f-tpp','');
+  sf('t-cr',1); sf('t-dv','34.2'); sf('t-is','9.1'); sf('t-ab',1); sf('t-cn',1); sf('f-sfd',0);
+  sf('t-src','OEM'); sf('t-scope','FULL'); sf('t-spd','67'); sf('t-sb',1);
+  sf('t-lat','30.3215'); sf('t-lon','-97.6489'); sf('t-oem','FORDPASS-20260519-002847');
+  toast('OEM Crash demo — FULL telematics, high severity (9.1/10), triggers S0 high-severity + A9 field-dispatch recommendation.','info',6000);
 };
 
 /* ═══ SUBMIT ════════════════════════════════════════════ */
@@ -1383,6 +1470,13 @@ $('#fnol-form').onsubmit = async e => {
       impact_severity_score: +$('#t-is').value||0,
       airbag_deployed: $('#t-ab').checked,
       consent_given: $('#t-cn').checked,
+      crash_notification_source_cd: $('#t-src').value||'UNKNOWN',
+      telematics_data_scope: $('#t-scope').value||'NONE',
+      vehicle_speed_mph: +$('#t-spd').value||null,
+      seatbelt_deployed: $('#t-sb').checked,
+      location_lat: +$('#t-lat').value||null,
+      location_lon: +$('#t-lon').value||null,
+      oem_event_id: $('#t-oem').value.trim()||null,
     },
   };
   const btn=$('#sub-btn'); btn.disabled=true;
@@ -1435,6 +1529,19 @@ function renderResult(out,wall) {
       toast('⚠ Salvage title detected — ACV adjustment + fraud signal flagged (S1-B).','warn',5000);
     }
   } else { vrBtn.style.display='none'; }
+  // S0 — Telematics: show high-severity badge when crash data was captured
+  const s0=(out.pipeline?.stages||[]).find(s=>s.stage_id==='S0');
+  const s0Btn=$('#r-s0-badge');
+  if(s0 && s0.status!=='error') {
+    const highSev=!!s0.outputs?.high_severity_flag;
+    const hasCrash=s0.outputs?.delta_v_mph>0||s0.outputs?.impact_severity_score>0;
+    if(highSev||hasCrash) {
+      s0Btn.style.display='';
+      s0Btn.textContent=highSev?'🚨 High-Severity Crash':'📡 Telematics Captured';
+      s0Btn.onclick=()=>{ S.sel=out.claim_id; go('copilot'); openCop(out.claim_id); };
+      if(highSev) toast('🚨 HIGH-SEVERITY crash detected — field adjuster dispatch recommended (S0 Telematics).','err',8000);
+    } else { s0Btn.style.display='none'; }
+  } else { s0Btn.style.display='none'; }
   // A12 — SIU Case Builder: show button + payment-hold badge when stage ran
   const a12=(out.pipeline?.stages||[]).find(s=>s.stage_id==='A12');
   const siuBtn=$('#r-siu');
@@ -1594,7 +1701,14 @@ async function openCop(cid) {
   $('#cop-inp').disabled=false; $('#cop-snd').disabled=false;
   $('#cop-alrt').style.display='';
   if(!S.copMsgs[cid]) S.copMsgs[cid]=[];
+  $('#cop-tel-bar').style.display='none';  // hide until data loaded
   renderCopMsgs(cid);
+  // Load S0 telematics context bar
+  try {
+    const tel=await api('/api/v1/fnol/copilot/telematics/'+cid);
+    renderTelBar(cid,tel);
+  } catch(e){ /* server may not have telematics for this claim yet */ }
+  // Load proactive alerts
   try {
     const a=await api('/api/v1/fnol/copilot/alerts/'+cid);
     (a.alerts||[]).forEach(al => {
@@ -1605,13 +1719,64 @@ async function openCop(cid) {
   } catch(e){}
 }
 
+function renderTelBar(cid, tel) {
+  const bar=$('#cop-tel-bar');
+  const s0out=tel.s0_outputs||{};
+  const tp=tel.telematics_payload||{};
+  const dv=+(s0out.delta_v_mph||0), imp=+(s0out.impact_severity_score||0);
+  const hasTel=dv>0||imp>0||s0out.high_severity_flag||
+    (tp.crash_notification_source_cd&&tp.crash_notification_source_cd!=='UNKNOWN');
+  if(!hasTel){ bar.style.display='none'; return; }
+  const highSev=!!s0out.high_severity_flag;
+  bar.className=highSev?'high-sev':'';
+  bar.style.display='';
+  const src=tp.crash_notification_source_cd||'—';
+  const scope=tp.telematics_data_scope||'—';
+  const airbag=tp.airbag_deployed?'Yes':'No';
+  const seatbelt=tp.seatbelt_deployed?'Yes':'No';
+  // Severity badge
+  let sevLabel,sevCls;
+  if(highSev){ sevLabel='🚨 HIGH SEV'; sevCls='sev-hi'; }
+  else if(imp>=5){ sevLabel='⚠ MOD SEV'; sevCls='sev-med'; }
+  else { sevLabel='📡 TELEMATICS'; sevCls='sev-ok'; }
+  // KV pairs
+  const kvParts=[
+    `<span class="tel-kv">Src: <b>${esc(src)}</b></span>`,
+    `<span class="tel-kv">Scope: <b>${esc(scope)}</b></span>`,
+    `<span class="tel-kv">Δv: <b>${dv} mph</b></span>`,
+    `<span class="tel-kv">Impact: <b>${imp}/10</b></span>`,
+    `<span class="tel-kv">Airbag: <b>${airbag}</b></span>`,
+    `<span class="tel-kv">Seatbelt: <b>${seatbelt}</b></span>`,
+  ];
+  if(tel.s1b_recall_flag) kvParts.push(`<span class="tel-kv" style="color:var(--am)">Recall: <b>⚠ NHTSA</b></span>`);
+  if(tel.s1b_salvage_flag) kvParts.push(`<span class="tel-kv" style="color:var(--am)">Salvage: <b>⚠ Flag</b></span>`);
+  if(tp.oem_event_id) kvParts.push(`<span class="tel-kv">OEM ID: <b>${esc(tp.oem_event_id)}</b></span>`);
+  $('#cop-tel-row').innerHTML=`<span class="tel-badge ${sevCls}">${sevLabel}</span>${kvParts.join('')}`;
+  // Quick-prompt chips
+  const chips=[];
+  if(highSev){ chips.push('Summarise crash severity','Dispatch field adjuster','Request medical authorisation'); }
+  else { chips.push('Summarise telematics data','Review impact data'); }
+  if(tel.s1b_recall_flag) chips.push('Open subro referral — NHTSA recall');
+  if(tel.s1b_salvage_flag) chips.push('ACV adjustment — salvage title');
+  chips.push('What are the next recommended actions?');
+  $('#cop-tel-chips').innerHTML=chips.map(c=>`<button class="q-chip" onclick="doQuickPrompt('${esc(c)}')">${esc(c)}</button>`).join('');
+  // Inject a pinned system context message for high-severity if chat is fresh
+  if(highSev && !(S.copMsgs[cid]||[]).find(m=>m.role==='system')) {
+    if(!S.copMsgs[cid]) S.copMsgs[cid]=[];
+    const oemNote=tp.oem_event_id?` · OEM: ${tp.oem_event_id}`:'';
+    S.copMsgs[cid].unshift({role:'system',
+      text:`🚨 HIGH-SEVERITY CRASH DETECTED · Δv ${dv} mph · Impact ${imp}/10 · Airbag: ${airbag} · Seatbelt: ${seatbelt} · Source: ${src} · Scope: ${scope}${oemNote}`});
+    renderCopMsgs(cid);
+  }
+}
+
 function renderCopMsgs(cid) {
   const msgs=S.copMsgs[cid]||[], el=$('#cop-body');
   if(!msgs.length){ el.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>Ask anything about ${esc(cid)}</p></div>`; return; }
   el.innerHTML=msgs.map(m => {
     const r=m.role==='user'?'user':m.role==='alert'?'alert':m.role==='system'?'system':'bot';
     const l=r==='user'?'You':r==='alert'?'⚡ Alert':r==='system'?'System':'Co-Pilot (A9)';
-    const chips=(m.suggested_actions||[]).map(a=>`<div class="chip">${esc(a.label||a)}</div>`).join('');
+    const chips=(m.suggested_actions||[]).map(a=>`<button class="chip" onclick="doQuickPrompt('${esc(a.label||a)}')">${esc(a.label||a)}</button>`).join('');
     return `<div class="msg ${r}"><div class="msg-role">${esc(l)}</div><div class="bbl">${esc(m.text||'…')}</div>${chips?`<div class="msg-chips">${chips}</div>`:''}</div>`;
   }).join('');
   el.scrollTop=el.scrollHeight;
@@ -1630,6 +1795,14 @@ async function sendCop() {
   } catch(e){ msgs[msgs.length-1]={role:'bot',text:'Error: '+e.message}; }
   renderCopMsgs(cid);
 }
+function doQuickPrompt(text) {
+  if(!S.sel){ toast('Select a claim first.','warn'); return; }
+  const inp=$('#cop-inp');
+  inp.value=text;
+  inp.focus();
+  sendCop();
+}
+
 $('#cop-snd').onclick=sendCop;
 $('#cop-inp').onkeydown=e=>{ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){e.preventDefault();sendCop();} };
 $('#cop-alrt').onclick=()=>{ if(S.sel) openCop(S.sel); };

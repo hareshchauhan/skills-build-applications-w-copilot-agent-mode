@@ -325,16 +325,31 @@ def policy_lookup(req: PolicyLookupRequest,
         raise _client_error(f"Policy {req.policy_number} not found", 404)
     return pol
 
+def _enrich_record_with_intake(record: dict, pipeline: Optional[dict]) -> dict:
+    """Merge original intake payload (claim_payload) into the SOR record.
+    The SOR record wins for any key they share (claim_id, status, etc.),
+    but the intake payload provides fields the SOR may not store — notably
+    the telematics nested object (ACORD Gap 6) and vehicle/injury details.
+    """
+    if not pipeline:
+        return record
+    intake = pipeline.get("claim_payload") or {}
+    # intake first so SOR fields take precedence on collision
+    return {**intake, **record}
+
+
 @app.post("/api/v1/fnol/copilot")
 def copilot_chat(req: CoPilotRequest,
                  _api_key: str = Depends(rate_limited)):
     sor = get_sor_adapter()
-    record = sor.get_claim(req.claim_id)
+    record = sor.get_claim(req.claim_id) or {}
     pipeline = _PIPELINE_TRACES.get(req.claim_id)
-    if not record or not pipeline:
+    if not record and not pipeline:
         raise _client_error(f"No claim/pipeline for {req.claim_id}", 404)
+    # Enrich SOR record with full intake payload (includes telematics, ACORD Gap 6)
+    record = _enrich_record_with_intake(record, pipeline)
     try:
-        resp = copilot.chat(req.question, record, pipeline)
+        resp = copilot.chat(req.question, record, pipeline or {})
     except Exception as e:
         raise _server_error("copilot.chat failed", e)
     return resp.to_dict()
@@ -343,11 +358,51 @@ def copilot_chat(req: CoPilotRequest,
 def copilot_alerts(claim_id: str,
                    _api_key: str = Depends(require_api_key)):
     sor = get_sor_adapter()
-    record = sor.get_claim(claim_id)
+    record = sor.get_claim(claim_id) or {}
     pipeline = _PIPELINE_TRACES.get(claim_id)
-    if not record or not pipeline:
+    if not record and not pipeline:
         raise _client_error(f"No claim/pipeline for {claim_id}", 404)
-    return {"claim_id": claim_id, "alerts": copilot.proactive_alerts(record, pipeline)}
+    record = _enrich_record_with_intake(record, pipeline)
+    return {"claim_id": claim_id, "alerts": copilot.proactive_alerts(record, pipeline or {})}
+
+@app.get("/api/v1/fnol/copilot/telematics/{claim_id}")
+def copilot_telematics(claim_id: str,
+                       _api_key: str = Depends(require_api_key)):
+    """Return structured telematics + vendor report context for the Co-Pilot UI panel.
+    This is the dedicated data feed for the S0 telematics context card — keeps the
+    copilot/chat endpoint lightweight.
+    """
+    pipeline = _PIPELINE_TRACES.get(claim_id)
+    if not pipeline:
+        raise _client_error(f"No pipeline trace for {claim_id}", 404)
+    stages = {s["stage_id"]: s for s in pipeline.get("stages", [])}
+    s0     = stages.get("S0", {})
+    s1b    = stages.get("S1B", {})
+    intake = pipeline.get("claim_payload") or {}
+    tel    = intake.get("telematics") or {}
+    return {
+        "claim_id":          claim_id,
+        "s0_status":         s0.get("status", "skipped"),
+        "s0_outputs":        s0.get("outputs") or {},
+        "s0_advisories":     s0.get("advisories") or [],
+        "telematics_payload": {
+            "crash_alert_received":        tel.get("crash_alert_received"),
+            "delta_v_mph":                 tel.get("delta_v_mph"),
+            "impact_severity_score":       tel.get("impact_severity_score"),
+            "airbag_deployed":             tel.get("airbag_deployed"),
+            "vehicle_speed_mph":           tel.get("vehicle_speed_mph"),
+            "seatbelt_deployed":           tel.get("seatbelt_deployed"),
+            "crash_notification_source_cd": tel.get("crash_notification_source_cd"),
+            "telematics_data_scope":       tel.get("telematics_data_scope"),
+            "oem_event_id":                tel.get("oem_event_id"),
+            "location_lat":                tel.get("location_lat"),
+            "location_lon":                tel.get("location_lon"),
+            "consent_given":               tel.get("consent_given"),
+        },
+        "s1b_recall_flag":   (s1b.get("outputs") or {}).get("vehicle_recall_indicator", False),
+        "s1b_salvage_flag":  (s1b.get("outputs") or {}).get("salvage_title_flag", False),
+        "s1b_fraud_delta":   (s1b.get("outputs") or {}).get("fraud_signal_delta", 0.0),
+    }
 
 
 # ───────────────────────────────────────────────────────────────────────────
