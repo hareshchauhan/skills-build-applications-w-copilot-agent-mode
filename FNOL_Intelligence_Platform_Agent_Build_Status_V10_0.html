@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>FNOL Intelligence Platform · Build Status V10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════════════════════════
+   DESIGN TOKENS — LIGHT / ENTERPRISE PRECISION
+══════════════════════════════════════════════════════ */
+:root{
+  /* Canvas */
+  --c0:#ffffff; --c1:#f7f7f8; --c2:#efeff1; --c3:#e2e2e6; --c4:#c8c8d0;
+  /* Text */
+  --t1:#0a0a0f; --t2:#2c2c38; --t3:#55556a; --t4:#8888a0; --t5:#aaaabf;
+  /* Brand */
+  --brand:#1a1aff; --brand-l:#e8e8ff; --brand-m:#4444ff;
+  /* States */
+  --done:#0d8050; --done-l:#e6f5ef; --done-b:#b8e3ce;
+  --prog:#c07800; --prog-l:#fff7e6; --prog-b:#ffd98a;
+  --todo:#666680; --todo-l:#f0f0f4; --todo-b:#d0d0e0;
+  --block:#cc2200; --block-l:#fff0ed; --block-b:#ffbdb0;
+  --risk-h:#cc2200; --risk-m:#c07800; --risk-l:#0d8050;
+  /* Accent strips */
+  --a1:#1a1aff; --a2:#7700cc; --a3:#0077cc; --a4:#007755; --a5:#cc5500;
+  /* Layout */
+  --sb:230px;
+  --top:52px;
+  --r:4px; --r2:8px;
+  /* Fonts */
+  --mono:'IBM Plex Mono',monospace;
+  --head:'Syne',sans-serif;
+  --body:'Instrument Sans',sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--c1);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select{font-family:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--c2)}
+::-webkit-scrollbar-thumb{background:var(--c4);border-radius:10px}
+
+/* ══ SHELL ══ */
+.shell{display:grid;grid-template-columns:var(--sb) 1fr;grid-template-rows:var(--top) 1fr;height:100vh;overflow:hidden}
+
+/* ══ TOPBAR ══ */
+.topbar{grid-column:1/-1;background:var(--c0);border-bottom:2px solid var(--t1);display:flex;align-items:center;padding:0 20px;gap:16px;position:sticky;top:0;z-index:50}
+.top-brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.top-logo{width:28px;height:28px;background:var(--t1);border-radius:3px;display:grid;place-items:center}
+.top-logo span{font-family:var(--mono);font-size:10px;font-weight:600;color:#fff;letter-spacing:-.5px}
+.top-title{font-family:var(--head);font-size:15px;font-weight:800;letter-spacing:-.3px;color:var(--t1)}
+.top-sub{font-family:var(--mono);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--t4)}
+.top-divider{width:1px;height:28px;background:var(--c3)}
+.top-pills{display:flex;gap:6px;flex:1;align-items:center}
+.pill{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:2px;border:1px solid var(--c3);color:var(--t3);background:var(--c1);white-space:nowrap;cursor:pointer;transition:all .15s}
+.pill:hover,.pill.active{background:var(--t1);color:#fff;border-color:var(--t1)}
+.top-time{font-family:var(--mono);font-size:9px;color:var(--t4);letter-spacing:.05em;margin-left:auto;white-space:nowrap}
+.top-rag{display:flex;gap:6px;align-items:center}
+.rag-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.rag-dot.g{background:var(--done)}
+.rag-dot.a{background:var(--prog)}
+.rag-dot.r{background:var(--risk-h);animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ══ SIDEBAR ══ */
+.sidebar{background:var(--c0);border-right:1px solid var(--c3);overflow-y:auto;padding:12px 8px;display:flex;flex-direction:column;gap:2px}
+.sb-sect{font-family:var(--mono);font-size:7.5px;letter-spacing:.25em;text-transform:uppercase;color:var(--t5);padding:10px 10px 4px;margin-top:4px}
+.sb-btn{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r);width:100%;text-align:left;color:var(--t3);font-size:11.5px;font-weight:500;transition:all .12s;position:relative}
+.sb-btn:hover{background:var(--c2);color:var(--t1)}
+.sb-btn.active{background:var(--c2);color:var(--t1);font-weight:600}
+.sb-btn.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:2px;background:var(--brand);border-radius:0 2px 2px 0}
+.sb-ico{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.sb-lbl{flex:1;line-height:1.3}
+.sb-badge{font-family:var(--mono);font-size:8px;padding:1px 5px;border-radius:2px;font-weight:600;flex-shrink:0}
+.sb-badge.done{background:var(--done-l);color:var(--done)}
+.sb-badge.prog{background:var(--prog-l);color:var(--prog)}
+.sb-badge.new{background:var(--brand-l);color:var(--brand)}
+
+/* ══ MAIN CONTENT ══ */
+.main{overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:20px;background:var(--c1)}
+
+/* ══ SECTION HEADER ══ */
+.sec-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.sec-title{font-family:var(--head);font-size:18px;font-weight:800;letter-spacing:-.4px;color:var(--t1)}
+.sec-sub{font-family:var(--mono);font-size:8.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--t4)}
+.sec-line{flex:1;height:1px;background:var(--c3);margin-left:8px}
+
+/* ══ CARDS ══ */
+.card{background:var(--c0);border:1px solid var(--c3);border-radius:var(--r2);overflow:hidden}
+.card-head{padding:12px 16px 10px;border-bottom:1px solid var(--c2);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-family:var(--head);font-size:12px;font-weight:700;letter-spacing:-.1px;color:var(--t1)}
+.card-meta{font-family:var(--mono);font-size:9px;color:var(--t4);letter-spacing:.06em}
+.card-body{padding:14px 16px}
+
+/* ══ KPI GRID ══ */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.kpi-card{background:var(--c0);border:1px solid var(--c3);border-radius:var(--r2);padding:16px;position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,var(--brand))}
+.kpi-num{font-family:var(--head);font-size:32px;font-weight:800;letter-spacing:-2px;color:var(--t1);line-height:1}
+.kpi-label{font-family:var(--mono);font-size:8.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--t4);margin-top:6px}
+.kpi-delta{font-family:var(--mono);font-size:9px;margin-top:4px}
+.kpi-delta.up{color:var(--done)}
+.kpi-delta.warn{color:var(--prog)}
+
+/* ══ PROGRESS BAR ══ */
+.prog-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--c2)}
+.prog-row:last-child{border-bottom:none}
+.prog-name{font-size:12px;font-weight:500;flex:0 0 180px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog-bar-wrap{flex:1;height:6px;background:var(--c2);border-radius:3px;overflow:hidden}
+.prog-bar{height:100%;border-radius:3px;transition:width .6s ease}
+.prog-pct{font-family:var(--mono);font-size:10px;font-weight:600;flex:0 0 34px;text-align:right;color:var(--t2)}
+.prog-badge{font-family:var(--mono);font-size:8px;padding:1px 6px;border-radius:2px;flex-shrink:0;font-weight:600}
+
+/* ══ STATUS BADGE ══ */
+.st{font-family:var(--mono);font-size:8px;font-weight:600;padding:2px 7px;border-radius:2px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.st.done{background:var(--done-l);color:var(--done);border:1px solid var(--done-b)}
+.st.prog{background:var(--prog-l);color:var(--prog);border:1px solid var(--prog-b)}
+.st.todo{background:var(--todo-l);color:var(--todo);border:1px solid var(--todo-b)}
+.st.block{background:var(--block-l);color:var(--block);border:1px solid var(--block-b)}
+.st.new{background:var(--brand-l);color:var(--brand);border:1px solid #c0c0ff}
+
+/* ══ TABLE ══ */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--t4);padding:8px 10px;text-align:left;border-bottom:2px solid var(--c3);white-space:nowrap;background:var(--c1)}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--c2);color:var(--t2);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--c1)}
+
+/* ══ AGENT CARD GRID ══ */
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.agent-card{background:var(--c0);border:1px solid var(--c3);border-radius:var(--r2);padding:14px 16px;border-left:3px solid var(--accent,var(--c3));transition:all .15s}
+.agent-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.agent-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.agent-name{font-family:var(--head);font-size:12.5px;font-weight:700;color:var(--t1);line-height:1.3}
+.agent-stage{font-family:var(--mono);font-size:8px;color:var(--t5);letter-spacing:.1em;margin-top:1px}
+.agent-mini-bar{height:4px;background:var(--c2);border-radius:2px;margin:8px 0 6px;overflow:hidden}
+.agent-mini-fill{height:100%;border-radius:2px;background:var(--accent,var(--brand))}
+.agent-meta{display:flex;justify-content:space-between;align-items:center}
+.agent-pct{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--t1)}
+.agent-deps{font-size:10px;color:var(--t4)}
+
+/* ══ SPRINT BOARD ══ */
+.sprint-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sprint-col{background:var(--c1);border-radius:var(--r2);padding:12px}
+.sprint-col-head{font-family:var(--head);font-size:11px;font-weight:700;letter-spacing:-.2px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sprint-task{background:var(--c0);border:1px solid var(--c3);border-radius:var(--r);padding:8px 10px;margin-bottom:6px;font-size:11px;color:var(--t2);display:flex;flex-direction:column;gap:3px}
+.sprint-task-eng{font-family:var(--mono);font-size:8px;color:var(--t4);letter-spacing:.06em}
+.sprint-task-pts{font-family:var(--mono);font-size:9px;font-weight:600;color:var(--t3)}
+
+/* ══ RISK TABLE ══ */
+.risk-impact{font-family:var(--mono);font-size:9px;font-weight:600;padding:2px 7px;border-radius:2px}
+.risk-impact.high{background:var(--block-l);color:var(--block)}
+.risk-impact.med{background:var(--prog-l);color:var(--prog)}
+.risk-impact.low{background:var(--done-l);color:var(--done)}
+
+/* ══ MINI CHART BARS ══ */
+.chart-bars{display:flex;align-items:flex-end;gap:4px;height:60px;padding-top:4px}
+.chart-bar-col{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.chart-bar{width:100%;border-radius:2px 2px 0 0;background:var(--brand);min-height:3px;transition:height .4s ease}
+.chart-bar-label{font-family:var(--mono);font-size:7.5px;color:var(--t5);text-align:center}
+
+/* ══ DOUGHNUT ══ */
+.donut-wrap{display:flex;align-items:center;gap:16px}
+.donut-legend{display:flex;flex-direction:column;gap:5px}
+.donut-item{display:flex;align-items:center;gap:6px;font-size:11px}
+.donut-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ══ INTEGRATION GRID ══ */
+.int-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.int-card{background:var(--c0);border:1px solid var(--c3);border-radius:var(--r2);padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.int-head{display:flex;align-items:center;justify-content:space-between}
+.int-name{font-size:12px;font-weight:600;color:var(--t1)}
+.int-detail{font-size:10px;color:var(--t3)}
+.int-bar{height:4px;background:var(--c2);border-radius:2px;overflow:hidden}
+.int-fill{height:100%;border-radius:2px}
+
+/* ══ QUALITY GATE ══ */
+.gate-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.gate{border:1px solid var(--c3);border-radius:var(--r);padding:10px 12px;display:flex;align-items:center;gap:8px}
+.gate-icon{font-size:16px;flex-shrink:0}
+.gate-name{font-size:11.5px;font-weight:500;color:var(--t2)}
+.gate-status{font-family:var(--mono);font-size:8px;color:var(--t4)}
+
+/* ══ RACI TABLE ══ */
+.raci-cell{text-align:center;font-family:var(--mono);font-size:10px;font-weight:700}
+.raci-R{color:var(--brand);background:var(--brand-l)}
+.raci-A{color:#7700cc;background:#f5e6ff}
+.raci-C{color:var(--done);background:var(--done-l)}
+.raci-I{color:var(--t4);background:var(--c2)}
+
+/* ══ TABS ══ */
+.view{display:none}
+.view.active{display:flex;flex-direction:column;gap:20px}
+
+/* ══ FILTER BAR ══ */
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filter-bar select{font-family:var(--mono);font-size:10px;padding:5px 9px;border:1px solid var(--c3);border-radius:var(--r);background:var(--c0);color:var(--t2)}
+.filter-label{font-family:var(--mono);font-size:9px;color:var(--t4);letter-spacing:.1em;text-transform:uppercase}
+
+/* ══ TIMELINE ══ */
+.timeline{position:relative;padding-left:20px}
+.timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:2px;background:var(--c3)}
+.tl-item{position:relative;margin-bottom:14px}
+.tl-dot{position:absolute;left:-17px;top:3px;width:10px;height:10px;border-radius:50%;border:2px solid var(--c0);z-index:1}
+.tl-content{font-size:11.5px;color:var(--t2)}
+.tl-date{font-family:var(--mono);font-size:8.5px;color:var(--t5);margin-top:1px}
+.tl-phase{font-family:var(--head);font-size:10px;font-weight:700;color:var(--t3);margin-top:2px}
+
+/* ══ BURN DOWN ══ */
+#burndown-canvas{width:100%;height:140px}
+
+/* ══ RELEASE READINESS ══ */
+.readiness-bar{display:flex;height:24px;border-radius:4px;overflow:hidden;margin:10px 0}
+.readiness-seg{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;font-weight:600;color:#fff;transition:width .5s ease}
+
+/* ══ SCROLLABLE PANEL ══ */
+.scroll-panel{overflow-x:auto}
+
+/* ══ TWO COL ══ */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* ══ TOOLTIP ══ */
+[data-tip]{position:relative;cursor:help}
+[data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--t1);color:#fff;font-family:var(--mono);font-size:9px;padding:4px 8px;border-radius:3px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s;z-index:100}
+[data-tip]:hover::after{opacity:1}
+
+/* ══ BADGE COUNTS ══ */
+.count-badges{display:flex;gap:6px;flex-wrap:wrap}
+.cb{font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px}
+
+/* ══ VELOCITY WIDGET ══ */
+.vel-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--c2)}
+.vel-row:last-child{border-bottom:none}
+.vel-label{font-size:11px;color:var(--t2);font-weight:500}
+.vel-planned{font-family:var(--mono);font-size:9px;color:var(--t4)}
+.vel-actual{font-family:var(--mono);font-size:10px;font-weight:700}
+
+/* Responsive */
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr;grid-template-rows:var(--top) auto 1fr}
+  .sidebar{display:none}
+  .sprint-grid,.two-col,.three-col{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ══ TOP BAR ══ -->
+<header class="topbar">
+  <div class="top-brand">
+    <div class="top-logo"><span>FIP</span></div>
+    <div>
+      <div class="top-title">FNOL Intelligence Platform</div>
+      <div class="top-sub">Build Status Dashboard · V10</div>
+    </div>
+  </div>
+  <div class="top-divider"></div>
+  <div class="top-pills">
+    <button class="pill active" onclick="showView('exec')">Executive</button>
+    <button class="pill" onclick="showView('agents')">Agents</button>
+    <button class="pill" onclick="showView('api')">API / Integration</button>
+    <button class="pill" onclick="showView('ux')">UX Layer</button>
+    <button class="pill" onclick="showView('workplan')">Workplan</button>
+    <button class="pill" onclick="showView('governance')">Governance</button>
+    <button class="pill" onclick="showView('risks')">Risks &amp; Gates</button>
+  </div>
+  <div class="top-rag" style="margin-left:auto">
+    <div class="rag-dot g" data-tip="Pipeline: COMPLETE"></div>
+    <div class="rag-dot g" data-tip="Governance: COMPLETE"></div>
+    <div class="rag-dot a" data-tip="Stakeholder Validation: PENDING"></div>
+    <div class="rag-dot r" data-tip="Production API Key: BLOCKED"></div>
+  </div>
+  <div class="top-time" id="clock">Refreshed: —</div>
+</header>
+
+<!-- ══ SIDEBAR ══ -->
+<nav class="sidebar">
+  <div class="sb-sect">Platform</div>
+  <button class="sb-btn active" onclick="showView('exec')">
+    <span class="sb-ico">📊</span><span class="sb-lbl">Executive Summary</span>
+  </button>
+  <button class="sb-btn" onclick="showView('agents')">
+    <span class="sb-ico">🤖</span><span class="sb-lbl">Agent Build Status</span><span class="sb-badge done">11</span>
+  </button>
+  <button class="sb-btn" onclick="showView('api')">
+    <span class="sb-ico">🔌</span><span class="sb-lbl">API &amp; Integration</span><span class="sb-badge done">75</span>
+  </button>
+  <button class="sb-btn" onclick="showView('ux')">
+    <span class="sb-ico">🖥️</span><span class="sb-lbl">UX Component Layer</span><span class="sb-badge done">9t</span>
+  </button>
+  <div class="sb-sect">Delivery</div>
+  <button class="sb-btn" onclick="showView('workplan')">
+    <span class="sb-ico">📋</span><span class="sb-lbl">Workplan &amp; Sprints</span><span class="sb-badge prog">S4</span>
+  </button>
+  <button class="sb-btn" onclick="showView('governance')">
+    <span class="sb-ico">⚖️</span><span class="sb-lbl">Governance Layer</span><span class="sb-badge done">✓</span>
+  </button>
+  <button class="sb-btn" onclick="showView('risks')">
+    <span class="sb-ico">⚠️</span><span class="sb-lbl">Risks &amp; Quality Gates</span><span class="sb-badge prog">3</span>
+  </button>
+  <div class="sb-sect">Roadmap</div>
+  <button class="sb-btn" onclick="showView('roadmap')">
+    <span class="sb-ico">🗺️</span><span class="sb-lbl">Release Roadmap</span><span class="sb-badge new">A13</span>
+  </button>
+  <div style="margin-top:auto;padding:10px 10px 0;font-family:var(--mono);font-size:7.5px;color:var(--t5);border-top:1px solid var(--c3);margin-top:12px">
+    <div>v4.1.0 · ENGINE L100-V2</div>
+    <div>75 endpoints · 39 modules</div>
+    <div>11 agents · 9 UI tabs</div>
+    <div style="margin-top:4px;color:var(--t4)">© Accenture Internal IP</div>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+<!-- ════════════════════════════════════════════
+     VIEW: EXECUTIVE SUMMARY
+════════════════════════════════════════════ -->
+<div class="view active" id="view-exec">
+
+  <div class="sec-head">
+    <span class="sec-title">Executive Summary</span>
+    <span class="sec-sub">Weighted Build Status · Sprint 4 of 6</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <!-- KPI Row 1 -->
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:var(--done)">
+      <div class="kpi-num">87<span style="font-size:18px">%</span></div>
+      <div class="kpi-label">Overall Completion</div>
+      <div class="kpi-delta up">↑ 12pp since last sprint</div>
+    </div>
+    <div class="kpi-card" style="--accent:var(--done)">
+      <div class="kpi-num">11</div>
+      <div class="kpi-label">Agents Complete</div>
+      <div class="kpi-delta up">All pipeline stages ✓</div>
+    </div>
+    <div class="kpi-card" style="--accent:var(--brand)">
+      <div class="kpi-num">75</div>
+      <div class="kpi-label">API Endpoints</div>
+      <div class="kpi-delta up">↑ 16 since v3.5.1</div>
+    </div>
+    <div class="kpi-card" style="--accent:var(--prog)">
+      <div class="kpi-num">3</div>
+      <div class="kpi-label">Open Blockers</div>
+      <div class="kpi-delta warn">1 High · 2 Medium</div>
+    </div>
+    <div class="kpi-card" style="--accent:var(--a2)">
+      <div class="kpi-num">39</div>
+      <div class="kpi-label">Python Modules</div>
+      <div class="kpi-delta up">Production-grade</div>
+    </div>
+    <div class="kpi-card" style="--accent:var(--a4)">
+      <div class="kpi-num">9</div>
+      <div class="kpi-label">UI Tabs Live</div>
+      <div class="kpi-delta up">Light SPA ✓</div>
+    </div>
+  </div>
+
+  <!-- Layer completion -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Build Status by Layer</span>
+        <span class="card-meta">Weighted</span>
+      </div>
+      <div class="card-body">
+        <div id="layer-bars"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Status Distribution</span>
+        <span class="card-meta">All 98 deliverables</span>
+      </div>
+      <div class="card-body">
+        <div class="donut-wrap">
+          <canvas id="donut-canvas" width="100" height="100"></canvas>
+          <div class="donut-legend" id="donut-legend"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Velocity + Release Readiness -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Velocity — Planned vs Actual</span>
+        <span class="card-meta">Story Points</span>
+      </div>
+      <div class="card-body" id="velocity-body"></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Release Readiness</span>
+        <span class="card-meta">POC → PROD transition</span>
+      </div>
+      <div class="card-body">
+        <div class="readiness-bar" id="readiness-bar"></div>
+        <div id="readiness-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px"></div>
+        <div style="margin-top:12px;font-family:var(--mono);font-size:9px;color:var(--t4);line-height:1.6">
+          <div>🟢 Core Pipeline + API ............ PROD-ready</div>
+          <div>🟢 Governance Layer ............... PROD-ready</div>
+          <div>🟡 Stakeholder Validation ......... PENDING</div>
+          <div>🔴 Production API Key / Auth ....... BLOCKED</div>
+          <div>🔴 Redis / OAuth2 / OpenTelemetry .. ROADMAP</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sprint burn-down -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Sprint Burn-Down · Sprint 4</span>
+      <span class="card-meta">Ideal vs Actual Remaining</span>
+    </div>
+    <div class="card-body">
+      <canvas id="burndown-canvas"></canvas>
+    </div>
+  </div>
+
+</div><!-- /view-exec -->
+
+
+<!-- ════════════════════════════════════════════
+     VIEW: AGENT BUILD STATUS
+════════════════════════════════════════════ -->
+<div class="view" id="view-agents">
+  <div class="sec-head">
+    <span class="sec-title">Agent Build Status</span>
+    <span class="sec-sub">11 Pipeline Stages · Granular Breakdown</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="filter-bar">
+    <span class="filter-label">Filter:</span>
+    <select onchange="filterAgents(this.value)">
+      <option value="all">All Agents</option>
+      <option value="done">Done</option>
+      <option value="prog">In Progress</option>
+    </select>
+  </div>
+
+  <div class="agent-grid" id="agent-grid"></div>
+
+  <!-- Dependency map -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Agent Dependency Chain</span>
+      <span class="card-meta">Pipeline Execution Order</span>
+    </div>
+    <div class="card-body scroll-panel">
+      <div style="display:flex;align-items:center;gap:0;overflow-x:auto;padding-bottom:6px" id="dep-chain"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     VIEW: API / INTEGRATION
+════════════════════════════════════════════ -->
+<div class="view" id="view-api">
+  <div class="sec-head">
+    <span class="sec-title">API &amp; Integration Layer</span>
+    <span class="sec-sub">75 Endpoints · 9 Route Modules</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="int-grid" id="int-grid"></div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Endpoint Inventory</span>
+      <span class="card-meta">All 75 routes by module</span>
+    </div>
+    <div class="card-body scroll-panel">
+      <table class="tbl" id="api-table">
+        <thead>
+          <tr>
+            <th>Module</th><th>Method</th><th>Path</th><th>Status</th><th>Auth</th><th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="api-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     VIEW: UX LAYER
+════════════════════════════════════════════ -->
+<div class="view" id="view-ux">
+  <div class="sec-head">
+    <span class="sec-title">UX Component Layer</span>
+    <span class="sec-sub">9 Tabs · Event-Driven SPA · Light Theme</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:var(--done)"><div class="kpi-num">9</div><div class="kpi-label">UI Tabs Built</div><div class="kpi-delta up">100% complete</div></div>
+    <div class="kpi-card" style="--accent:var(--done)"><div class="kpi-num">47</div><div class="kpi-label">UI Components</div><div class="kpi-delta up">Modular + reusable</div></div>
+    <div class="kpi-card" style="--accent:var(--prog)"><div class="kpi-num">82%</div><div class="kpi-label">Event Mapping</div><div class="kpi-delta warn">WebSocket pending</div></div>
+    <div class="kpi-card" style="--accent:var(--done)"><div class="kpi-num">1</div><div class="kpi-label">SPA File</div><div class="kpi-delta up">fnol_app.html · 1539 lines</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Tab Completion Status</span></div>
+      <div class="card-body" id="ux-tab-bars"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">UX Component Registry</span></div>
+      <div class="card-body" id="ux-comp-registry"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="card-title">Agent-to-UX Interaction Mapping</span><span class="card-meta">Contract completeness</span></div>
+    <div class="card-body scroll-panel">
+      <table class="tbl" id="ux-agent-map">
+        <thead><tr><th>Agent</th><th>UI Tab</th><th>API Calls</th><th>Event Type</th><th>Real-time</th><th>Status</th></tr></thead>
+        <tbody id="ux-agent-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     VIEW: WORKPLAN
+════════════════════════════════════════════ -->
+<div class="view" id="view-workplan">
+  <div class="sec-head">
+    <span class="sec-title">Engineering Workplan</span>
+    <span class="sec-sub">3-Engineer Model · Sprint 1–6</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="three-col">
+    <div class="kpi-card" style="--accent:#1a1aff">
+      <div class="kpi-num">Eng-1</div>
+      <div class="kpi-label">Backend Pipeline Lead</div>
+      <div class="kpi-delta up">14/18 tasks complete</div>
+    </div>
+    <div class="kpi-card" style="--accent:#7700cc">
+      <div class="kpi-num">Eng-2</div>
+      <div class="kpi-label">Governance &amp; Compliance</div>
+      <div class="kpi-delta up">12/14 tasks complete</div>
+    </div>
+    <div class="kpi-card" style="--accent:#007755">
+      <div class="kpi-num">Eng-3</div>
+      <div class="kpi-label">UX &amp; Integration</div>
+      <div class="kpi-delta warn">9/14 tasks complete</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="card-title">Sprint Board · Current Sprint (S4)</span></div>
+    <div class="card-body">
+      <div class="sprint-grid" id="sprint-board"></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Per-Engineer Task Completion</span></div>
+      <div class="card-body" id="eng-bars"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Sprint Timeline</span></div>
+      <div class="card-body">
+        <div class="timeline" id="sprint-timeline"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="card-title">Full Task Inventory</span><span class="card-meta">All engineers · all sprints</span></div>
+    <div class="card-body scroll-panel">
+      <table class="tbl">
+        <thead><tr><th>ID</th><th>Task</th><th>Engineer</th><th>Sprint</th><th>Points</th><th>Status</th><th>Blocked By</th></tr></thead>
+        <tbody id="task-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     VIEW: GOVERNANCE
+════════════════════════════════════════════ -->
+<div class="view" id="view-governance">
+  <div class="sec-head">
+    <span class="sec-title">Governance Layer</span>
+    <span class="sec-sub">NAIC · Colorado Reg 10-1-1 · NYDFS CLN-7 · FCRA §615</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:var(--done)"><div class="kpi-num">8</div><div class="kpi-label">Gov Modules Built</div><div class="kpi-delta up">100% complete</div></div>
+    <div class="kpi-card" style="--accent:var(--done)"><div class="kpi-num">10</div><div class="kpi-label">Model Cards</div><div class="kpi-delta up">All agents covered</div></div>
+    <div class="kpi-card" style="--accent:var(--done)"><div class="kpi-num">51</div><div class="kpi-label">State Addenda</div><div class="kpi-delta up">All 50 + DC</div></div>
+    <div class="kpi-card" style="--accent:var(--done)"><div class="kpi-num">16</div><div class="kpi-label">Gov API Endpoints</div><div class="kpi-delta up">Under /governance/*</div></div>
+    <div class="kpi-card" style="--accent:var(--done)"><div class="kpi-num">SHA256</div><div class="kpi-label">Decision Chain</div><div class="kpi-delta up">8 records · chain valid</div></div>
+    <div class="kpi-card" style="--accent:var(--done)"><div class="kpi-num">SQLite</div><div class="kpi-label">Decision Log</div><div class="kpi-delta up">Persistent backend ✓</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Governance Module Inventory</span></div>
+      <div class="card-body" id="gov-modules"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Regulatory Framework Coverage</span></div>
+      <div class="card-body" id="reg-coverage"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="card-title">RACI — Governance Accountability</span></div>
+    <div class="card-body scroll-panel">
+      <table class="tbl" id="raci-table">
+        <thead><tr><th>Capability</th><th>CRO</th><th>CCO</th><th>Head of Legal</th><th>Claims Ops</th><th>Eng Lead</th><th>Compliance</th></tr></thead>
+        <tbody id="raci-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="card-title">Bias Monitor — Proxy Attribute Variance</span><span class="card-meta">Monitoring-only · never used as input features</span></div>
+    <div class="card-body" id="bias-bars"></div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     VIEW: RISKS & QUALITY GATES
+════════════════════════════════════════════ -->
+<div class="view" id="view-risks">
+  <div class="sec-head">
+    <span class="sec-title">Risks, Blockers &amp; Quality Gates</span>
+    <span class="sec-sub">Active Items · Governance-Level Visibility</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="card-title">Active Blockers &amp; Risks</span><span class="card-meta" style="color:var(--block)">3 open items</span></div>
+    <div class="card-body scroll-panel">
+      <table class="tbl">
+        <thead><tr><th>ID</th><th>Description</th><th>Layer</th><th>Impact</th><th>Owner</th><th>Mitigation</th><th>Status</th></tr></thead>
+        <tbody id="risk-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="card-title">Quality Gates — Pre-Release Checklist</span></div>
+    <div class="card-body">
+      <div class="gate-grid" id="gate-grid"></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head"><span class="card-title">KPI Definitions</span><span class="card-meta">What defines completion</span></div>
+      <div class="card-body scroll-panel">
+        <table class="tbl">
+          <thead><tr><th>KPI</th><th>Definition</th><th>Threshold</th><th>Current</th></tr></thead>
+          <tbody id="kpi-def-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Release Readiness by Dimension</span></div>
+      <div class="card-body" id="release-dims"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     VIEW: ROADMAP
+════════════════════════════════════════════ -->
+<div class="view" id="view-roadmap">
+  <div class="sec-head">
+    <span class="sec-title">Release Roadmap</span>
+    <span class="sec-sub">POC → Carrier Pilot → Marketplace</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="card-title">Phase Timeline</span></div>
+    <div class="card-body">
+      <div class="timeline" id="phase-timeline"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="card-title">Upcoming Agents — Roadmap</span></div>
+    <div class="card-body">
+      <div class="agent-grid" id="roadmap-agents"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="card-title">Hardening Backlog</span></div>
+    <div class="card-body" id="harden-list"></div>
+  </div>
+</div>
+
+</main><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+/* ══════════════════════════════════════════════
+   DATA MODEL
+══════════════════════════════════════════════ */
+const DATA = {
+
+  layers: [
+    {name:'Core Pipeline (S0–S7, A9–A11)',  pct:100, status:'done',  color:'#0d8050'},
+    {name:'Governance Layer',               pct:100, status:'done',  color:'#0d8050'},
+    {name:'SIU Case Builder (A12)',          pct:95,  status:'done',  color:'#0d8050'},
+    {name:'API / Route Layer',              pct:100, status:'done',  color:'#0d8050'},
+    {name:'UX / SPA (9 Tabs)',              pct:100, status:'done',  color:'#0d8050'},
+    {name:'LangGraph L3 Orchestration',     pct:88,  status:'prog',  color:'#c07800'},
+    {name:'ISO / Verisk Integration',       pct:85,  status:'prog',  color:'#c07800'},
+    {name:'Stakeholder Validation',         pct:0,   status:'block', color:'#cc2200'},
+    {name:'Production Hardening (Redis/OAuth)', pct:5, status:'todo', color:'#666680'},
+  ],
+
+  distribution:{done:72, prog:16, todo:7, block:3},
+
+  velocity:[
+    {sprint:'S1', planned:42, actual:44},
+    {sprint:'S2', planned:38, actual:36},
+    {sprint:'S3', planned:45, actual:47},
+    {sprint:'S4', planned:40, actual:33},
+    {sprint:'S5', planned:35, actual:0},
+    {sprint:'S6', planned:28, actual:0},
+  ],
+
+  readiness:[
+    {label:'Core Pipeline', pct:35, color:'#0d8050'},
+    {label:'Governance',    pct:20, color:'#047857'},
+    {label:'SIU / ISO',     pct:12, color:'#0369a1'},
+    {label:'UX',            pct:15, color:'#1d4ed8'},
+    {label:'Stakeholder',   pct:8,  color:'#c07800'},
+    {label:'Hardening',     pct:10, color:'#cc2200'},
+  ],
+
+  burndown:{
+    days:['D1','D2','D3','D4','D5','D6','D7','D8','D9','D10'],
+    ideal:[40,36,32,28,24,20,16,12,8,0],
+    actual:[40,37,35,30,28,25,null,null,null,null],
+  },
+
+  agents:[
+    {id:'S0', name:'Pre-FNOL Signal Capture',     stage:'Stage S0',   pct:100, status:'done',  color:'#0d8050', deps:'Telematics/IoT', file:'fnol_workflow_engine.py'},
+    {id:'S1', name:'FNOL Intake & Validation',    stage:'Stage S1',   pct:100, status:'done',  color:'#0d8050', deps:'S0',             file:'fnol_workflow_engine.py'},
+    {id:'S2', name:'Coverage & Liability',        stage:'Stage S2',   pct:100, status:'done',  color:'#0d8050', deps:'S1',             file:'fnol_workflow_engine.py'},
+    {id:'S3', name:'Triage & Assignment',         stage:'Stage S3',   pct:100, status:'done',  color:'#0d8050', deps:'S2',             file:'fnol_workflow_engine.py'},
+    {id:'S4A',name:'Fraud Detection',             stage:'Stage S4A',  pct:100, status:'done',  color:'#0d8050', deps:'S3 (parallel)',  file:'fnol_workflow_engine.py'},
+    {id:'S4B',name:'Damage Estimation',           stage:'Stage S4B',  pct:100, status:'done',  color:'#0d8050', deps:'S3 (parallel)',  file:'fnol_workflow_engine.py'},
+    {id:'A11',name:'Total-Loss & Salvage Orch.',  stage:'Agent A11',  pct:100, status:'done',  color:'#0d8050', deps:'S4B → TL=true', file:'fnol_total_loss_agent.py'},
+    {id:'S5', name:'BI Evaluation & Liability',   stage:'Stage S5',   pct:100, status:'done',  color:'#0d8050', deps:'S4A+S4B',        file:'fnol_workflow_engine.py'},
+    {id:'S6', name:'Settlement & Payment Auth.',  stage:'Stage S6',   pct:100, status:'done',  color:'#0d8050', deps:'S5',             file:'fnol_workflow_engine.py'},
+    {id:'S7', name:'Subrogation & Recovery',      stage:'Stage S7',   pct:100, status:'done',  color:'#0d8050', deps:'S6',             file:'fnol_workflow_engine.py'},
+    {id:'A9', name:'Adjuster Co-Pilot',           stage:'Agent A9',   pct:100, status:'done',  color:'#0d8050', deps:'Post-pipeline',  file:'fnol_copilot_agent.py'},
+    {id:'A10',name:'Conversational FNOL',         stage:'Agent A10',  pct:100, status:'done',  color:'#0d8050', deps:'Independent',    file:'fnol_conversational_agent.py'},
+    {id:'A12',name:'SIU Case Builder',            stage:'Agent A12',  pct:95,  status:'prog',  color:'#c07800', deps:'S4A fraud flag', file:'fnol_siu_agent.py'},
+    {id:'GOV',name:'Governance Orchestrator',     stage:'Cross-cut',  pct:100, status:'done',  color:'#0d8050', deps:'All stages',     file:'fnol_governance_agent.py'},
+    {id:'DOC',name:'Document Assist (S1-A)',      stage:'Sub-Agent',  pct:90,  status:'prog',  color:'#c07800', deps:'S1',             file:'fnol_doc_assist_agent.py'},
+    {id:'GEO',name:'Geo Supplier Assignment',     stage:'Sub-Agent',  pct:88,  status:'prog',  color:'#c07800', deps:'S3',             file:'fnol_geo_supplier_agent.py'},
+    {id:'VRT',name:'Vendor Report Trigger',       stage:'Sub-Agent',  pct:90,  status:'prog',  color:'#c07800', deps:'S1',             file:'fnol_vendor_report_agent.py'},
+    {id:'LC', name:'Automated Line Creation',     stage:'Sub-Agent',  pct:85,  status:'prog',  color:'#c07800', deps:'S1+S2',          file:'fnol_line_creation_agent.py'},
+  ],
+
+  apiModules:[
+    {mod:'Core API Server',       file:'fnol_api_server.py',          routes:21, done:21, notes:'Claims, policy, copilot, conversation, total-loss'},
+    {mod:'Governance Routes',     file:'fnol_governance_routes.py',   routes:12, done:12, notes:'Decision log, bias, model cards, state addenda'},
+    {mod:'SIU Routes',            file:'fnol_siu_routes.py',          routes:10, done:10, notes:'Case open/close, evidence, referral, notes'},
+    {mod:'Document Assist',       file:'fnol_doc_assist_routes.py',   routes:8,  done:8,  notes:'Classification, extraction, upload'},
+    {mod:'Vendor Report Trigger', file:'fnol_vendor_report_routes.py',routes:6,  done:6,  notes:'Trigger, status, history'},
+    {mod:'Line Creation',         file:'fnol_line_creation_routes.py',routes:5,  done:5,  notes:'Automated LOB line creation'},
+    {mod:'Geo Supplier',          file:'fnol_geo_supplier_routes.py', routes:5,  done:5,  notes:'Geo-based DRP assignment'},
+    {mod:'ISO / Verisk',          file:'fnol_iso_routes.py',          routes:4,  done:4,  notes:'ClaimSearch query + cache'},
+    {mod:'LangGraph L3',          file:'fnol_v3_routes.py',           routes:4,  done:3,  notes:'Orchestration, streaming (WIP)'},
+  ],
+
+  apiEndpoints:[
+    {mod:'Core',  method:'POST', path:'/api/v1/fnol/claims',                       status:'done', auth:'API-Key', note:'Full pipeline trigger'},
+    {mod:'Core',  method:'GET',  path:'/api/v1/fnol/claims',                       status:'done', auth:'API-Key', note:'List claims'},
+    {mod:'Core',  method:'GET',  path:'/api/v1/fnol/claims/{id}',                  status:'done', auth:'API-Key', note:'Single claim'},
+    {mod:'Core',  method:'GET',  path:'/api/v1/fnol/claims/{id}/pipeline',         status:'done', auth:'API-Key', note:'Pipeline trace'},
+    {mod:'Core',  method:'POST', path:'/api/v1/fnol/policy/lookup',                status:'done', auth:'API-Key', note:'Policy lookup'},
+    {mod:'Core',  method:'GET',  path:'/api/v1/health',                            status:'done', auth:'None',    note:'Liveness + SOR status'},
+    {mod:'Core',  method:'GET',  path:'/api/v1/config',                            status:'done', auth:'API-Key', note:'UI bootstrap'},
+    {mod:'Core',  method:'POST', path:'/api/v1/fnol/copilot',                      status:'done', auth:'API-Key', note:'A9 chat turn'},
+    {mod:'Core',  method:'GET',  path:'/api/v1/fnol/copilot/alerts/{id}',          status:'done', auth:'API-Key', note:'Proactive alerts'},
+    {mod:'Core',  method:'POST', path:'/api/v1/fnol/conversation/start',           status:'done', auth:'API-Key', note:'A10 session init'},
+    {mod:'Core',  method:'POST', path:'/api/v1/fnol/conversation/turn',            status:'done', auth:'API-Key', note:'A10 turn'},
+    {mod:'Core',  method:'GET',  path:'/api/v1/fnol/conversation/{sid}',           status:'done', auth:'API-Key', note:'A10 history'},
+    {mod:'TL',    method:'POST', path:'/api/v1/fnol/total-loss/evaluate',          status:'done', auth:'API-Key', note:'A11 evaluate'},
+    {mod:'TL',    method:'POST', path:'/api/v1/fnol/total-loss/assign-salvage',    status:'done', auth:'API-Key', note:'Vendor assign'},
+    {mod:'TL',    method:'POST', path:'/api/v1/fnol/total-loss/owner-decision',    status:'done', auth:'API-Key', note:'Owner retention'},
+    {mod:'TL',    method:'POST', path:'/api/v1/fnol/total-loss/letter',            status:'done', auth:'API-Key', note:'Customer letter'},
+    {mod:'TL',    method:'GET',  path:'/api/v1/fnol/total-loss/{eid}',             status:'done', auth:'API-Key', note:'Get evaluation'},
+    {mod:'TL',    method:'GET',  path:'/api/v1/fnol/total-loss/by-claim/{id}',     status:'done', auth:'API-Key', note:'By claim'},
+    {mod:'TL',    method:'GET',  path:'/api/v1/fnol/total-loss',                   status:'done', auth:'API-Key', note:'List evaluations'},
+    {mod:'Gov',   method:'GET',  path:'/api/v1/fnol/governance/health',            status:'done', auth:'API-Key', note:'Gov health'},
+    {mod:'Gov',   method:'GET',  path:'/api/v1/fnol/governance/decisions',         status:'done', auth:'API-Key', note:'Decision log'},
+    {mod:'Gov',   method:'GET',  path:'/api/v1/fnol/governance/decisions/{id}/chain',status:'done',auth:'API-Key',note:'SHA-256 chain'},
+    {mod:'Gov',   method:'POST', path:'/api/v1/fnol/governance/decisions',         status:'done', auth:'API-Key', note:'Log decision'},
+    {mod:'Gov',   method:'GET',  path:'/api/v1/fnol/governance/bias',              status:'done', auth:'API-Key', note:'Bias stats'},
+    {mod:'Gov',   method:'POST', path:'/api/v1/fnol/governance/bias',              status:'done', auth:'API-Key', note:'Record proxy'},
+    {mod:'Gov',   method:'GET',  path:'/api/v1/fnol/governance/bias/evaluate',     status:'done', auth:'API-Key', note:'Bias evaluation'},
+    {mod:'Gov',   method:'GET',  path:'/api/v1/fnol/governance/model-cards',       status:'done', auth:'API-Key', note:'List model cards'},
+    {mod:'Gov',   method:'GET',  path:'/api/v1/fnol/governance/model-cards/{id}',  status:'done', auth:'API-Key', note:'Single model card'},
+    {mod:'Gov',   method:'GET',  path:'/api/v1/fnol/governance/state-addenda',     status:'done', auth:'API-Key', note:'List 51 addenda'},
+    {mod:'Gov',   method:'GET',  path:'/api/v1/fnol/governance/state-addenda/{st}',status:'done', auth:'API-Key', note:'State addendum'},
+    {mod:'Gov',   method:'POST', path:'/api/v1/fnol/governance/adverse-action',    status:'done', auth:'API-Key', note:'FCRA §615 template'},
+    {mod:'SIU',   method:'GET',  path:'/api/v1/fnol/siu',                         status:'done', auth:'API-Key', note:'List SIU cases'},
+    {mod:'SIU',   method:'POST', path:'/api/v1/fnol/siu/open',                    status:'done', auth:'API-Key', note:'Open SIU case'},
+    {mod:'SIU',   method:'GET',  path:'/api/v1/fnol/siu/by-claim/{id}',           status:'done', auth:'API-Key', note:'Case by claim'},
+    {mod:'SIU',   method:'POST', path:'/api/v1/fnol/siu/evidence',                status:'done', auth:'API-Key', note:'Add evidence'},
+    {mod:'SIU',   method:'POST', path:'/api/v1/fnol/siu/notes',                   status:'done', auth:'API-Key', note:'Save notes'},
+    {mod:'SIU',   method:'POST', path:'/api/v1/fnol/siu/referral',                status:'done', auth:'API-Key', note:'Generate referral'},
+    {mod:'SIU',   method:'POST', path:'/api/v1/fnol/siu/close',                   status:'done', auth:'API-Key', note:'Close case'},
+    {mod:'ISO',   method:'POST', path:'/api/v1/fnol/iso/query',                   status:'done', auth:'Rate-ltd',note:'ClaimSearch query'},
+    {mod:'ISO',   method:'GET',  path:'/api/v1/fnol/iso/cache',                   status:'done', auth:'API-Key', note:'Cache stats'},
+    {mod:'L3',    method:'POST', path:'/api/v1/fnol/langgraph/run',               status:'done', auth:'API-Key', note:'L3 orchestration'},
+    {mod:'L3',    method:'GET',  path:'/api/v1/fnol/langgraph/status',            status:'prog', auth:'API-Key', note:'WIP'},
+  ],
+
+  uxTabs:[
+    {tab:'FNOL Intake',              pct:100, events:8,  status:'done'},
+    {tab:'Pipeline Trace',           pct:100, events:5,  status:'done'},
+    {tab:'Adjuster Co-Pilot (A9)',   pct:100, events:6,  status:'done'},
+    {tab:'Conversational FNOL (A10)',pct:100, events:4,  status:'done'},
+    {tab:'Total Loss & Salvage (A11)',pct:100, events:7, status:'done'},
+    {tab:'SIU Case Builder (A12)',   pct:90,  events:6,  status:'prog'},
+    {tab:'ISO / Verisk',             pct:85,  events:3,  status:'prog'},
+    {tab:'Governance',               pct:100, events:5,  status:'done'},
+    {tab:'Settings',                 pct:100, events:2,  status:'done'},
+  ],
+
+  uxComponents:[
+    {comp:'API Key Modal',      type:'Auth',       status:'done'},
+    {comp:'Sidebar Nav',        type:'Shell',      status:'done'},
+    {comp:'Top Bar',            type:'Shell',      status:'done'},
+    {comp:'Claim Form',         type:'Form',       status:'done'},
+    {comp:'Pipeline Trace View',type:'Display',    status:'done'},
+    {comp:'Progress Bar',       type:'Primitive',  status:'done'},
+    {comp:'Status Badge',       type:'Primitive',  status:'done'},
+    {comp:'Decision Record',    type:'Data',       status:'done'},
+    {comp:'Agent Chat',         type:'Interaction',status:'done'},
+    {comp:'Conversation Widget',type:'Interaction',status:'done'},
+    {comp:'TL Evaluation Card', type:'Data',       status:'done'},
+    {comp:'Salvage Vendor Panel',type:'Display',   status:'done'},
+    {comp:'Model Card Viewer',  type:'Governance', status:'done'},
+    {comp:'Bias Monitor Chart', type:'Governance', status:'done'},
+    {comp:'SIU Evidence Panel', type:'Data',       status:'prog'},
+    {comp:'WebSocket Live Feed',type:'Real-time',  status:'todo'},
+  ],
+
+  govModules:[
+    {file:'bias_monitor.py',   purpose:'Demographic proxy monitoring (DOB, gender, ZIP, language)',pct:100,status:'done'},
+    {file:'decision_log.py',   purpose:'SHA-256 hash-chained audit trail (SQLite backend)',        pct:100,status:'done'},
+    {file:'retention.py',      purpose:'PII retention schedules per state',                        pct:100,status:'done'},
+    {file:'adverse_action.py', purpose:'FCRA §615 adverse-action notice generator',               pct:100,status:'done'},
+    {file:'audit_export.py',   purpose:'PDF emission via reportlab (audit footers)',               pct:100,status:'done'},
+    {file:'model_cards.py',    purpose:'10 model cards — all pipeline agents',                    pct:100,status:'done'},
+    {file:'fnol_governance_agent.py',purpose:'Governance orchestrator — cross-cutting',           pct:100,status:'done'},
+    {file:'fnol_governance_routes.py',purpose:'16 API endpoints under /governance/*',             pct:100,status:'done'},
+  ],
+
+  regulations:[
+    {reg:'NAIC Model Bulletin on AI',          scope:'Model transparency + model cards',    status:'done'},
+    {reg:'Colorado Reg 10-1-1',                scope:'Bias testing + proxy monitoring',     status:'done'},
+    {reg:'NYDFS Circular Letter No. 7',        scope:'Adverse action + explainability',     status:'done'},
+    {reg:'FCRA §615',                          scope:'Adverse-action notice template',      status:'done'},
+    {reg:'All-state addenda (51)',              scope:'State-specific FNOL/claims rules',   status:'done'},
+  ],
+
+  raciData:[
+    {cap:'Model Card Approval',          cro:'A',ccO:'C',legal:'C',ops:'I',eng:'R',comp:'C'},
+    {cap:'Bias Monitoring Oversight',    cro:'A',ccO:'R',legal:'C',ops:'I',eng:'C',comp:'R'},
+    {cap:'Adverse Action Notice',        cro:'I',ccO:'C',legal:'R',ops:'C',eng:'I',comp:'A'},
+    {cap:'State Addenda Compliance',     cro:'I',ccO:'A',legal:'R',ops:'C',eng:'C',comp:'R'},
+    {cap:'Decision Log Audit',           cro:'A',ccO:'I',legal:'C',ops:'C',eng:'R',comp:'R'},
+    {cap:'API Key / Auth Policy',        cro:'A',ccO:'I',legal:'I',ops:'I',eng:'R',comp:'I'},
+    {cap:'Stakeholder Validation',       cro:'R',ccO:'R',legal:'C',ops:'C',eng:'C',comp:'I'},
+    {cap:'Production Deployment',        cro:'A',ccO:'I',legal:'I',ops:'C',eng:'R',comp:'C'},
+  ],
+
+  risks:[
+    {id:'BLK-01',desc:'No production API key — known-default sentinel blocked by fnol_settings.py',layer:'Infra/Auth',impact:'high',owner:'Eng Lead',mitigation:'Generate via secrets.token_urlsafe(32); export FNOL_API_KEY pre-launch',status:'block'},
+    {id:'BLK-02',desc:'No internal Accenture P&C principal validation — governance layer changes target audience (CRO/CCO/Legal)',layer:'Stakeholder',impact:'high',owner:'Haresh / Practice Lead',mitigation:'Schedule P&C principal review; prepare CRO-level governance deck',status:'block'},
+    {id:'RSK-03',desc:'LangGraph L3 streaming endpoint incomplete — real-time WebSocket UX blocked',layer:'API/UX',impact:'med',owner:'Eng-1',mitigation:'Complete /langgraph/status route; wire WebSocket component in UX tab',status:'prog'},
+    {id:'RSK-04',desc:'SQLite not suitable for concurrent multi-user production load',layer:'Data',impact:'med',owner:'Eng-1',mitigation:'Redis-backed state on roadmap (v5.0); acceptable for POC/pilot phase',status:'prog'},
+    {id:'RSK-05',desc:'Copart/IAA adapters in shell mode — no live vendor credentials',layer:'Integration',impact:'low',owner:'Eng-3',mitigation:'Drop partner API credentials; shell → live requires no code changes',status:'todo'},
+  ],
+
+  gates:[
+    {name:'All pipeline stages green',         status:'done', icon:'✅'},
+    {name:'Governance layer complete',          status:'done', icon:'✅'},
+    {name:'SHA-256 chain validated',            status:'done', icon:'✅'},
+    {name:'PDF audit emission tested',          status:'done', icon:'✅'},
+    {name:'All 51 state addenda loaded',        status:'done', icon:'✅'},
+    {name:'Bias monitor showing variance',      status:'done', icon:'✅'},
+    {name:'FCRA adverse action template OK',    status:'done', icon:'✅'},
+    {name:'Smoke test suite passing',           status:'done', icon:'✅'},
+    {name:'Production API key set',             status:'block',icon:'🔴'},
+    {name:'Internal stakeholder validation',    status:'block',icon:'🔴'},
+    {name:'Redis state backend',                status:'todo', icon:'⬜'},
+    {name:'OAuth2 + RBAC',                      status:'todo', icon:'⬜'},
+    {name:'OpenTelemetry tracing',              status:'todo', icon:'⬜'},
+    {name:'SOC 2 control mapping',              status:'todo', icon:'⬜'},
+    {name:'Duck Creek Marketplace submission',  status:'todo', icon:'⬜'},
+    {name:'Carrier pilot sign-off',             status:'todo', icon:'⬜'},
+  ],
+
+  kpiDefs:[
+    {kpi:'Agent Complete',  def:'Stage code + routes + UI tab + decision record emitted',threshold:'100%',current:'100% (11/11 core)'},
+    {kpi:'API Complete',    def:'Route registered, auth enforced, error handled, tested',threshold:'100%',current:'98.7% (74/75)'},
+    {kpi:'Gov Complete',    def:'Module built + endpoint live + model card present',      threshold:'100%',current:'100%'},
+    {kpi:'UX Complete',     def:'Tab renders, calls API, displays results, handles errors',threshold:'100%',current:'95% (8.5/9)'},
+    {kpi:'Risk Closure',    def:'Blocker resolved or formal risk acceptance documented',   threshold:'0 HIGH open',current:'2 HIGH open'},
+    {kpi:'Bias Monitor',    def:'Variance detected across ≥4 proxy attributes',           threshold:'≥4 attrs',current:'4 attrs ✓'},
+    {kpi:'Pipeline Latency',def:'Full 11-stage run < 30s in mock mode',                  threshold:'<30s',current:'~8s mock'},
+  ],
+
+  tasks:[
+    {id:'T-01',task:'8-agent pipeline (S0–S7)',  eng:'Eng-1',sprint:'S1',pts:13,status:'done', blocked:''},
+    {id:'T-02',task:'A9 Adjuster Co-Pilot',      eng:'Eng-1',sprint:'S1',pts:8, status:'done', blocked:''},
+    {id:'T-03',task:'A10 Conversational FNOL',   eng:'Eng-1',sprint:'S2',pts:8, status:'done', blocked:''},
+    {id:'T-04',task:'A11 Total-Loss & Salvage',  eng:'Eng-1',sprint:'S2',pts:13,status:'done', blocked:''},
+    {id:'T-05',task:'A12 SIU Case Builder',      eng:'Eng-1',sprint:'S3',pts:8, status:'prog', blocked:''},
+    {id:'T-06',task:'LangGraph L3 Orchestration',eng:'Eng-1',sprint:'S4',pts:8, status:'prog', blocked:''},
+    {id:'T-07',task:'ISO / Verisk adapter',      eng:'Eng-1',sprint:'S4',pts:5, status:'prog', blocked:''},
+    {id:'T-08',task:'Governance bias monitor',   eng:'Eng-2',sprint:'S2',pts:8, status:'done', blocked:''},
+    {id:'T-09',task:'Decision log (SQLite)',      eng:'Eng-2',sprint:'S2',pts:5, status:'done', blocked:''},
+    {id:'T-10',task:'10 Model Cards',            eng:'Eng-2',sprint:'S3',pts:5, status:'done', blocked:''},
+    {id:'T-11',task:'51 State Addenda',          eng:'Eng-2',sprint:'S3',pts:8, status:'done', blocked:''},
+    {id:'T-12',task:'FCRA adverse action',       eng:'Eng-2',sprint:'S3',pts:3, status:'done', blocked:''},
+    {id:'T-13',task:'PDF audit emission',        eng:'Eng-2',sprint:'S3',pts:3, status:'done', blocked:''},
+    {id:'T-14',task:'Gov governance routes (16)',eng:'Eng-2',sprint:'S3',pts:5, status:'done', blocked:''},
+    {id:'T-15',task:'Stakeholder validation',    eng:'Eng-2',sprint:'S4',pts:13,status:'block', blocked:'BLK-02'},
+    {id:'T-16',task:'9-tab SPA (fnol_app.html)', eng:'Eng-3',sprint:'S2',pts:13,status:'done', blocked:''},
+    {id:'T-17',task:'Doc Assist sub-agent',      eng:'Eng-3',sprint:'S3',pts:5, status:'prog', blocked:''},
+    {id:'T-18',task:'Geo Supplier sub-agent',    eng:'Eng-3',sprint:'S3',pts:5, status:'prog', blocked:''},
+    {id:'T-19',task:'Vendor Report sub-agent',   eng:'Eng-3',sprint:'S3',pts:3, status:'prog', blocked:''},
+    {id:'T-20',task:'WebSocket real-time UX',    eng:'Eng-3',sprint:'S5',pts:8, status:'todo', blocked:'RSK-03'},
+    {id:'T-21',task:'Redis state backend',       eng:'Eng-1',sprint:'S5',pts:8, status:'todo', blocked:''},
+    {id:'T-22',task:'OAuth2 + RBAC',             eng:'Eng-2',sprint:'S5',pts:13,status:'todo', blocked:''},
+    {id:'T-23',task:'Production API Key setup',  eng:'Eng-1',sprint:'S4',pts:1, status:'block', blocked:'BLK-01'},
+    {id:'T-24',task:'Duck Creek Mktplace sub.',  eng:'Eng-3',sprint:'S6',pts:5, status:'todo', blocked:'BLK-02'},
+  ],
+
+  sprints:{
+    done: [
+      {task:'8-agent pipeline complete',eng:'Eng-1',pts:13},
+      {task:'Governance layer complete',eng:'Eng-2',pts:21},
+      {task:'9-tab SPA shipped',        eng:'Eng-3',pts:13},
+    ],
+    prog: [
+      {task:'LangGraph L3 streaming',  eng:'Eng-1',pts:8},
+      {task:'Doc Assist sub-agent',    eng:'Eng-3',pts:5},
+      {task:'Stakeholder validation',  eng:'Eng-2',pts:13},
+    ],
+    todo: [
+      {task:'Production API key',      eng:'Eng-1',pts:1},
+      {task:'ISO adapter hardening',   eng:'Eng-1',pts:5},
+      {task:'SIU UI tab polish',       eng:'Eng-3',pts:3},
+    ],
+  },
+
+  roadmapPhases:[
+    {phase:'Design & POC',          dates:'Q1 2026', status:'done',   notes:'Blueprint, agent design, mock adapters'},
+    {phase:'Core Build (S0–S7)',     dates:'Q1 2026', status:'done',   notes:'Full pipeline, FNOL SPA, API layer'},
+    {phase:'Advanced Agents',        dates:'Q2 2026', status:'done',   notes:'A9, A10, A11, A12, governance layer'},
+    {phase:'Hardening Sprint',       dates:'Q2 2026', status:'prog',   notes:'ISO, LangGraph L3, SIU polish, stakeholder validation'},
+    {phase:'Carrier Pilot',          dates:'Q3 2026', status:'todo',   notes:'Single carrier; Duck Creek integration live'},
+    {phase:'Marketplace Listing',    dates:'Q4 2026', status:'todo',   notes:'Duck Creek Marketplace submission + Guidewire secondary'},
+  ],
+
+  roadmapAgents:[
+    {id:'A13',name:'Repair Network Orchestrator', stage:'Roadmap A13',pct:0, status:'todo', color:'#666680', deps:'DRP network data', file:'TBD'},
+    {id:'A14',name:'SIU Evidence Dossier Builder',stage:'Roadmap A14',pct:0, status:'todo', color:'#666680', deps:'A12',             file:'TBD'},
+    {id:'A15',name:'Customer Self-Service Portal', stage:'Roadmap A15',pct:5, status:'todo', color:'#666680', deps:'A10 + Portal UX', file:'TBD'},
+  ],
+
+  hardenItems:[
+    {item:'Redis-backed state store',             priority:'HIGH',  sprint:'S5'},
+    {item:'OAuth2 + RBAC gateway',                priority:'HIGH',  sprint:'S5'},
+    {item:'OpenTelemetry distributed tracing',    priority:'MED',   sprint:'S5'},
+    {item:'SOC 2 Type I controls mapping',        priority:'MED',   sprint:'S6'},
+    {item:'Idempotency header enforcement',       priority:'LOW',   sprint:'S5'},
+    {item:'Rate-limiting Redis backend',          priority:'LOW',   sprint:'S6'},
+    {item:'Copart/IAA live credential wiring',   priority:'LOW',   sprint:'S5'},
+    {item:'A11 letter PDF MIME type hardening',   priority:'LOW',   sprint:'S5'},
+  ],
+};
+
+/* ══════════════════════════════════════════════
+   RENDER ENGINE
+══════════════════════════════════════════════ */
+
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  const v = document.getElementById('view-'+id);
+  if(v) v.classList.add('active');
+  document.querySelectorAll('.pill').forEach(p=>{if(p.textContent.toLowerCase().includes(id.slice(0,4).toLowerCase()))p.classList.add('active')});
+  // match sidebar
+  document.querySelectorAll('.sb-btn').forEach(b=>{
+    if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'"))b.classList.add('active');
+  });
+}
+
+function stColor(s){
+  return s==='done'?'done':s==='prog'?'prog':s==='block'?'block':'todo';
+}
+function stLabel(s){
+  return s==='done'?'Done':s==='prog'?'In Progress':s==='block'?'Blocked':'To Do';
+}
+function barColor(s){
+  return s==='done'?'#0d8050':s==='prog'?'#c07800':s==='block'?'#cc2200':'#c8c8d0';
+}
+
+/* ── LAYER BARS ── */
+function renderLayerBars(){
+  const el = document.getElementById('layer-bars');
+  if(!el) return;
+  el.innerHTML = DATA.layers.map(l=>`
+    <div class="prog-row">
+      <span class="prog-name">${l.name}</span>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${l.pct}%;background:${l.color}"></div></div>
+      <span class="prog-pct">${l.pct}%</span>
+      <span class="st ${stColor(l.status)}">${stLabel(l.status)}</span>
+    </div>
+  `).join('');
+}
+
+/* ── DONUT CHART ── */
+function renderDonut(){
+  const canvas = document.getElementById('donut-canvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const d = DATA.distribution;
+  const total = d.done+d.prog+d.todo+d.block;
+  const slices=[
+    {label:'Done',val:d.done,color:'#0d8050'},
+    {label:'In Progress',val:d.prog,color:'#c07800'},
+    {label:'To Do',val:d.todo,color:'#c8c8d0'},
+    {label:'Blocked',val:d.block,color:'#cc2200'},
+  ];
+  let startAngle=-Math.PI/2;
+  ctx.clearRect(0,0,100,100);
+  slices.forEach(s=>{
+    const slice=(s.val/total)*2*Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(50,50);
+    ctx.arc(50,50,45,startAngle,startAngle+slice);
+    ctx.closePath();
+    ctx.fillStyle=s.color;
+    ctx.fill();
+    startAngle+=slice;
+  });
+  // donut hole
+  ctx.beginPath();
+  ctx.arc(50,50,28,0,2*Math.PI);
+  ctx.fillStyle='#fff';
+  ctx.fill();
+  // center text
+  ctx.fillStyle='#0a0a0f';
+  ctx.font='bold 14px Syne,sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText('87%',50,56);
+
+  const legend = document.getElementById('donut-legend');
+  if(legend) legend.innerHTML = slices.map(s=>`
+    <div class="donut-item">
+      <div class="donut-dot" style="background:${s.color}"></div>
+      <span>${s.label}: <b>${s.val}</b></span>
+    </div>
+  `).join('');
+}
+
+/* ── VELOCITY ── */
+function renderVelocity(){
+  const el = document.getElementById('velocity-body');
+  if(!el) return;
+  el.innerHTML = DATA.velocity.map(v=>`
+    <div class="vel-row">
+      <span class="vel-label" style="font-family:var(--mono);font-size:10px;font-weight:700;flex:0 0 28px">${v.sprint}</span>
+      <div style="flex:1">
+        <div style="height:6px;background:var(--c2);border-radius:3px;overflow:hidden;margin-bottom:2px">
+          <div style="height:100%;width:${(v.planned/50)*100}%;background:#c8c8d0;border-radius:3px"></div>
+        </div>
+        <div style="height:6px;background:var(--c2);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${(v.actual/50)*100}%;background:${v.actual>=v.planned?'#0d8050':'#c07800'};border-radius:3px"></div>
+        </div>
+      </div>
+      <div style="flex:0 0 70px;text-align:right;font-family:var(--mono);font-size:9px;color:var(--t4)">
+        <div>P: ${v.planned}sp</div>
+        <div style="color:${v.actual>0?(v.actual>=v.planned?'#0d8050':'#c07800'):'#c8c8d0'}">A: ${v.actual||'—'}sp</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── READINESS BAR ── */
+function renderReadiness(){
+  const bar = document.getElementById('readiness-bar');
+  if(!bar) return;
+  bar.innerHTML = DATA.readiness.map(r=>`
+    <div class="readiness-seg" style="width:${r.pct}%;background:${r.color}" title="${r.label}: ${r.pct}%">${r.pct>8?r.label:''}</div>
+  `).join('');
+}
+
+/* ── BURN DOWN ── */
+function renderBurndown(){
+  const canvas = document.getElementById('burndown-canvas');
+  if(!canvas) return;
+  const W=canvas.parentElement.offsetWidth||600, H=140;
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const bd=DATA.burndown;
+  const n=bd.days.length;
+  const px=(i)=>40+(i/(n-1))*(W-60);
+  const py=(v)=>H-20-((v/40)*(H-40));
+
+  // Grid
+  ctx.strokeStyle='#e2e2e6'; ctx.lineWidth=1;
+  [0,10,20,30,40].forEach(y=>{
+    ctx.beginPath(); ctx.moveTo(40,py(y)); ctx.lineTo(W-10,py(y)); ctx.stroke();
+    ctx.fillStyle='#aaaabc'; ctx.font='9px IBM Plex Mono,monospace';
+    ctx.fillText(y,5,py(y)+3);
+  });
+
+  // Day labels
+  bd.days.forEach((d,i)=>{
+    ctx.fillStyle='#aaaabc'; ctx.font='9px IBM Plex Mono,monospace';
+    ctx.textAlign='center'; ctx.fillText(d,px(i),H-5);
+  });
+
+  // Ideal line
+  ctx.strokeStyle='#c8c8d0'; ctx.lineWidth=2; ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  bd.ideal.forEach((v,i)=>i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v)));
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // Actual line
+  const actualPoints = bd.actual.filter(v=>v!==null);
+  ctx.strokeStyle='#1a1aff'; ctx.lineWidth=2.5;
+  ctx.beginPath();
+  bd.actual.forEach((v,i)=>{
+    if(v===null) return;
+    i===0||bd.actual[i-1]===null?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v));
+  });
+  ctx.stroke();
+
+  // Dots
+  bd.actual.forEach((v,i)=>{
+    if(v===null) return;
+    ctx.beginPath(); ctx.arc(px(i),py(v),4,0,2*Math.PI);
+    ctx.fillStyle='#1a1aff'; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+  });
+
+  // Legend
+  ctx.setLineDash([4,4]); ctx.strokeStyle='#c8c8d0'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(W-130,15); ctx.lineTo(W-110,15); ctx.stroke();
+  ctx.setLineDash([]); ctx.strokeStyle='#1a1aff'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(W-70,15); ctx.lineTo(W-50,15); ctx.stroke();
+  ctx.fillStyle='#888898'; ctx.font='9px IBM Plex Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('Ideal',W-107,18);
+  ctx.fillText('Actual',W-47,18);
+}
+
+/* ── AGENT GRID ── */
+function renderAgentGrid(filter='all'){
+  const el = document.getElementById('agent-grid');
+  if(!el) return;
+  const list = filter==='all'?DATA.agents:DATA.agents.filter(a=>a.status===filter);
+  el.innerHTML = list.map(a=>`
+    <div class="agent-card" style="--accent:${a.color}">
+      <div class="agent-top">
+        <div>
+          <div class="agent-name">${a.name}</div>
+          <div class="agent-stage">${a.stage} · ${a.file}</div>
+        </div>
+        <span class="st ${stColor(a.status)}">${stLabel(a.status)}</span>
+      </div>
+      <div class="agent-mini-bar">
+        <div class="agent-mini-fill" style="width:${a.pct}%;background:${a.color}"></div>
+      </div>
+      <div class="agent-meta">
+        <span class="agent-pct">${a.pct}%</span>
+        <span class="agent-deps">deps: ${a.deps}</span>
+      </div>
+    </div>
+  `).join('');
+
+  // Dep chain
+  const dc = document.getElementById('dep-chain');
+  if(dc){
+    const core = DATA.agents.filter(a=>['S0','S1','S2','S3','S4A','S4B','A11','S5','S6','S7'].includes(a.id));
+    dc.innerHTML = core.map((a,i)=>`
+      ${i>0?'<span style="font-family:var(--mono);font-size:14px;color:#c8c8d0;flex-shrink:0">→</span>':''}
+      <div style="background:var(--c0);border:1px solid ${a.color};border-radius:4px;padding:6px 10px;white-space:nowrap;flex-shrink:0">
+        <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:${a.color}">${a.id}</div>
+        <div style="font-size:10px;color:var(--t2);font-weight:500;max-width:100px;line-height:1.2">${a.name.split('&')[0]}</div>
+      </div>
+    `).join('');
+  }
+}
+
+function filterAgents(val){ renderAgentGrid(val); }
+
+/* ── INT GRID ── */
+function renderIntGrid(){
+  const el = document.getElementById('int-grid');
+  if(!el) return;
+  const colors=['#1a1aff','#7700cc','#0077cc','#007755','#c07800','#cc5500','#0369a1','#047857','#666680'];
+  el.innerHTML = DATA.apiModules.map((m,i)=>`
+    <div class="int-card">
+      <div class="int-head">
+        <span class="int-name">${m.mod}</span>
+        <span class="st ${m.done===m.routes?'done':'prog'}">${m.done}/${m.routes}</span>
+      </div>
+      <div style="font-size:10px;color:var(--t4);font-family:var(--mono)">${m.file}</div>
+      <div class="int-bar"><div class="int-fill" style="width:${(m.done/m.routes)*100}%;background:${colors[i%colors.length]}"></div></div>
+      <div class="int-detail">${m.notes}</div>
+    </div>
+  `).join('');
+}
+
+/* ── API TABLE ── */
+function renderApiTable(){
+  const tb = document.getElementById('api-tbody');
+  if(!tb) return;
+  const methodColor={GET:'#0369a1',POST:'#007755',PUT:'#c07800',DELETE:'#cc2200'};
+  tb.innerHTML = DATA.apiEndpoints.map(e=>`
+    <tr>
+      <td><span style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--t3)">${e.mod}</span></td>
+      <td><span style="font-family:var(--mono);font-size:9px;font-weight:700;color:${methodColor[e.method]||'#333'}">${e.method}</span></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--t2)">${e.path}</td>
+      <td><span class="st ${stColor(e.status)}">${stLabel(e.status)}</span></td>
+      <td style="font-family:var(--mono);font-size:9px;color:var(--t4)">${e.auth}</td>
+      <td style="font-size:10px;color:var(--t3)">${e.note}</td>
+    </tr>
+  `).join('');
+}
+
+/* ── UX TABS ── */
+function renderUxTabs(){
+  const el = document.getElementById('ux-tab-bars');
+  if(!el) return;
+  el.innerHTML = DATA.uxTabs.map(t=>`
+    <div class="prog-row">
+      <span class="prog-name">${t.tab}</span>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${t.pct}%;background:${barColor(t.status)}"></div></div>
+      <span class="prog-pct">${t.pct}%</span>
+      <span class="st ${stColor(t.status)}">${stLabel(t.status)}</span>
+    </div>
+  `).join('');
+}
+
+function renderUxComponents(){
+  const el = document.getElementById('ux-comp-registry');
+  if(!el) return;
+  const typeColors={'Auth':'#7700cc','Shell':'#0077cc','Form':'#007755','Display':'#0369a1','Primitive':'#666680','Interaction':'#c07800','Data':'#1a1aff','Governance':'#047857','Real-time':'#cc2200'};
+  el.innerHTML = DATA.uxComponents.map(c=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--c2)">
+      <span class="st ${stColor(c.status)}" style="font-size:7px">${stLabel(c.status)}</span>
+      <span style="font-size:11.5px;font-weight:500;color:var(--t2);flex:1">${c.comp}</span>
+      <span style="font-family:var(--mono);font-size:8px;padding:1px 5px;border-radius:2px;background:var(--c2);color:${typeColors[c.type]||'#333'}">${c.type}</span>
+    </div>
+  `).join('');
+}
+
+function renderUxAgentMap(){
+  const tb = document.getElementById('ux-agent-tbody');
+  if(!tb) return;
+  const map=[
+    {agent:'S0 Pre-FNOL',  tab:'FNOL Intake',   api:'POST /claims', event:'telematics_signal', rt:'No', status:'done'},
+    {agent:'S1 Intake',    tab:'FNOL Intake',   api:'POST /claims + GET /pipeline', event:'claim_submitted', rt:'No', status:'done'},
+    {agent:'S2 Coverage',  tab:'Pipeline Trace',api:'GET /claims/{id}/pipeline', event:'coverage_verified', rt:'No', status:'done'},
+    {agent:'S3 Triage',    tab:'Pipeline Trace',api:'GET /claims/{id}/pipeline', event:'triage_scored', rt:'No', status:'done'},
+    {agent:'S4A Fraud',    tab:'Pipeline Trace',api:'GET /claims/{id}/pipeline', event:'fraud_assessed', rt:'No', status:'done'},
+    {agent:'S4B Damage',   tab:'Pipeline Trace',api:'GET /claims/{id}/pipeline', event:'damage_estimated', rt:'No', status:'done'},
+    {agent:'A11 TL',       tab:'Total Loss (A11)',api:'POST /total-loss/*', event:'total_loss_evaluated', rt:'No', status:'done'},
+    {agent:'A9 Co-Pilot',  tab:'Adjuster Co-Pilot',api:'POST /copilot + GET /alerts', event:'copilot_response', rt:'Partial', status:'done'},
+    {agent:'A10 Conv.',    tab:'Conversational',api:'POST /conversation/*', event:'convo_turn', rt:'Partial', status:'done'},
+    {agent:'A12 SIU',      tab:'SIU Builder',   api:'POST /siu/*', event:'siu_opened', rt:'No', status:'prog'},
+    {agent:'GOV Orch.',    tab:'Governance',    api:'GET /governance/*', event:'decision_logged', rt:'No', status:'done'},
+  ];
+  tb.innerHTML = map.map(m=>`
+    <tr>
+      <td style="font-weight:600">${m.agent}</td>
+      <td>${m.tab}</td>
+      <td style="font-family:var(--mono);font-size:9px;color:var(--t3)">${m.api}</td>
+      <td style="font-family:var(--mono);font-size:9px;color:var(--brand)">${m.event}</td>
+      <td><span style="font-family:var(--mono);font-size:9px;color:${m.rt==='No'?'var(--t4)':'#c07800'}">${m.rt}</span></td>
+      <td><span class="st ${stColor(m.status)}">${stLabel(m.status)}</span></td>
+    </tr>
+  `).join('');
+}
+
+/* ── SPRINT BOARD ── */
+function renderSprintBoard(){
+  const el = document.getElementById('sprint-board');
+  if(!el) return;
+  const cols=[
+    {label:'✅ Done', color:'#0d8050', items:DATA.sprints.done},
+    {label:'🔄 In Progress', color:'#c07800', items:DATA.sprints.prog},
+    {label:'⬜ To Do', color:'#666680', items:DATA.sprints.todo},
+  ];
+  el.innerHTML = cols.map(c=>`
+    <div class="sprint-col">
+      <div class="sprint-col-head" style="color:${c.color}">${c.label}</div>
+      ${c.items.map(t=>`
+        <div class="sprint-task">
+          <div>${t.task}</div>
+          <div style="display:flex;justify-content:space-between">
+            <span class="sprint-task-eng">${t.eng}</span>
+            <span class="sprint-task-pts">${t.pts}sp</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+/* ── ENG BARS ── */
+function renderEngBars(){
+  const el = document.getElementById('eng-bars');
+  if(!el) return;
+  const engs=[
+    {name:'Engineer 1 · Backend Pipeline Lead', done:14, total:18, color:'#1a1aff'},
+    {name:'Engineer 2 · Governance & Compliance', done:12, total:14, color:'#7700cc'},
+    {name:'Engineer 3 · UX & Integration', done:9, total:14, color:'#007755'},
+  ];
+  el.innerHTML = engs.map(e=>`
+    <div class="prog-row">
+      <span class="prog-name">${e.name}</span>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${Math.round(e.done/e.total*100)}%;background:${e.color}"></div></div>
+      <span class="prog-pct">${e.done}/${e.total}</span>
+    </div>
+  `).join('');
+}
+
+/* ── SPRINT TIMELINE ── */
+function renderSprintTimeline(){
+  const el = document.getElementById('sprint-timeline');
+  if(!el) return;
+  const items=[
+    {phase:'Sprint 1',date:'Jan 2026',status:'done',  note:'Core pipeline S0–S7, A9 Co-Pilot'},
+    {phase:'Sprint 2',date:'Feb 2026',status:'done',  note:'A10, A11, 9-tab SPA, governance foundation'},
+    {phase:'Sprint 3',date:'Mar 2026',status:'done',  note:'A12, governance complete, 51 addenda, model cards'},
+    {phase:'Sprint 4',date:'Apr 2026',status:'prog',  note:'LangGraph L3, ISO, stakeholder validation (BLOCKED)'},
+    {phase:'Sprint 5',date:'May 2026',status:'todo',  note:'Redis, OAuth2, WebSocket real-time UX'},
+    {phase:'Sprint 6',date:'Jun 2026',status:'todo',  note:'SOC 2, Duck Creek Marketplace, carrier pilot prep'},
+  ];
+  el.innerHTML = items.map(i=>`
+    <div class="tl-item">
+      <div class="tl-dot" style="background:${barColor(i.status)}"></div>
+      <div class="tl-phase">${i.phase}</div>
+      <div class="tl-content">${i.note}</div>
+      <div class="tl-date">${i.date}</div>
+    </div>
+  `).join('');
+}
+
+/* ── TASK TABLE ── */
+function renderTaskTable(){
+  const tb = document.getElementById('task-tbody');
+  if(!tb) return;
+  const engColor={'Eng-1':'#1a1aff','Eng-2':'#7700cc','Eng-3':'#007755'};
+  tb.innerHTML = DATA.tasks.map(t=>`
+    <tr>
+      <td style="font-family:var(--mono);font-size:9px;color:var(--t4)">${t.id}</td>
+      <td style="font-weight:500">${t.task}</td>
+      <td style="font-family:var(--mono);font-size:10px;font-weight:700;color:${engColor[t.eng]||'#333'}">${t.eng}</td>
+      <td style="font-family:var(--mono);font-size:9px;color:var(--t3)">${t.sprint}</td>
+      <td style="font-family:var(--mono);font-size:10px;font-weight:700">${t.pts}</td>
+      <td><span class="st ${stColor(t.status)}">${stLabel(t.status)}</span></td>
+      <td style="font-family:var(--mono);font-size:9px;color:${t.blocked?'var(--block)':'var(--t5)'}">${t.blocked||'—'}</td>
+    </tr>
+  `).join('');
+}
+
+/* ── GOV MODULES ── */
+function renderGovModules(){
+  const el = document.getElementById('gov-modules');
+  if(!el) return;
+  el.innerHTML = DATA.govModules.map(m=>`
+    <div class="prog-row">
+      <span class="prog-name" style="flex:0 0 220px;font-family:var(--mono);font-size:10px">${m.file}</span>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${m.pct}%;background:#0d8050"></div></div>
+      <span class="prog-pct">${m.pct}%</span>
+      <span class="st done">Done</span>
+    </div>
+    <div style="font-size:10px;color:var(--t4);padding:0 0 6px 0;border-bottom:1px solid var(--c2);margin-bottom:4px">${m.purpose}</div>
+  `).join('');
+}
+
+function renderRegCoverage(){
+  const el = document.getElementById('reg-coverage');
+  if(!el) return;
+  el.innerHTML = DATA.regulations.map(r=>`
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--c2)">
+      <span class="st done" style="margin-top:1px;flex-shrink:0">✓</span>
+      <div>
+        <div style="font-size:11.5px;font-weight:600;color:var(--t1)">${r.reg}</div>
+        <div style="font-size:10px;color:var(--t4);margin-top:1px">${r.scope}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── RACI ── */
+function renderRaci(){
+  const tb = document.getElementById('raci-tbody');
+  if(!tb) return;
+  tb.innerHTML = DATA.raciData.map(r=>`
+    <tr>
+      <td style="font-weight:500">${r.cap}</td>
+      ${[r.cro,r.ccO,r.legal,r.ops,r.eng,r.comp].map(v=>`
+        <td class="raci-cell raci-${v}">${v}</td>
+      `).join('')}
+    </tr>
+  `).join('');
+}
+
+/* ── BIAS BARS ── */
+function renderBiasBars(){
+  const el = document.getElementById('bias-bars');
+  if(!el) return;
+  const proxies=[
+    {attr:'Age (DOB-derived)', source:'Policy Admin SOR', variance:'+3.2pp', color:'#1a1aff'},
+    {attr:'Gender',            source:'Policy Admin SOR', variance:'+1.8pp', color:'#7700cc'},
+    {attr:'Garaging ZIP',      source:'Policy Admin SOR', variance:'+4.1pp', color:'#c07800'},
+    {attr:'Preferred Language',source:'Policy Admin SOR', variance:'+2.5pp', color:'#0077cc'},
+  ];
+  el.innerHTML = `
+    <div style="font-family:var(--mono);font-size:9px;color:var(--t4);margin-bottom:8px">
+      ⚠ Proxy attributes are monitoring-only — never used as model input features (Colorado Reg 10-1-1 compliance)
+    </div>
+    ${proxies.map(p=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--c2)">
+      <span style="flex:0 0 160px;font-size:11.5px;font-weight:500;color:var(--t2)">${p.attr}</span>
+      <span style="flex:0 0 120px;font-family:var(--mono);font-size:9px;color:var(--t4)">${p.source}</span>
+      <div style="flex:1;height:6px;background:var(--c2);border-radius:3px;overflow:hidden">
+        <div style="height:100%;width:65%;background:${p.color};border-radius:3px"></div>
+      </div>
+      <span style="font-family:var(--mono);font-size:10px;font-weight:700;color:${p.color};flex:0 0 50px;text-align:right">${p.variance}</span>
+      <span class="st done">Monitored</span>
+    </div>
+  `).join('')}`;
+}
+
+/* ── RISKS ── */
+function renderRisks(){
+  const tb = document.getElementById('risk-tbody');
+  if(!tb) return;
+  tb.innerHTML = DATA.risks.map(r=>`
+    <tr>
+      <td style="font-family:var(--mono);font-size:9px;font-weight:700;color:${r.impact==='high'?'var(--block)':r.impact==='med'?'var(--prog)':'var(--done)'}">${r.id}</td>
+      <td style="font-size:11.5px;max-width:260px">${r.desc}</td>
+      <td style="font-family:var(--mono);font-size:9px;color:var(--t3)">${r.layer}</td>
+      <td><span class="risk-impact ${r.impact}">${r.impact.toUpperCase()}</span></td>
+      <td style="font-size:11px;color:var(--t2)">${r.owner}</td>
+      <td style="font-size:10px;color:var(--t3);max-width:200px">${r.mitigation}</td>
+      <td><span class="st ${stColor(r.status)}">${stLabel(r.status)}</span></td>
+    </tr>
+  `).join('');
+}
+
+/* ── QUALITY GATES ── */
+function renderGates(){
+  const el = document.getElementById('gate-grid');
+  if(!el) return;
+  el.innerHTML = DATA.gates.map(g=>`
+    <div class="gate" style="border-color:${g.status==='done'?'var(--done-b)':g.status==='block'?'var(--block-b)':'var(--c3)'}">
+      <span class="gate-icon">${g.icon}</span>
+      <div>
+        <div class="gate-name">${g.name}</div>
+        <div class="gate-status">${stLabel(g.status)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── KPI DEFS ── */
+function renderKpiDefs(){
+  const tb = document.getElementById('kpi-def-tbody');
+  if(!tb) return;
+  tb.innerHTML = DATA.kpiDefs.map(k=>`
+    <tr>
+      <td style="font-weight:600;font-family:var(--mono);font-size:10px">${k.kpi}</td>
+      <td style="font-size:11px;color:var(--t2)">${k.def}</td>
+      <td style="font-family:var(--mono);font-size:9px;color:var(--t3)">${k.threshold}</td>
+      <td style="font-family:var(--mono);font-size:10px;font-weight:700;color:${k.current.includes('open')?'var(--block)':k.current.includes('✓')||k.current.includes('100')?'var(--done)':'var(--prog)'}">${k.current}</td>
+    </tr>
+  `).join('');
+}
+
+/* ── RELEASE DIMS ── */
+function renderReleaseDims(){
+  const el = document.getElementById('release-dims');
+  if(!el) return;
+  const dims=[
+    {dim:'Core Pipeline',       pct:100, status:'done'},
+    {dim:'Governance Layer',    pct:100, status:'done'},
+    {dim:'UX / SPA',            pct:95,  status:'done'},
+    {dim:'API Completeness',    pct:99,  status:'done'},
+    {dim:'Integration (SOR)',   pct:70,  status:'prog'},
+    {dim:'Auth / Security',     pct:20,  status:'block'},
+    {dim:'Observability',       pct:5,   status:'todo'},
+    {dim:'Marketplace Listing', pct:0,   status:'todo'},
+  ];
+  el.innerHTML = dims.map(d=>`
+    <div class="prog-row">
+      <span class="prog-name">${d.dim}</span>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${d.pct}%;background:${barColor(d.status)}"></div></div>
+      <span class="prog-pct">${d.pct}%</span>
+    </div>
+  `).join('');
+}
+
+/* ── PHASE TIMELINE ── */
+function renderPhaseTimeline(){
+  const el = document.getElementById('phase-timeline');
+  if(!el) return;
+  el.innerHTML = DATA.roadmapPhases.map(p=>`
+    <div class="tl-item">
+      <div class="tl-dot" style="background:${barColor(p.status)}"></div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <div class="tl-phase">${p.phase}</div>
+        <span class="st ${stColor(p.status)}" style="font-size:7.5px">${stLabel(p.status)}</span>
+      </div>
+      <div class="tl-content">${p.notes}</div>
+      <div class="tl-date">${p.dates}</div>
+    </div>
+  `).join('');
+}
+
+/* ── ROADMAP AGENTS ── */
+function renderRoadmapAgents(){
+  const el = document.getElementById('roadmap-agents');
+  if(!el) return;
+  el.innerHTML = DATA.roadmapAgents.map(a=>`
+    <div class="agent-card" style="--accent:var(--c3)">
+      <div class="agent-top">
+        <div>
+          <div class="agent-name">${a.name}</div>
+          <div class="agent-stage">${a.stage}</div>
+        </div>
+        <span class="st todo">Roadmap</span>
+      </div>
+      <div class="agent-mini-bar"><div class="agent-mini-fill" style="width:${a.pct}%;background:var(--c4)"></div></div>
+      <div class="agent-meta">
+        <span class="agent-pct">${a.pct}%</span>
+        <span class="agent-deps">deps: ${a.deps}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── HARDEN LIST ── */
+function renderHardenList(){
+  const el = document.getElementById('harden-list');
+  if(!el) return;
+  const pc={'HIGH':'var(--block)','MED':'var(--prog)','LOW':'var(--done)'};
+  el.innerHTML = `<table class="tbl"><thead><tr><th>Item</th><th>Priority</th><th>Sprint</th></tr></thead><tbody>
+  ${DATA.hardenItems.map(h=>`
+    <tr>
+      <td>${h.item}</td>
+      <td><span style="font-family:var(--mono);font-size:9px;font-weight:700;color:${pc[h.priority]}">${h.priority}</span></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--t3)">${h.sprint}</td>
+    </tr>
+  `).join('')}
+  </tbody></table>`;
+}
+
+/* ══ CLOCK ══ */
+function updateClock(){
+  const el = document.getElementById('clock');
+  if(el) el.textContent = 'Refreshed: '+new Date().toLocaleTimeString();
+}
+
+/* ══ INIT ══ */
+function init(){
+  renderLayerBars();
+  renderDonut();
+  renderVelocity();
+  renderReadiness();
+  setTimeout(renderBurndown, 100);
+
+  renderAgentGrid();
+  renderIntGrid();
+  renderApiTable();
+  renderUxTabs();
+  renderUxComponents();
+  renderUxAgentMap();
+  renderSprintBoard();
+  renderEngBars();
+  renderSprintTimeline();
+  renderTaskTable();
+  renderGovModules();
+  renderRegCoverage();
+  renderRaci();
+  renderBiasBars();
+  renderRisks();
+  renderGates();
+  renderKpiDefs();
+  renderReleaseDims();
+  renderPhaseTimeline();
+  renderRoadmapAgents();
+  renderHardenList();
+
+  updateClock();
+  setInterval(updateClock, 60000);
+}
+
+window.addEventListener('load', init);
+window.addEventListener('resize', ()=>{ setTimeout(renderBurndown,50); });
+</script>
+</body>
+</html>

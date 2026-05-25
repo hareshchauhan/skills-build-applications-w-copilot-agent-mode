@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blueprint V4 — AI-Native FNOL Claims Solution | Accenture</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Mono:wght@300;400;500&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Light theme — refined consulting palette */
+  --bg:#F8F7F4;
+  --bg2:#FFFFFF;
+  --bg3:#F2F0EC;
+  --bg4:#E8E5DF;
+  --ink:#0D0D0B;
+  --ink2:#1C1C1A;
+  --ink3:#3D3D39;
+  --ink4:#6B6B65;
+  --ink5:#9A9A93;
+  --rule:rgba(13,13,11,0.08);
+  --rule2:rgba(13,13,11,0.14);
+
+  /* Accent system */
+  --acc:#1A1A6E;        /* deep navy — primary */
+  --acc2:#2832A8;       /* bright navy */
+  --acc-lt:#EEF0FF;
+  --acc-md:#C5CBF7;
+  --red:#B91C1C;
+  --red-lt:#FEF2F2;
+  --red-md:#FECACA;
+  --amber:#92400E;
+  --amber-lt:#FFFBEB;
+  --amber-md:#FDE68A;
+  --teal:#0F5E5E;
+  --teal-lt:#ECFDF5;
+  --teal-md:#A7F3D0;
+  --purple:#5B21B6;
+  --purple-lt:#F5F3FF;
+  --purple-md:#DDD6FE;
+  --green:#14532D;
+  --green-lt:#F0FDF4;
+  --green-md:#BBF7D0;
+  --orange:#C2410C;
+  --orange-lt:#FFF7ED;
+  --orange-md:#FED7AA;
+  --indigo:#312E81;
+  --indigo-lt:#EEF2FF;
+
+  /* NEW in V4 — signal colors */
+  --v4:#6D28D9;          /* V4 new = purple */
+  --v4-lt:#F5F3FF;
+  --up:#059669;          /* upgrade = emerald */
+  --up-lt:#ECFDF5;
+
+  --display:'Bebas Neue',sans-serif;
+  --body:'DM Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+
+  --nav-w:248px;
+  --max-w:1000px;
+}
+
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);font-size:13.5px;line-height:1.65;overflow-x:hidden}
+
+/* ─── HERO ─── */
+.hero{
+  background:var(--ink);
+  position:relative;overflow:hidden;
+  padding:0;
+}
+.hero-noise{
+  position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity:.4;
+}
+.hero-grad{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 900px 500px at 85% -5%, rgba(40,50,168,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 600px 400px at 5% 100%, rgba(109,40,217,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 400px 300px at 50% 50%, rgba(26,26,110,0.15) 0%, transparent 70%);
+}
+.hero-inner{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr 300px;gap:60px;
+  max-width:var(--max-w);margin:0 auto;
+  padding:64px 56px 56px;
+}
+.hero-eyebrow{
+  font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,0.35);margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.hero-eyebrow span{width:28px;height:1px;background:rgba(255,255,255,0.2);display:inline-block}
+.hero-version{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(109,40,217,0.25);border:1px solid rgba(109,40,217,0.4);
+  padding:3px 12px 3px 8px;margin-bottom:24px;
+}
+.hero-version-dot{width:6px;height:6px;background:#A78BFA;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-version span{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:#A78BFA;text-transform:uppercase}
+.hero-title{
+  font-family:var(--display);font-size:72px;line-height:.92;letter-spacing:.01em;
+  color:#FFFFFF;margin-bottom:6px;
+}
+.hero-title .accent{color:#818CF8}
+.hero-sub{
+  font-size:13px;color:rgba(255,255,255,0.45);line-height:1.8;margin-bottom:28px;max-width:520px;
+}
+.hero-tags{display:flex;gap:6px;flex-wrap:wrap}
+.htag{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 9px;border:0.5px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);
+}
+.htag.new{border-color:rgba(167,139,250,0.5);color:#A78BFA;background:rgba(109,40,217,0.15)}
+.htag.hi{border-color:rgba(99,102,241,0.5);color:#A5B4FC;background:rgba(40,50,168,0.2)}
+
+/* Hero KPIs */
+.hero-kpis{display:flex;flex-direction:column;gap:18px;padding-top:8px}
+.hkpi{border-left:2px solid rgba(255,255,255,0.1);padding-left:16px}
+.hkpi-n{font-family:var(--display);font-size:42px;line-height:1;color:#FFFFFF;letter-spacing:.02em}
+.hkpi-n span{font-size:20px;color:rgba(255,255,255,0.4)}
+.hkpi-l{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:rgba(255,255,255,0.35);line-height:1.5;text-transform:uppercase}
+
+/* Hero bottom bar */
+.hero-bar{
+  position:relative;z-index:1;
+  border-top:1px solid rgba(255,255,255,0.06);
+  display:flex;gap:0;
+}
+.hbar-item{
+  flex:1;padding:16px 20px;
+  border-right:1px solid rgba(255,255,255,0.06);
+  font-family:var(--mono);font-size:9px;letter-spacing:.06em;
+  color:rgba(255,255,255,0.3);text-transform:uppercase;
+}
+.hbar-item:last-child{border-right:none}
+.hbar-item strong{display:block;color:rgba(255,255,255,0.6);margin-bottom:2px;font-size:10px}
+
+/* ─── LAYOUT ─── */
+.layout{display:grid;grid-template-columns:var(--nav-w) 1fr;min-height:100vh}
+
+/* ─── SIDENAV ─── */
+.sidenav{
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--bg2);border-right:1px solid var(--rule);
+  padding:20px 0;
+}
+.sidenav::-webkit-scrollbar{width:3px}
+.sidenav::-webkit-scrollbar-thumb{background:var(--rule2)}
+.nav-cat{
+  font-family:var(--mono);font-size:8px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink5);padding:16px 18px 6px;
+}
+.nav-cat:first-child{padding-top:0}
+.nlink{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 18px;font-size:11.5px;color:var(--ink4);
+  cursor:pointer;border-left:2px solid transparent;
+  text-decoration:none;transition:all .12s;font-weight:500;
+}
+.nlink:hover{color:var(--acc2);background:var(--acc-lt)}
+.nlink.active{color:var(--acc2);border-left-color:var(--acc2);background:var(--acc-lt)}
+.nlink-badge{
+  margin-left:auto;font-family:var(--mono);font-size:7.5px;letter-spacing:.04em;
+  padding:1px 6px;background:var(--v4-lt);color:var(--v4);border-radius:2px;
+}
+.nav-version{
+  font-family:var(--mono);font-size:8.5px;color:var(--ink5);
+  padding:14px 18px 0;letter-spacing:.04em;
+  border-top:1px solid var(--rule);margin-top:12px;
+}
+
+/* ─── MAIN ─── */
+.main{max-width:var(--max-w);padding:48px 52px;overflow-x:hidden}
+
+/* ─── SECTION ─── */
+.section{margin-bottom:80px;scroll-margin-top:20px}
+.sec-head{margin-bottom:28px}
+.sec-eye{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink5);margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.sec-eye::after{content:'';flex:1;height:1px;background:var(--rule)}
+.sec-title{
+  font-family:var(--display);font-size:34px;letter-spacing:.02em;
+  color:var(--ink);line-height:1;margin-bottom:10px;
+}
+.sec-lead{font-size:12.5px;color:var(--ink4);line-height:1.75;max-width:700px}
+
+/* ─── CALLOUT ─── */
+.callout{
+  padding:14px 18px;margin-bottom:20px;
+  border-left:3px solid var(--acc2);background:var(--acc-lt);
+  font-size:12px;color:var(--ink3);line-height:1.65;
+}
+.callout.warn{border-left-color:var(--amber);background:var(--amber-lt)}
+.callout.ok{border-left-color:var(--up);background:var(--up-lt)}
+.callout.v4{border-left-color:var(--v4);background:var(--v4-lt)}
+
+/* ─── EXEC GRID ─── */
+.exec-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+.exec-card{
+  border:1px solid var(--rule);padding:20px;background:var(--bg2);
+  border-top:3px solid var(--acc2);
+  position:relative;
+}
+.exec-card.teal{border-top-color:var(--teal)}
+.exec-card.red{border-top-color:var(--red)}
+.exec-card.amber{border-top-color:var(--amber)}
+.exec-card.purple{border-top-color:var(--purple)}
+.exec-card.green{border-top-color:var(--up)}
+.exec-card.orange{border-top-color:var(--orange)}
+.ec-num{font-family:var(--mono);font-size:9px;color:var(--ink5);margin-bottom:5px}
+.ec-title{font-weight:700;font-size:12.5px;margin-bottom:6px;color:var(--ink)}
+.ec-body{font-size:11.5px;color:var(--ink3);line-height:1.6}
+.ec-v4{
+  position:absolute;top:12px;right:12px;
+  font-family:var(--mono);font-size:7px;letter-spacing:.06em;
+  background:var(--v4-lt);color:var(--v4);padding:2px 7px;text-transform:uppercase;
+}
+
+/* ─── TABLES ─── */
+.tbl-wrap{overflow-x:auto;margin-top:16px}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+th{
+  background:var(--ink);color:rgba(255,255,255,0.85);
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:9px 12px;text-align:left;font-weight:400;
+}
+td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink3)}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:var(--bg3)}
+td.mono{font-family:var(--mono);font-size:10.5px;color:var(--ink2)}
+td.ok{color:var(--up);font-weight:600;font-family:var(--mono);font-size:10px}
+td.warn{color:var(--amber);font-weight:600;font-family:var(--mono);font-size:10px}
+td.bad{color:var(--red);font-weight:600;font-family:var(--mono);font-size:10px}
+td.v4b{
+  font-family:var(--mono);font-size:9px;
+  background:var(--v4-lt)!important;color:var(--v4);font-weight:600;
+}
+
+/* ─── BADGE ─── */
+.badge{
+  display:inline-block;font-family:var(--mono);font-size:8px;letter-spacing:.05em;
+  padding:2px 7px;text-transform:uppercase;margin-left:6px;vertical-align:middle;
+}
+.badge.v4{background:var(--v4-lt);color:var(--v4)}
+.badge.up{background:var(--up-lt);color:var(--up)}
+.badge.auto{background:var(--green-lt);color:var(--green)}
+.badge.partial{background:var(--amber-lt);color:var(--amber)}
+.badge.human{background:var(--red-lt);color:var(--red)}
+
+/* ─── AGENT CARDS ─── */
+.agent-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
+.agent-card{
+  border:1px solid var(--rule);background:var(--bg2);padding:16px;
+  position:relative;overflow:hidden;
+}
+.agent-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--acc2);
+}
+.agent-card.v4c::before{background:var(--v4)}
+.agent-card.upc::before{background:var(--up)}
+.agent-id{font-family:var(--mono);font-size:8.5px;color:var(--ink5);margin-bottom:4px;letter-spacing:.06em}
+.agent-name{font-weight:700;font-size:12px;color:var(--ink);margin-bottom:4px}
+.agent-cat{
+  display:inline-block;font-family:var(--mono);font-size:7.5px;letter-spacing:.05em;
+  padding:2px 7px;margin-bottom:8px;text-transform:uppercase;
+}
+.agent-cat.fnol{background:var(--acc-lt);color:var(--acc2)}
+.agent-cat.dec{background:var(--purple-lt);color:var(--purple)}
+.agent-cat.eco{background:var(--teal-lt);color:var(--teal)}
+.agent-cat.gov{background:var(--amber-lt);color:var(--amber)}
+.agent-cat.ux{background:var(--orange-lt);color:var(--orange)}
+.agent-desc{font-size:11px;color:var(--ink4);line-height:1.55}
+.agent-flag{
+  position:absolute;top:10px;right:10px;
+  font-family:var(--mono);font-size:7px;letter-spacing:.04em;
+  padding:2px 6px;text-transform:uppercase;
+}
+.agent-flag.nw{background:var(--v4-lt);color:var(--v4)}
+.agent-flag.ex{background:var(--up-lt);color:var(--up)}
+
+/* ─── ORCH DIAGRAM ─── */
+.orch-vis{
+  background:var(--ink);border-radius:0;
+  padding:28px 24px;margin-top:16px;overflow-x:auto;
+}
+
+/* ─── PHASE ROADMAP ─── */
+.roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:16px;border:1px solid var(--rule)}
+.phase{padding:22px 20px;border-right:1px solid var(--rule)}
+.phase:last-child{border-right:none}
+.phase-label{
+  font-family:var(--mono);font-size:8px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink5);margin-bottom:8px;
+}
+.phase-title{font-family:var(--display);font-size:22px;color:var(--ink);margin-bottom:6px;letter-spacing:.02em}
+.phase-time{
+  font-family:var(--mono);font-size:9px;color:var(--acc2);margin-bottom:12px;letter-spacing:.04em;
+}
+.phase-body{font-size:11.5px;color:var(--ink3);line-height:1.65}
+.phase-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.ptag{
+  font-family:var(--mono);font-size:8px;padding:2px 7px;
+  background:var(--bg3);color:var(--ink4);letter-spacing:.03em;
+}
+.phase.p1{border-top:3px solid var(--acc2)}
+.phase.p2{border-top:3px solid var(--v4)}
+.phase.p3{border-top:3px solid var(--up)}
+
+/* ─── MATURITY ─── */
+.mat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);margin-top:16px}
+.mat-col{padding:20px 18px;border-right:1px solid var(--rule)}
+.mat-col:last-child{border-right:none}
+.mat-col.active{background:var(--acc-lt)}
+.mat-l{
+  font-family:var(--display);font-size:16px;letter-spacing:.06em;
+  color:var(--ink5);margin-bottom:4px;
+}
+.mat-title{font-weight:700;font-size:13px;color:var(--ink);margin-bottom:4px}
+.mat-sub{font-family:var(--mono);font-size:9px;color:var(--ink5);margin-bottom:12px}
+.mat-item{
+  font-size:11px;color:var(--ink3);padding:5px 0;
+  border-bottom:1px solid var(--rule);line-height:1.5;
+}
+.mat-item:last-child{border-bottom:none}
+.mat-item strong{color:var(--ink);display:block;font-size:11px}
+
+/* ─── STATUS ICONS ─── */
+.s-auto::before{content:'✔';color:var(--up);margin-right:5px;font-size:10px}
+.s-part::before{content:'⚠';color:var(--amber);margin-right:5px;font-size:10px}
+.s-human::before{content:'✖';color:var(--red);margin-right:5px;font-size:10px}
+
+/* ─── LAYER ARCH ─── */
+.arch-layers{display:flex;flex-direction:column;gap:6px;margin-top:16px}
+.arch-layer{
+  display:grid;grid-template-columns:160px 1fr;
+  border:1px solid var(--rule);overflow:hidden;
+}
+.arch-layer-label{
+  padding:14px 16px;background:var(--ink);
+  font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(255,255,255,0.7);display:flex;align-items:center;
+}
+.arch-layer-body{
+  padding:12px 16px;background:var(--bg2);
+  font-size:11.5px;color:var(--ink3);line-height:1.6;
+  border-left:1px solid var(--rule);
+}
+.arch-layer.l1 .arch-layer-label{background:var(--acc)}
+.arch-layer.l2 .arch-layer-label{background:var(--purple)}
+.arch-layer.l3 .arch-layer-label{background:var(--teal)}
+.arch-layer.l4 .arch-layer-label{background:var(--amber);color:var(--ink)}
+.arch-layer.l5 .arch-layer-label{background:var(--red)}
+.arch-layer.l6 .arch-layer-label{background:var(--ink2)}
+
+/* ─── GAP TABLE row ─── */
+.gap-tag{
+  display:inline-block;font-family:var(--mono);font-size:8px;letter-spacing:.04em;
+  padding:2px 7px;text-transform:uppercase;
+}
+.gap-tag.crit{background:var(--red-lt);color:var(--red)}
+.gap-tag.high{background:var(--amber-lt);color:var(--amber)}
+.gap-tag.med{background:var(--teal-lt);color:var(--teal)}
+
+/* ─── DIFF CARDS ─── */
+.diff-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}
+.diff-card{
+  border:1px solid var(--rule);padding:16px 14px;background:var(--bg2);text-align:center;
+}
+.diff-num{
+  font-family:var(--display);font-size:36px;color:var(--acc2);letter-spacing:.02em;margin-bottom:4px;
+}
+.diff-label{font-size:11px;color:var(--ink3);line-height:1.5}
+
+/* ─── EVENT TAXONOMY ─── */
+.evt-table td:first-child{font-family:var(--mono);font-size:10px;color:var(--acc2)}
+.evt-table td:nth-child(2){font-family:var(--mono);font-size:10px;color:var(--ink3)}
+
+/* ─── INTEGR STRIP ─── */
+.int-strip{
+  display:flex;gap:0;border:1px solid var(--rule);margin-top:16px;overflow-x:auto;
+}
+.int-item{
+  flex:1;min-width:120px;padding:14px 14px;
+  border-right:1px solid var(--rule);text-align:center;
+}
+.int-item:last-child{border-right:none}
+.int-label{font-family:var(--mono);font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink5);margin-bottom:4px}
+.int-name{font-weight:700;font-size:11.5px;color:var(--ink)}
+.int-mode{
+  font-family:var(--mono);font-size:8px;margin-top:4px;
+  color:var(--acc2);
+}
+
+/* ─── FOOTNOTE ─── */
+.footnote{
+  font-family:var(--mono);font-size:9px;color:var(--ink5);
+  margin-top:32px;padding-top:16px;border-top:1px solid var(--rule);
+  line-height:1.75;
+}
+
+/* ─── SCROLL INDICATOR ─── */
+.scroll-top{
+  position:fixed;bottom:24px;right:24px;
+  width:36px;height:36px;background:var(--ink);color:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;z-index:100;
+  opacity:0;transition:opacity .2s;
+}
+.scroll-top.vis{opacity:1}
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<div class="hero">
+  <div class="hero-noise"></div>
+  <div class="hero-grad"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow"><span></span>Accenture · P&C Insurance Technology</div>
+      <div class="hero-version">
+        <div class="hero-version-dot"></div>
+        <span>Blueprint V4 · L3 AI-Centric · May 2026</span>
+      </div>
+      <div class="hero-title">AI-NATIVE<br>FNOL<br><span class="accent">CLAIMS</span><br>BLUEPRINT</div>
+      <div class="hero-sub">Synthesis of V3 strengths + PoV capabilities → Production-grade, agentic-first, event-driven FNOL-to-Settlement architecture for U.S. P&C Auto. 21-agent mesh. L3 maturity target.</div>
+      <div class="hero-tags">
+        <span class="htag hi">Agentic-First</span>
+        <span class="htag hi">Event-Driven</span>
+        <span class="htag hi">Deterministic + AI Hybrid</span>
+        <span class="htag new">V4 · 8 New Agents</span>
+        <span class="htag new">L3 Maturity</span>
+        <span class="htag hi">Guidewire · Duck Creek · ALIP</span>
+        <span class="htag new">Industrialization-Ready</span>
+      </div>
+    </div>
+    <div class="hero-kpis">
+      <div class="hkpi">
+        <div class="hkpi-n">88<span>%</span></div>
+        <div class="hkpi-l">STP Automation<br>Target (APD)</div>
+      </div>
+      <div class="hkpi">
+        <div class="hkpi-n">21</div>
+        <div class="hkpi-l">Specialized Agents<br>FNOL → Subrogation</div>
+      </div>
+      <div class="hkpi">
+        <div class="hkpi-n">4<span>h</span></div>
+        <div class="hkpi-l">Cycle Time APD<br>(vs. 4–6 Days Legacy)</div>
+      </div>
+      <div class="hkpi">
+        <div class="hkpi-n">18<span>%</span></div>
+        <div class="hkpi-l">LAE Reduction<br>at Full L3 Deployment</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-bar">
+    <div class="hbar-item"><strong>Scope</strong>U.S. P&C Auto · Personal Lines · APD + BI + UM/UIM</div>
+    <div class="hbar-item"><strong>States</strong>TX · GA · AZ (Phase 1 POC) → 50-State Config</div>
+    <div class="hbar-item"><strong>Operating Model</strong>Carrier · MGA · TPA · White-label Ready</div>
+    <div class="hbar-item"><strong>Channels</strong>Phone · App · Web · IVR · SMS · Agent · Telematics</div>
+    <div class="hbar-item"><strong>SOR Compat.</strong>Guidewire · Duck Creek · ALIP · Custom via Adapter</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ LAYOUT ═══════════════════════════ -->
+<div class="layout">
+
+<!-- SIDENAV -->
+<nav class="sidenav">
+  <div class="nav-version">BLUEPRINT V4 · MAY 2026</div>
+  <div class="nav-cat">Core</div>
+  <a class="nlink active" href="#s1">01 · Executive Summary</a>
+  <a class="nlink" href="#s2">02 · Agent Architecture <span class="nlink-badge">V4</span></a>
+  <a class="nlink" href="#s3">03 · Orchestration Model</a>
+  <a class="nlink" href="#s4">04 · Deterministic Workflow</a>
+  <a class="nlink" href="#s5">05 · Ecosystem & Integration</a>
+  <a class="nlink" href="#s6">06 · Target Architecture</a>
+  <div class="nav-cat">Strategy</div>
+  <a class="nlink" href="#s7">07 · Maturity Model</a>
+  <a class="nlink" href="#s8">08 · Gap Closure Traceability</a>
+  <a class="nlink" href="#s9">09 · Strategic Differentiators</a>
+  <a class="nlink" href="#s10">10 · Implementation Roadmap</a>
+  <div class="nav-cat">Reference</div>
+  <a class="nlink" href="#s11">Human × Claude Collab Model</a>
+  <a class="nlink" href="#s12">Open Questions</a>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- ═══════ S1: EXECUTIVE SUMMARY ═══════ -->
+<section class="section" id="s1">
+  <div class="sec-head">
+    <div class="sec-eye">Section 01</div>
+    <h2 class="sec-title">EXECUTIVE SUMMARY</h2>
+    <p class="sec-lead">Blueprint V4 is the production-grade synthesis of V3's event-driven agentic foundation with the PoV's missing capabilities. Eight net-new agents, a conversational UX layer, attorney/litigation early warning, regulatory rule engine, and a full governance mesh are the headline additions. V4 targets L3 AI-Centric maturity as the end-state.</p>
+  </div>
+
+  <div class="callout v4">
+    <strong>V4 Thesis:</strong> V3 established the right architecture (event-driven, agentic, deterministic). V4 fills every functional gap the PoV exposed — attorney representation detection, medical record AI, conversational FNOL UX, state regulatory engine, subrogation intelligence, damage AI feedback loop — while adding industrialization controls (prompt versioning, bias monitoring, DR audit trail, multi-LLM abstraction) that make it Accenture-grade.
+  </div>
+
+  <div class="exec-grid">
+    <div class="exec-card">
+      <div class="ec-num">01</div>
+      <div class="ec-title">Agentic Mesh Expands from 13 → 21 Agents</div>
+      <div class="ec-body">V4 adds 8 net-new specialized agents: Attorney/Litigation Early Warning, Medical Record AI Reviewer, Conversational Orchestration (L3 UX), State Regulatory Compliance, Subrogation Intelligence, Adjuster Co-Pilot, Salvage & Total Loss, and Settlement Negotiation. Each carries its own event trigger, deterministic logic layer, confidence threshold, and HITL gate.</div>
+    </div>
+    <div class="exec-card teal">
+      <div class="ec-num">02</div>
+      <div class="ec-title">L3 AI-Centric UX as Primary Target</div>
+      <div class="ec-body">The Conversational Orchestration Agent replaces IVR/portal as the primary claimant interface at L3. The Adjuster Co-Pilot Agent replaces the Guidewire ClaimCenter desktop as the adjuster's day-to-day surface. SOR collapses to a thin data-write service. This is the architectural inversion that defines L3 maturity.</div>
+      <div class="ec-v4">V4 NEW</div>
+    </div>
+    <div class="exec-card purple">
+      <div class="ec-num">03</div>
+      <div class="ec-title">Attorney Representation Early Warning</div>
+      <div class="ec-body">New A-12 agent monitors FNOL narrative, injury pattern, prior claims history, and ZIP-level attorney propensity indices to flag attorney representation risk at FNOL (0–72 hr window). Triggers early reserve adjustment, SIU collaboration, and litigation management pathway before counsel retention. Reduces litigation frequency by estimated 12–18%.</div>
+      <div class="ec-v4">V4 NEW</div>
+    </div>
+    <div class="exec-card amber">
+      <div class="ec-num">04</div>
+      <div class="ec-title">Medical Record AI + BI Evaluation Engine</div>
+      <div class="ec-body">A-13 Medical Record Review Agent ingests ICD-10 codes, treatment timelines, provider patterns, and injury-mechanism consistency checks. Outputs a structured BI Evaluation Score with component-level reason codes. Feeds directly to the Settlement Agent for reserve adequacy and authority routing. Replaces manual medical review for &lt;$15K BI.</div>
+      <div class="ec-v4">V4 NEW</div>
+    </div>
+    <div class="exec-card red">
+      <div class="ec-num">05</div>
+      <div class="ec-title">State Regulatory Compliance Engine</div>
+      <div class="ec-body">New A-17 Regulatory Compliance Agent enforces state-specific prompt-to-pay windows, acknowledgement SLAs (e.g., TX 15-day, CA 40-day), adverse action letter generation, and DOI reporting triggers. Rules stored as versioned YAML configs — no hard-coded logic. Supports 50-state expansion without code changes. Auto-generates regulatory correspondence with full audit trail.</div>
+      <div class="ec-v4">V4 NEW</div>
+    </div>
+    <div class="exec-card green">
+      <div class="ec-num">06</div>
+      <div class="ec-title">Subrogation Intelligence at FNOL</div>
+      <div class="ec-body">A-19 Subrogation Agent activates at FNOL — not post-settlement. Analyses police report, at-fault determination, defendant carrier lookup (ISO ClaimSearch), and salvage data to score subrogation recovery potential. Flags high-value recoveries for specialist assignment and pre-populates the subrogation demand package. Targets ≥80% subrogation ID at FNOL vs. &lt;50% legacy.</div>
+      <div class="ec-v4">V4 NEW</div>
+    </div>
+    <div class="exec-card orange">
+      <div class="ec-num">07</div>
+      <div class="ec-title">Multi-LLM Abstraction & Prompt Governance</div>
+      <div class="ec-body">V4 introduces an LLM Gateway service decoupling agents from any single provider. claude-sonnet-4 is the default; GPT-4o and Gemini Pro available via config. All prompts versioned in git, hashed at runtime, stored in Decision Records. Enables A/B testing of model versions, provider failover, and cost optimization without agent re-deployment.</div>
+      <div class="ec-v4">V4 NEW</div>
+    </div>
+    <div class="exec-card teal">
+      <div class="ec-num">08</div>
+      <div class="ec-title">Deterministic Workflow Controls AI Execution</div>
+      <div class="ec-body">AI agents operate within a deterministic harness: SLA timers enforce acknowledgement and escalation regardless of AI confidence; business rules validate every agent output before SOR write; exception branches are fully enumerated. The V4 principle: AI proposes, deterministic logic disposes. No agent can write to SOR without passing the rule validation gate.</div>
+    </div>
+    <div class="exec-card">
+      <div class="ec-num">09</div>
+      <div class="ec-title">Event-Driven Parallel Execution</div>
+      <div class="ec-body">All V4 agents subscribe to the central Event Bus. Fraud Detection, Damage Estimation, Coverage Validation, and BI Triage execute in parallel on the same ClaimIntakeCompleted event — not sequentially. P99 FNOL completion time: &lt;4 minutes (APD, no injury). Event schema versioned via Confluent Schema Registry; consumers declare compatibility.</div>
+    </div>
+    <div class="exec-card purple">
+      <div class="ec-num">10</div>
+      <div class="ec-title">Business Impact</div>
+      <div class="ec-body"><strong>STP:</strong> 88% APD (vs. ~35% baseline) · <strong>Cycle time:</strong> APD 4 hrs, BI 3 days (vs. 4–6 days, 21 days) · <strong>LAE:</strong> −18% · <strong>Fraud:</strong> +40% early detection · <strong>Subrogation:</strong> +60% recovery rate · <strong>CSAT:</strong> +22 NPS points · <strong>Litigation frequency:</strong> −12–18% via early attorney warning</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ S2: AGENT ARCHITECTURE ═══════ -->
+<section class="section" id="s2">
+  <div class="sec-head">
+    <div class="sec-eye">Section 02</div>
+    <h2 class="sec-title">AGENT ARCHITECTURE</h2>
+    <p class="sec-lead">21 specialized agents across 5 categories. V3 carried 13; V4 adds 8 net-new (marked NEW) and upgrades 4 existing. Each agent has a single responsibility, a deterministic logic harness, an AI capability layer, and a defined HITL gate.</p>
+  </div>
+
+  <div class="callout">
+    <strong>Legend:</strong> <span class="badge v4">NEW V4</span> = added from PoV gap analysis &nbsp;|&nbsp; <span class="badge up">UPGRADED</span> = V3 agent materially enhanced &nbsp;|&nbsp; <span class="badge auto">EXISTING</span> = carried forward from V3 unchanged
+  </div>
+
+  <!-- FNOL CORE AGENTS -->
+  <div style="font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink5);margin:20px 0 10px;display:flex;align-items:center;gap:8px">
+    <span style="width:16px;height:1px;background:var(--rule2);display:inline-block"></span>
+    FNOL Core Agents
+    <span style="flex:1;height:1px;background:var(--rule);display:inline-block"></span>
+  </div>
+  <div class="agent-grid">
+    <div class="agent-card">
+      <div class="agent-flag ex">Upgraded</div>
+      <div class="agent-id">A-01</div>
+      <div class="agent-name">FNOL Intake Agent</div>
+      <div><span class="agent-cat fnol">FNOL Core</span></div>
+      <div class="agent-desc">Multi-channel ingestion (phone, app, SMS, telematics webhook, IVR). Pre-fills claim from policy data. V4 upgrade: structured JSON output with confidence fields + ADA/language compliance gate.</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-flag ex">Upgraded</div>
+      <div class="agent-id">A-02</div>
+      <div class="agent-name">Coverage & Liability Agent</div>
+      <div><span class="agent-cat fnol">FNOL Core</span></div>
+      <div class="agent-desc">Policy lookup, coverage validation, liability split scoring. V4 upgrade: state-specific liability rules injected via Regulatory Config API; outputs liability_confidence + reason codes.</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-flag ex">Existing</div>
+      <div class="agent-id">A-03</div>
+      <div class="agent-name">Triage & Assignment Agent</div>
+      <div><span class="agent-cat fnol">FNOL Core</span></div>
+      <div class="agent-desc">Claim complexity scoring, adjuster workload balancing, SLA-based priority assignment. Routes APD → STP lane, complex BI → senior adjuster, fraud-flagged → SIU.</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-flag ex">Existing</div>
+      <div class="agent-id">A-04</div>
+      <div class="agent-name">Fraud Signal Detection Agent</div>
+      <div><span class="agent-cat fnol">FNOL Core</span></div>
+      <div class="agent-desc">ISO ClaimSearch, C.L.U.E., velocity checks, staged-accident patterns. Outputs fraud_score 0–100 with component breakdowns. Triggers SIU referral at score ≥65.</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-flag ex">Existing</div>
+      <div class="agent-id">A-05</div>
+      <div class="agent-name">Damage Estimation Agent</div>
+      <div><span class="agent-cat fnol">FNOL Core</span></div>
+      <div class="agent-desc">CCC One / Mitchell AI integration. Photo damage assessment, total-loss threshold logic, rental authorization. V4: feedback loop from supplement data to retrain damage model quarterly.</div>
+    </div>
+    <div class="agent-card upc">
+      <div class="agent-flag nw">New V4</div>
+      <div class="agent-id">A-06</div>
+      <div class="agent-name">Salvage & Total Loss Agent</div>
+      <div><span class="agent-cat fnol">FNOL Core</span></div>
+      <div class="agent-desc">Activates when ACV estimate triggers total-loss threshold (state-specific). Coordinates salvage title, Copart/IAA auction, owner-retained deduction, and gap insurance notifications. Full SOR write on completion.</div>
+    </div>
+  </div>
+
+  <!-- DECISIONING AGENTS -->
+  <div style="font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink5);margin:24px 0 10px;display:flex;align-items:center;gap:8px">
+    <span style="width:16px;height:1px;background:var(--rule2);display:inline-block"></span>
+    Decisioning Agents
+    <span style="flex:1;height:1px;background:var(--rule);display:inline-block"></span>
+  </div>
+  <div class="agent-grid">
+    <div class="agent-card">
+      <div class="agent-flag ex">Existing</div>
+      <div class="agent-id">A-07</div>
+      <div class="agent-name">BI Evaluation Agent</div>
+      <div><span class="agent-cat dec">Decisioning</span></div>
+      <div class="agent-desc">Injury severity scoring, BI reserve adequacy, UM/UIM trigger detection. Upgraded in V4 to consume Medical Record Review output (A-13) for enhanced accuracy.</div>
+    </div>
+    <div class="agent-card upc">
+      <div class="agent-flag nw">New V4</div>
+      <div class="agent-id">A-08</div>
+      <div class="agent-name">Attorney / Litigation Early Warning</div>
+      <div><span class="agent-cat dec">Decisioning</span></div>
+      <div class="agent-desc">Monitors FNOL narrative NLP, injury pattern, ZIP-level attorney propensity index, and claimant prior litigation history. Flags attorney risk within 72 hrs. Triggers pre-litigation reserve adjustment and litigation management pathway.</div>
+    </div>
+    <div class="agent-card upc">
+      <div class="agent-flag nw">New V4</div>
+      <div class="agent-id">A-09</div>
+      <div class="agent-name">Settlement Negotiation Agent</div>
+      <div><span class="agent-cat dec">Decisioning</span></div>
+      <div class="agent-desc">Authority-bound settlement offer generation, demand evaluation, counter-offer logic. Consumes BI score, damage estimate, liability split, medical record score. Requires adjuster approval above $10K authority. Full audit trail per offer.</div>
+    </div>
+    <div class="agent-card upc">
+      <div class="agent-flag nw">New V4</div>
+      <div class="agent-id">A-13</div>
+      <div class="agent-name">Medical Record Review Agent</div>
+      <div><span class="agent-cat dec">Decisioning</span></div>
+      <div class="agent-desc">Ingests ICD-10 codes, treatment timelines, provider billing patterns. Outputs structured BI_Eval_Score with injury-mechanism consistency flag. Replaces manual review for BI &lt;$15K. Feeds A-07 and A-09.</div>
+    </div>
+  </div>
+
+  <!-- ECOSYSTEM / INTEGRATION AGENTS -->
+  <div style="font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink5);margin:24px 0 10px;display:flex;align-items:center;gap:8px">
+    <span style="width:16px;height:1px;background:var(--rule2);display:inline-block"></span>
+    Ecosystem & Integration Agents
+    <span style="flex:1;height:1px;background:var(--rule);display:inline-block"></span>
+  </div>
+  <div class="agent-grid">
+    <div class="agent-card">
+      <div class="agent-flag ex">Upgraded</div>
+      <div class="agent-id">A-10</div>
+      <div class="agent-name">Telematics Enrichment Agent</div>
+      <div><span class="agent-cat eco">Ecosystem</span></div>
+      <div class="agent-desc">Listens for TSP/OEM crash webhooks. Pre-populates deltaV, airbag deployment, GPS coordinates, speed-at-impact. V4 upgrade: cross-references OBD-II data against claimed damage pattern for consistency scoring.</div>
+    </div>
+    <div class="agent-card upc">
+      <div class="agent-flag nw">New V4</div>
+      <div class="agent-id">A-19</div>
+      <div class="agent-name">Subrogation Intelligence Agent</div>
+      <div><span class="agent-cat eco">Ecosystem</span></div>
+      <div class="agent-desc">Activates at FNOL (not post-settlement). Scores subrogation recovery potential from police report, at-fault split, defendant carrier lookup. Pre-populates demand package. Specialist assignment for score ≥70.</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-flag ex">Existing</div>
+      <div class="agent-id">A-11</div>
+      <div class="agent-name">Communications Agent</div>
+      <div><span class="agent-cat eco">Ecosystem</span></div>
+      <div class="agent-desc">Outbound notifications: claim acknowledgement, status updates, payment confirmations. Multi-channel (SMS, email, push). Language preference respected. Consent gate enforced before PII transmission.</div>
+    </div>
+  </div>
+
+  <!-- GOVERNANCE / CONTROL AGENTS -->
+  <div style="font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink5);margin:24px 0 10px;display:flex;align-items:center;gap:8px">
+    <span style="width:16px;height:1px;background:var(--rule2);display:inline-block"></span>
+    Governance & Control Agents
+    <span style="flex:1;height:1px;background:var(--rule);display:inline-block"></span>
+  </div>
+  <div class="agent-grid">
+    <div class="agent-card upc">
+      <div class="agent-flag nw">New V4</div>
+      <div class="agent-id">A-17</div>
+      <div class="agent-name">State Regulatory Compliance Agent</div>
+      <div><span class="agent-cat gov">Governance</span></div>
+      <div class="agent-desc">Enforces state-specific prompt-to-pay windows, acknowledgement SLAs, adverse action drafting, DOI reporting. Rules as versioned YAML configs. Auto-generates regulatory correspondence. Raises SLA_Breach event before deadline.</div>
+    </div>
+    <div class="agent-card upc">
+      <div class="agent-flag nw">New V4</div>
+      <div class="agent-id">A-18</div>
+      <div class="agent-name">Audit & Decision Record Agent</div>
+      <div><span class="agent-cat gov">Governance</span></div>
+      <div class="agent-desc">Immutable Decision Record (DR) per agent invocation: inputs, outputs, model version hash, confidence score, HITL flag, timestamp, user ID. Writes to append-only audit store. Basis for E&O defense, DOI audit, and bias monitoring.</div>
+    </div>
+    <div class="agent-card upc">
+      <div class="agent-flag nw">New V4</div>
+      <div class="agent-id">A-20</div>
+      <div class="agent-name">Bias Monitoring Agent</div>
+      <div><span class="agent-cat gov">Governance</span></div>
+      <div class="agent-desc">Continuously monitors agent outputs for disparate impact across protected classes (ZIP-level demographic proxy, gender, age). Raises BiasAlert event if statistical threshold exceeded. Triggers model re-evaluation workflow.</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-flag ex">Existing</div>
+      <div class="agent-id">A-14</div>
+      <div class="agent-name">SOR Sync Agent</div>
+      <div><span class="agent-cat gov">Governance</span></div>
+      <div class="agent-desc">Single point of SOR write. Translates canonical FNOL payload to Guidewire / Duck Creek / ALIP adapter format. Validates against business rules before every write. Never bypassed by AI agents.</div>
+    </div>
+  </div>
+
+  <!-- UX / CONVERSATIONAL AGENTS -->
+  <div style="font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink5);margin:24px 0 10px;display:flex;align-items:center;gap:8px">
+    <span style="width:16px;height:1px;background:var(--rule2);display:inline-block"></span>
+    UX & Conversational Agents (L3 Targets)
+    <span style="flex:1;height:1px;background:var(--rule);display:inline-block"></span>
+  </div>
+  <div class="agent-grid">
+    <div class="agent-card v4c">
+      <div class="agent-flag nw">New V4</div>
+      <div class="agent-id">A-15</div>
+      <div class="agent-name">Conversational Orchestration Agent</div>
+      <div><span class="agent-cat ux">UX · L3</span></div>
+      <div class="agent-desc">Claimant-facing single-session conversational interface (voice + text). Orchestrates all FNOL data collection via NLU. Replaces IVR and portal forms at L3. Emotion detection triggers empathy routing. Consent and recording disclosure enforced in-session.</div>
+    </div>
+    <div class="agent-card v4c">
+      <div class="agent-flag nw">New V4</div>
+      <div class="agent-id">A-16</div>
+      <div class="agent-name">Adjuster Co-Pilot Agent</div>
+      <div><span class="agent-cat ux">UX · L3</span></div>
+      <div class="agent-desc">Adjuster-facing AI surface replacing GWCC desktop as primary interface at L3. Surfaces recommended actions, reserve guidance, coverage rationale, settlement authority checks. Natural language query over claim history. Explainable — all recommendations cite source evidence.</div>
+    </div>
+    <div class="agent-card v4c">
+      <div class="agent-flag nw">New V4</div>
+      <div class="agent-id">A-21</div>
+      <div class="agent-name">Contact Center AI Agent</div>
+      <div><span class="agent-cat ux">UX · L3</span></div>
+      <div class="agent-desc">Real-time adjuster assist during inbound calls: claim history surfacing, coverage query resolution, escalation scripting, complaint detection. Integrates with Genesys / Salesforce CRM. Reduces average handle time by estimated 30%.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ S3: ORCHESTRATION MODEL ═══════ -->
+<section class="section" id="s3">
+  <div class="sec-head">
+    <div class="sec-eye">Section 03</div>
+    <h2 class="sec-title">ORCHESTRATION MODEL</h2>
+    <p class="sec-lead">V4 eliminates all linear pipeline constraints. Agents subscribe to events on the central Event Bus and execute in parallel where dependencies permit. Temporal / AWS Step Functions enforces deterministic sequencing; AI agents are leaf-node invocations, not orchestrators.</p>
+  </div>
+
+  <div class="callout ok">
+    <strong>Core Principle:</strong> The Orchestration Engine (Temporal / AWS Step Functions) is the sole sequencing authority. Agents are stateless, single-purpose functions. No agent calls another agent directly — all coordination is via event emission + subscription.
+  </div>
+
+  <!-- Event Taxonomy -->
+  <div style="font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink5);margin:0 0 10px">Event Taxonomy — Lifecycle Events</div>
+  <div class="tbl-wrap">
+    <table class="evt-table">
+      <thead><tr><th>Event ID</th><th>Event Name</th><th>Producer</th><th>Consumers (Parallel)</th><th>Flow Type</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">EVT-001</td><td class="mono">TelematisCrashDetected</td><td>TSP Webhook</td><td>A-01 Intake, A-10 Telematics, A-03 Triage</td><td><span class="badge auto">ASYNC</span></td></tr>
+        <tr><td class="mono">EVT-002</td><td class="mono">FNOLInitiated</td><td>A-01 Intake</td><td>A-02 Coverage, A-03 Triage, A-04 Fraud, A-08 Attorney</td><td><span class="badge auto">ASYNC PARALLEL</span></td></tr>
+        <tr><td class="mono">EVT-003</td><td class="mono">ClaimIntakeCompleted</td><td>A-01 Intake</td><td>A-04 Fraud, A-05 Damage, A-07 BI, A-19 Subrogation</td><td><span class="badge auto">ASYNC PARALLEL</span></td></tr>
+        <tr><td class="mono">EVT-004</td><td class="mono">CoverageValidated</td><td>A-02 Coverage</td><td>A-03 Triage, A-09 Settlement, A-17 Regulatory</td><td><span class="badge auto">ASYNC</span></td></tr>
+        <tr><td class="mono">EVT-005</td><td class="mono">FraudScoreComputed</td><td>A-04 Fraud</td><td>A-03 Triage, A-09 Settlement, A-18 Audit DR</td><td><span class="badge auto">ASYNC</span></td></tr>
+        <tr><td class="mono">EVT-006</td><td class="mono">DamageEstimateReady</td><td>A-05 Damage</td><td>A-06 Total Loss, A-09 Settlement, A-19 Subrogation</td><td><span class="badge partial">SYNC GATE</span></td></tr>
+        <tr><td class="mono">EVT-007</td><td class="mono">TotalLossThresholdExceeded</td><td>A-05 Damage</td><td>A-06 Salvage/TL, A-11 Comms, A-17 Regulatory</td><td><span class="badge auto">ASYNC</span></td></tr>
+        <tr><td class="mono">EVT-008</td><td class="mono">AttorneyRiskFlagged</td><td>A-08 Attorney</td><td>A-09 Settlement, A-18 Audit, A-11 Comms</td><td><span class="badge auto">ASYNC</span></td></tr>
+        <tr><td class="mono">EVT-009</td><td class="mono">MedicalRecordIngested</td><td>External / A-13</td><td>A-07 BI Eval, A-09 Settlement, A-18 Audit</td><td><span class="badge auto">ASYNC</span></td></tr>
+        <tr><td class="mono">EVT-010</td><td class="mono">SettlementAuthorized</td><td>A-09 / Adjuster</td><td>A-14 SOR Sync, A-11 Comms, A-18 Audit</td><td><span class="badge partial">SYNC GATE</span></td></tr>
+        <tr><td class="mono">EVT-011</td><td class="mono">SubrogationOpportunityID</td><td>A-19 Subrg</td><td>A-14 SOR Sync, A-11 Comms, A-18 Audit</td><td><span class="badge auto">ASYNC</span></td></tr>
+        <tr><td class="mono">EVT-012</td><td class="mono">SLABreachImminent</td><td>A-17 Regulatory</td><td>A-11 Comms, A-03 Triage (escalation), A-18 Audit</td><td><span class="badge human">SYNC ESCALATION</span></td></tr>
+        <tr><td class="mono">EVT-013</td><td class="mono">BiasAlertRaised</td><td>A-20 Bias Monitor</td><td>A-18 Audit, MLOps pipeline, Compliance team</td><td><span class="badge human">SYNC ESCALATION</span></td></tr>
+        <tr><td class="mono">EVT-014</td><td class="mono">ClaimClosed</td><td>A-14 SOR Sync</td><td>A-19 Subrogation (final), A-18 Audit, ML Feedback loop</td><td><span class="badge auto">ASYNC</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Parallel Execution Patterns -->
+  <div style="font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink5);margin:24px 0 10px">Parallel Execution Patterns</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Pattern</th><th>Trigger Event</th><th>Parallel Agents</th><th>Join Condition</th><th>Timeout / Fallback</th></tr></thead>
+      <tbody>
+        <tr><td><strong>FNOL Fast Parallel</strong></td><td class="mono">ClaimIntakeCompleted</td><td>A-02, A-04, A-05, A-08, A-19</td><td>All complete OR 4-min timeout</td><td>Partial results forwarded; missing = HITL flag</td></tr>
+        <tr><td><strong>BI Deep Parallel</strong></td><td class="mono">BIInjuryConfirmed</td><td>A-07, A-13, A-08, A-09</td><td>A-13 must complete before A-09</td><td>A-13 timeout 24 hrs → adjuster manual review</td></tr>
+        <tr><td><strong>Fraud + SIU Parallel</strong></td><td class="mono">FraudScoreComputed ≥65</td><td>A-04 detail run, A-18 Audit, SIU system webhook</td><td>Informational; no join gate</td><td>SIU webhook timeout 30 min → email fallback</td></tr>
+        <tr><td><strong>Total Loss Parallel</strong></td><td class="mono">TotalLossThresholdExceeded</td><td>A-06, A-11, A-17, A-19</td><td>A-06 must complete before payment</td><td>A-06 timeout 48 hrs → adjuster override</td></tr>
+        <tr><td><strong>Settlement + Regulatory</strong></td><td class="mono">SettlementAuthorized</td><td>A-14 SOR, A-11 Comms, A-17 Regulatory</td><td>A-14 must complete; others async</td><td>A-14 retry 3× with backoff; dead-letter queue</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Conditional Branching -->
+  <div style="font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink5);margin:24px 0 10px">Conditional Branching Logic</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Branch</th><th>Trigger Condition</th><th>Routing Outcome</th><th>HITL Required</th></tr></thead>
+      <tbody>
+        <tr><td><strong>STP Lane</strong></td><td>APD only · fraud_score &lt;40 · damage &lt;$8K · coverage confirmed</td><td>Auto-approve → payment queue → close</td><td class="ok">No</td></tr>
+        <tr><td><strong>Total Loss</strong></td><td>Damage estimate &gt; ACV × state TL threshold</td><td>A-06 Salvage TL agent activated; STP suspended</td><td class="warn">Adjuster final approval</td></tr>
+        <tr><td><strong>BI Escalation</strong></td><td>injury_severity_score ≥ 6 OR BI reserve &gt;$25K</td><td>Senior adjuster assignment; A-13 + A-07 + A-08 activated</td><td class="bad">Required</td></tr>
+        <tr><td><strong>SIU Referral</strong></td><td>fraud_score ≥65</td><td>STP suspended; SIU queue; A-04 deep run</td><td class="bad">Required</td></tr>
+        <tr><td><strong>Attorney Warning</strong></td><td>attorney_risk_score ≥0.70</td><td>Litigation pathway; reserve uplift; A-08 monitoring loop</td><td class="warn">Supervisor review</td></tr>
+        <tr><td><strong>Coverage Dispute</strong></td><td>coverage_confidence &lt;0.65 OR exclusion triggered</td><td>Hold; adjuster review; denial letter drafting (A-17)</td><td class="bad">Required</td></tr>
+        <tr><td><strong>Regulatory SLA Breach</strong></td><td>SLA timer fires before EVT-010</td><td>A-17 raises SLABreachImminent; supervisor escalation</td><td class="bad">Required</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════ S4: DETERMINISTIC WORKFLOW ═══════ -->
+<section class="section" id="s4">
+  <div class="sec-head">
+    <div class="sec-eye">Section 04</div>
+    <h2 class="sec-title">DETERMINISTIC WORKFLOW LAYER</h2>
+    <p class="sec-lead">The deterministic layer wraps every AI invocation. Rules, SLA timers, and exception paths are fully specified. No AI output reaches the SOR without passing the rule validation gate. Classification: ✔ Fully Automated · ⚠ Partial · ✖ Requires Human.</p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Workflow Area</th><th>Rule / Trigger</th><th>Status</th><th>HITL Gate</th><th>Audit Artifact</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Claim Acknowledgement</strong></td>
+          <td>Auto-ack within 24 hrs; state-specific windows enforced (TX 15-day, CA 40-day). SLA timer set at intake.</td>
+          <td class="ok s-auto">FULLY AUTO</td>
+          <td>None — timer fires regardless of AI status</td>
+          <td>AckEvent + timestamp in DR</td>
+        </tr>
+        <tr>
+          <td><strong>Coverage Validation</strong></td>
+          <td>Policy lookup → coverage matrix match → exclusion scan. Auto-confirm if confidence ≥0.85.</td>
+          <td class="ok s-auto">FULLY AUTO</td>
+          <td>Confidence &lt;0.85 → adjuster review queue</td>
+          <td>CoverageDecision DR with reason codes</td>
+        </tr>
+        <tr>
+          <td><strong>Fraud Score Evaluation</strong></td>
+          <td>Score &lt;40 → clear. 40–64 → watchlist. ≥65 → SIU referral + STP suspend.</td>
+          <td class="ok s-auto">FULLY AUTO</td>
+          <td>SIU queue ≥65; supervisor review 55–64</td>
+          <td>FraudDecision DR with component scores</td>
+        </tr>
+        <tr>
+          <td><strong>Damage Estimate Authorization</strong></td>
+          <td>Auto-authorize repair ≤$8K with confirmed coverage + fraud clear. Above $8K or total loss → gate.</td>
+          <td class="warn s-part">PARTIAL</td>
+          <td>$8K–$25K → adjuster; &gt;$25K → senior adjuster</td>
+          <td>DamageAuth DR with estimate version</td>
+        </tr>
+        <tr>
+          <td><strong>STP Settlement (APD)</strong></td>
+          <td>All gates clear (coverage ✓, fraud &lt;40, damage &lt;$8K, no injury) → auto-payment trigger.</td>
+          <td class="ok s-auto">FULLY AUTO</td>
+          <td>None if all gates pass</td>
+          <td>STPClosure DR; payment reference</td>
+        </tr>
+        <tr>
+          <td><strong>BI Reserve Setting</strong></td>
+          <td>AI-recommended reserve based on injury score + medical record AI. Auto-set ≤$10K. Above → adjuster.</td>
+          <td class="warn s-part">PARTIAL</td>
+          <td>&gt;$10K reserve → adjuster approval</td>
+          <td>ReserveDecision DR with BI score input</td>
+        </tr>
+        <tr>
+          <td><strong>Settlement Offer Generation</strong></td>
+          <td>Authority matrix: AI auto-offer ≤$5K APD. $5K–$25K adjuster approval. &gt;$25K senior + counsel review.</td>
+          <td class="warn s-part">PARTIAL</td>
+          <td>Graduated authority gates as defined</td>
+          <td>SettlementOffer DR per offer version</td>
+        </tr>
+        <tr>
+          <td><strong>Attorney Risk Escalation</strong></td>
+          <td>attorney_risk_score ≥0.70 → supervisor notification + reserve uplift + litigation pathway routing.</td>
+          <td class="bad s-human">REQUIRES HUMAN</td>
+          <td>Supervisor must acknowledge within 4 hrs</td>
+          <td>LitigationAlert DR with risk factors</td>
+        </tr>
+        <tr>
+          <td><strong>SIU Referral</strong></td>
+          <td>fraud_score ≥65 triggers immutable SIU referral event. STP suspended. Human SIU investigator assigned.</td>
+          <td class="bad s-human">REQUIRES HUMAN</td>
+          <td>SIU investigator assignment mandatory</td>
+          <td>SIUReferral DR; all fraud signals preserved</td>
+        </tr>
+        <tr>
+          <td><strong>Regulatory SLA Enforcement</strong></td>
+          <td>A-17 monitors all SLA timers. Raises SLABreachImminent 24 hrs before expiry. Auto-sends required correspondence.</td>
+          <td class="ok s-auto">FULLY AUTO</td>
+          <td>Breach notification to supervisor</td>
+          <td>RegulatoryCompliance DR per state event</td>
+        </tr>
+        <tr>
+          <td><strong>Total Loss Determination</strong></td>
+          <td>ACV vs. repair estimate; state TL threshold (varies: 75%–100%). Auto-determines; requires adjuster final approval.</td>
+          <td class="warn s-part">PARTIAL</td>
+          <td>Adjuster final TL confirmation required</td>
+          <td>TotalLoss DR with ACV source, threshold</td>
+        </tr>
+        <tr>
+          <td><strong>Subrogation Initiation</strong></td>
+          <td>subrogation_score ≥70 at FNOL → specialist assignment. &lt;70 → post-settlement batch review.</td>
+          <td class="warn s-part">PARTIAL</td>
+          <td>Specialist assignment for score ≥70</td>
+          <td>SubrogationScore DR; demand package version</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout" style="margin-top:16px">
+    <strong>Exception Handling Protocol:</strong> Any unhandled exception in an agent invocation (timeout, schema violation, LLM error) triggers: (1) ClaimHeldForReview event → adjuster queue; (2) incident logged in observability platform; (3) dead-letter queue for replay after root cause resolution; (4) SLA timer continues regardless — human handles if AI cannot.
+  </div>
+</section>
+
+<!-- ═══════ S5: ECOSYSTEM & INTEGRATION ═══════ -->
+<section class="section" id="s5">
+  <div class="sec-head">
+    <div class="sec-eye">Section 05</div>
+    <h2 class="sec-title">ECOSYSTEM & INTEGRATION LAYER</h2>
+    <p class="sec-lead">V4 integration strategy: SOR adapters decouple the agentic layer from the claims core. All external vendor calls are mediated by the API Fabric with circuit breakers, retry logic, and schema validation. Real-time for FNOL-critical; batch for enrichment and analytics.</p>
+  </div>
+
+  <!-- SOR Strategy -->
+  <div style="font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink5);margin:0 0 10px">SOR Integration Strategy</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Platform</th><th>Integration Pattern</th><th>Write Authority</th><th>Adapter Notes</th><th>V4 Addition</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Guidewire ClaimCenter</strong></td><td>REST API + PolicyCenter events</td><td>A-14 SOR Sync only</td><td>ClaimCenter REST v2 + GWCC event bus subscription</td><td>Co-Pilot Agent surface overlay (L3)</td></tr>
+        <tr><td><strong>Duck Creek Claims</strong></td><td>Duck Creek API Hub + webhooks</td><td>A-14 SOR Sync only</td><td>API Hub adapter; canonical → DC schema translation</td><td>Regulatory config YAML injected via API Hub</td></tr>
+        <tr><td><strong>ALIP (Majesco)</strong></td><td>REST + SOAP bridge adapter</td><td>A-14 SOR Sync only</td><td>SOAP-REST bridge; ALIP 8.x schema mapping</td><td>Subrogation module API extended</td></tr>
+        <tr><td><strong>Custom / Legacy</strong></td><td>Canonical FNOL Payload v4 + outbound adapter</td><td>A-14 SOR Sync only</td><td>Adapter template; customer implements translation</td><td>Adapter SDK published with V4 release</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Vendor Ecosystem -->
+  <div style="font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink5);margin:24px 0 10px">Vendor Ecosystem — Real-time vs Batch</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Domain</th><th>Vendor / Service</th><th>Agent Consumer</th><th>Interaction</th><th>V4 New?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Telematics / TSP</strong></td><td>Arity, Verisk Telematics, OEM native, OBD-II</td><td>A-10</td><td>Webhook (real-time) + batch UW scoring</td><td>—</td></tr>
+        <tr><td><strong>Damage Estimation</strong></td><td>CCC One, Mitchell RepairCenter AI, Tractable</td><td>A-05</td><td>REST real-time (photo) + batch supplement</td><td>Feedback loop to retrain A-05 added V4</td></tr>
+        <tr><td><strong>Claims History</strong></td><td>ISO ClaimSearch, LexisNexis C.L.U.E.</td><td>A-04, A-08, A-19</td><td>REST real-time lookup at FNOL</td><td>A-08 now consumes for attorney risk</td></tr>
+        <tr><td><strong>Police / VIN / DMV</strong></td><td>LexisNexis AccurInt, Verisk VINAnalyst, state DMV</td><td>A-02, A-04</td><td>REST real-time</td><td>—</td></tr>
+        <tr><td><strong>Medical / BI</strong></td><td>Verisk Health, Optum, Intelligent Medical Objects</td><td>A-13, A-07</td><td>Async batch (medical records) + real-time ICD lookup</td><td>A-13 Medical Record AI — NEW V4</td></tr>
+        <tr><td><strong>Salvage / Auction</strong></td><td>Copart, IAA (Insurance Auto Auctions)</td><td>A-06</td><td>REST API for title transfer + auction assignment</td><td>A-06 Salvage/TL Agent — NEW V4</td></tr>
+        <tr><td><strong>Attorney / Litigation DB</strong></td><td>Verisk Litigation Profiles, LexisNexis Law, internal propensity model</td><td>A-08</td><td>REST real-time at FNOL</td><td>NEW V4</td></tr>
+        <tr><td><strong>Subrogation Data</strong></td><td>Verisk Subrogation, ISO defendant carrier data, internal recovery DB</td><td>A-19</td><td>REST real-time + batch demand package</td><td>NEW V4</td></tr>
+        <tr><td><strong>Communications</strong></td><td>Twilio, Genesys, Salesforce CRM</td><td>A-11, A-21</td><td>REST real-time (SMS/email) + CRM event webhook</td><td>A-21 Contact Center AI — NEW V4</td></tr>
+        <tr><td><strong>Payments</strong></td><td>Carrier payment platform, Early Warning / Zelle, check issuance</td><td>A-14 SOR Sync</td><td>REST real-time trigger after SOR write</td><td>—</td></tr>
+        <tr><td><strong>Document Management</strong></td><td>OpenText, Hyland OnBase, carrier DMS</td><td>All agents (evidence ingestion)</td><td>REST + event subscription for new document events</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="int-strip">
+    <div class="int-item"><div class="int-label">LLM Default</div><div class="int-name">claude-sonnet-4</div><div class="int-mode">via LLM Gateway</div></div>
+    <div class="int-item"><div class="int-label">LLM Alt</div><div class="int-name">GPT-4o / Gemini Pro</div><div class="int-mode">Failover config</div></div>
+    <div class="int-item"><div class="int-label">Orchestration</div><div class="int-name">Temporal / AWS Step Functions</div><div class="int-mode">Event-driven</div></div>
+    <div class="int-item"><div class="int-label">Event Bus</div><div class="int-name">Confluent Kafka</div><div class="int-mode">Schema Registry</div></div>
+    <div class="int-item"><div class="int-label">API Gateway</div><div class="int-name">Kong / AWS API GW</div><td class="int-mode">mTLS + OAuth 2.0</td></div>
+    <div class="int-item"><div class="int-label">Audit Store</div><div class="int-name">Immutable Append Log</div><div class="int-mode">7-yr retention</div></div>
+    <div class="int-item"><div class="int-label">Observability</div><div class="int-name">Datadog / Dynatrace</div><div class="int-mode">AI-specific metrics</div></div>
+  </div>
+</section>
+
+<!-- ═══════ S6: TARGET ARCHITECTURE ═══════ -->
+<section class="section" id="s6">
+  <div class="sec-head">
+    <div class="sec-eye">Section 06</div>
+    <h2 class="sec-title">TARGET ARCHITECTURE — V4</h2>
+    <p class="sec-lead">Six-layer architecture with strict separation of concerns. Agents never touch SOR directly. LLM Gateway abstracts model provider. Governance layer is cross-cutting — not a single layer but a service mesh injected at every agent invocation.</p>
+  </div>
+
+  <div class="arch-layers">
+    <div class="arch-layer l1">
+      <div class="arch-layer-label">L1 · Experience</div>
+      <div class="arch-layer-body"><strong>L3 Target (V4 New):</strong> Conversational Orchestration Agent (A-15) · Adjuster Co-Pilot (A-16) · Contact Center AI (A-21) · Mobile/Web FNOL App · IVR (L1/L2 transitional). At L3 the AI agent interface IS the primary UX — portal and IVR are legacy fallbacks. Single-session continuity across channels.</div>
+    </div>
+    <div class="arch-layer l2">
+      <div class="arch-layer-label">L2 · Agent Runtime</div>
+      <div class="arch-layer-body"><strong>21 Specialized Agents</strong> deployed as stateless microservices (containers). Each agent: system prompt (versioned, hashed) · tool call schema · confidence threshold · HITL flag logic · Decision Record emitter. LLM Gateway service decouples agents from model provider — config-driven model selection. Agent SDK enforces contract.</div>
+    </div>
+    <div class="arch-layer l3">
+      <div class="arch-layer-label">L3 · Orchestration</div>
+      <div class="arch-layer-body"><strong>Event Bus (Confluent Kafka)</strong> — schema-versioned events, 7-yr retention. <strong>Workflow Engine (Temporal / AWS Step Functions)</strong> — deterministic sequencing, SLA timers, retry + dead-letter logic. Parallel fan-out on ClaimIntakeCompleted. No agent is an orchestrator — all coordination via event subscription. Saga pattern for distributed transaction management.</div>
+    </div>
+    <div class="arch-layer l4">
+      <div class="arch-layer-label">L4 · Governance</div>
+      <div class="arch-layer-body"><strong>Cross-cutting mesh — injected at every agent invocation:</strong> Decision Record Writer (A-18) · Bias Monitor (A-20) · Regulatory Compliance Engine (A-17) · Prompt Version Registry (git-backed hash store) · PII Vault (tokenization, consent ledger) · Model Performance Tracker (drift detection, quarterly retrain trigger). All governance artifacts immutable.</div>
+    </div>
+    <div class="arch-layer l5">
+      <div class="arch-layer-label">L5 · Integration</div>
+      <div class="arch-layer-body"><strong>API Fabric (Kong / AWS API GW):</strong> OAuth 2.0 + mTLS all domains · circuit breakers · rate limiting · schema validation. SOR Adapters (Guidewire · Duck Creek · ALIP · Custom) — canonical FNOL Payload v4 translated to SOR format by A-14 only. Vendor connectors (telematics, fraud, damage, medical, salvage, legal data). Event-driven inbound (TSP webhooks).</div>
+    </div>
+    <div class="arch-layer l6">
+      <div class="arch-layer-label">L6 · Systems of Record</div>
+      <div class="arch-layer-body"><strong>At L1/L2:</strong> Guidewire ClaimCenter / Duck Creek Claims / ALIP — primary claims management interface. <strong>At L3:</strong> SOR collapses to thin data-write service; adjuster interaction moves to Co-Pilot Agent surface. Policy Admin (PAS) · Billing · Document Management · Data Lake (ML training, analytics, regulatory reporting). Canonical schema ensures SOR-independence.</div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:16px">
+    <strong>Multi-LLM Abstraction (V4 New):</strong> LLM Gateway service sits between Agent Runtime and all model providers. Default: <code>claude-sonnet-4-20250514</code>. Config-switchable to GPT-4o or Gemini Pro per agent. Enables: (1) provider failover without agent redeployment; (2) cost optimization by routing simpler tasks to cheaper models; (3) A/B testing model versions with Decision Record capture; (4) compliance with carrier model approval requirements.
+  </div>
+</section>
+
+<!-- ═══════ S7: MATURITY MODEL ═══════ -->
+<section class="section" id="s7">
+  <div class="sec-head">
+    <div class="sec-eye">Section 07</div>
+    <h2 class="sec-title">MATURITY MODEL — L1 → L3 EVOLUTION</h2>
+    <p class="sec-lead">V4 is designed to be deployable at L2 on day one (agents in existing workflow, SOR primary interface) and progressively upgradeable to L3 (AI as primary UX, SOR as thin service) without re-platforming. Canonical schema, event taxonomy, and adapter pattern remain stable across all levels.</p>
+  </div>
+
+  <div class="mat-grid">
+    <div class="mat-col">
+      <div class="mat-l">L1</div>
+      <div class="mat-title">Deploy & Pilot</div>
+      <div class="mat-sub">AI assists select steps · SOR primary UI</div>
+      <div class="mat-item"><strong>Status in V4</strong>Foundation complete; V4 begins deployment here</div>
+      <div class="mat-item"><strong>Primary Interface</strong>Guidewire / Duck Creek desktop</div>
+      <div class="mat-item"><strong>Agents Active</strong>A-01, A-02, A-03, A-04, A-05</div>
+      <div class="mat-item"><strong>Automation</strong>~35–45% STP</div>
+      <div class="mat-item"><strong>HITL</strong>High frequency; adjuster touches most claims</div>
+    </div>
+    <div class="mat-col active">
+      <div class="mat-l">L2</div>
+      <div class="mat-title">Industrialize</div>
+      <div class="mat-sub">Agents in full workflow · SOR still primary UI</div>
+      <div class="mat-item"><strong>Status in V4</strong><span style="color:var(--acc2);font-weight:700">V4 Day-1 Production Target</span></div>
+      <div class="mat-item"><strong>Primary Interface</strong>SOR + Agent outputs surfaced in workflow UI</div>
+      <div class="mat-item"><strong>Agents Active</strong>All 21 agents · parallel execution · governance mesh</div>
+      <div class="mat-item"><strong>Automation</strong>~70–88% STP (APD) · 40% BI acceleration</div>
+      <div class="mat-item"><strong>HITL</strong>Exception-only; adjuster handles escalations</div>
+    </div>
+    <div class="mat-col">
+      <div class="mat-l">L3</div>
+      <div class="mat-title">AI-Centric Redesign</div>
+      <div class="mat-sub">AI agent layer = primary UX · SOR = thin service</div>
+      <div class="mat-item"><strong>Status in V4</strong>Architecture hooks in place; agents A-15, A-16, A-21 built</div>
+      <div class="mat-item"><strong>Primary Interface</strong>A-15 Conversational UX (claimant) + A-16 Co-Pilot (adjuster)</div>
+      <div class="mat-item"><strong>Agents Active</strong>All 21 + L3 UX agents as primary surfaces</div>
+      <div class="mat-item"><strong>Automation</strong>>88% STP target · BI end-to-end AI-assisted</div>
+      <div class="mat-item"><strong>HITL</strong>Rare; adjuster approves high-authority settlements only</div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px">
+    <div style="font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink5);margin:0 0 10px">What Remains Stable Across L1 → L3 (No Re-Platforming Required)</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Stable Element</th><th>Why It's Stable</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">Canonical FNOL Payload v4 Schema</td><td>All agents produce/consume the same schema; SOR adapters translate — never the reverse</td></tr>
+          <tr><td class="mono">Event Taxonomy (EVT-001 through EVT-014)</td><td>Events are the API between layers; adding L3 agents means new subscribers, not new events</td></tr>
+          <tr><td class="mono">SOR Adapter Pattern</td><td>A-14 is the sole SOR writer; swapping SOR means replacing the adapter, not the agent mesh</td></tr>
+          <tr><td class="mono">Decision Record Format</td><td>DR schema is immutable; governance artifacts consistent across all maturity levels</td></tr>
+          <tr><td class="mono">Deterministic Rule Layer</td><td>SLA timers, authority matrices, fraud thresholds — all configurable, never hard-coded</td></tr>
+          <tr><td class="mono">BPMN Workflow Definition</td><td>L3 agents wrap the BPMN; they don't replace it — same orchestration logic, new front-end</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ S8: GAP CLOSURE TRACEABILITY ═══════ -->
+<section class="section" id="s8">
+  <div class="sec-head">
+    <div class="sec-eye">Section 08</div>
+    <h2 class="sec-title">GAP CLOSURE TRACEABILITY</h2>
+    <p class="sec-lead">Every gap identified in the V3 vs. PoV analysis has a V4 resolution with an implementation approach. This table is the traceability matrix between the PoV gap analysis and the V4 design decisions.</p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Gap Identified in V3</th><th>Source</th><th>Priority</th><th>V4 Resolution</th><th>Implementation Approach</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>No attorney representation early warning</strong></td>
+          <td>PoV — Litigation Early Warning</td>
+          <td><span class="gap-tag crit">Critical</span></td>
+          <td>A-08 Attorney/Litigation Early Warning Agent</td>
+          <td>NLP on FNOL narrative + Verisk Litigation Profiles API + ZIP-level propensity model. Triggers within 72 hrs of FNOL. Pre-litigation reserve uplift via deterministic rule.</td>
+        </tr>
+        <tr>
+          <td><strong>No medical record AI review for BI evaluation</strong></td>
+          <td>PoV — Medical Record Review</td>
+          <td><span class="gap-tag crit">Critical</span></td>
+          <td>A-13 Medical Record Review Agent</td>
+          <td>Verisk Health / Optum API integration. ICD-10 parsing, treatment timeline analysis, billing anomaly detection. Structured BI_Eval_Score output feeds A-07 and A-09.</td>
+        </tr>
+        <tr>
+          <td><strong>Subrogation only at post-settlement — too late</strong></td>
+          <td>PoV — Automated Subrogation ID</td>
+          <td><span class="gap-tag crit">Critical</span></td>
+          <td>A-19 Subrogation Intelligence Agent — FNOL activation</td>
+          <td>Activates on ClaimIntakeCompleted event. Verisk Subrogation + ISO defendant lookup. subrogation_score ≥70 → specialist assignment within 24 hrs. Pre-populates demand package automatically.</td>
+        </tr>
+        <tr>
+          <td><strong>No conversational AI for claimant FNOL experience</strong></td>
+          <td>PoV — AI Contact Center UX</td>
+          <td><span class="gap-tag high">High</span></td>
+          <td>A-15 Conversational Orchestration Agent (L3)</td>
+          <td>Voice + text NLU session. Replaces IVR at L3. Emotion detection → empathy routing. Recording consent gate. Architecture hooks in V4; full deployment at L3 milestone.</td>
+        </tr>
+        <tr>
+          <td><strong>Adjuster still using SOR desktop as primary interface</strong></td>
+          <td>PoV — AI-Augmented Claims Contact Center</td>
+          <td><span class="gap-tag high">High</span></td>
+          <td>A-16 Adjuster Co-Pilot Agent (L3)</td>
+          <td>Natural language query over claim state. Recommended actions with cited evidence. Authority checks inline. Integrates with Guidewire / Duck Creek surface via browser extension or overlay. L3 deployment.</td>
+        </tr>
+        <tr>
+          <td><strong>No state regulatory rule engine — hard-coded logic risk</strong></td>
+          <td>PoV — State Regulatory Compliance</td>
+          <td><span class="gap-tag crit">Critical</span></td>
+          <td>A-17 State Regulatory Compliance Agent</td>
+          <td>Rules as versioned YAML configs per state. SLA timer injection at FNOL. Auto-drafts adverse action letters (claude-sonnet-4). DOI reporting event trigger. 50-state expansion via config only.</td>
+        </tr>
+        <tr>
+          <td><strong>No dedicated salvage/total-loss workflow agent</strong></td>
+          <td>PoV — Damage + Total Loss workflow</td>
+          <td><span class="gap-tag high">High</span></td>
+          <td>A-06 Salvage & Total Loss Agent</td>
+          <td>Copart / IAA API integration. State TL threshold matrix (YAML config). Owner-retained salvage deduction calculation. Gap insurance notification. Title transfer workflow automation.</td>
+        </tr>
+        <tr>
+          <td><strong>No multi-LLM abstraction — single provider lock-in risk</strong></td>
+          <td>PoV — Platform Engineering</td>
+          <td><span class="gap-tag high">High</span></td>
+          <td>LLM Gateway Service (infrastructure layer)</td>
+          <td>Provider-agnostic gateway. Model selection via agent config (not hard-coded). Failover chain: claude-sonnet-4 → GPT-4o → Gemini Pro. A/B test support. Cost-routing for simple tasks.</td>
+        </tr>
+        <tr>
+          <td><strong>Bias monitoring not operationalized</strong></td>
+          <td>PoV — Governance / Explainability</td>
+          <td><span class="gap-tag high">High</span></td>
+          <td>A-20 Bias Monitoring Agent</td>
+          <td>Statistical parity monitoring on fraud scores and settlement offers across demographic proxies. BiasAlert event triggers model re-evaluation. Quarterly bias report auto-generated for compliance.</td>
+        </tr>
+        <tr>
+          <td><strong>Prompt versioning informal — no production governance</strong></td>
+          <td>Internal V3 gap</td>
+          <td><span class="gap-tag high">High</span></td>
+          <td>Prompt Version Registry (git-backed hash store)</td>
+          <td>All prompts stored in git with SHA-256 hash. Hash stored in every Decision Record. Deployment pipeline enforces hash match before agent activation. A/B deployment supported via feature flag.</td>
+        </tr>
+        <tr>
+          <td><strong>No real-time contact center AI assist for adjusters on calls</strong></td>
+          <td>PoV — AI-Augmented Contact Center</td>
+          <td><span class="gap-tag med">Medium</span></td>
+          <td>A-21 Contact Center AI Agent</td>
+          <td>Genesys / Salesforce CRM integration. Real-time call transcription (Whisper / vendor STT). Coverage query resolution inline. Complaint detection → supervisor alert. AHT reduction ~30%.</td>
+        </tr>
+        <tr>
+          <td><strong>Telematics data not cross-referenced against claimed damage</strong></td>
+          <td>Internal V3 gap</td>
+          <td><span class="gap-tag med">Medium</span></td>
+          <td>A-10 Telematics Agent — upgraded consistency check</td>
+          <td>OBD-II data (deltaV, impact direction) cross-referenced against damage estimate location and severity. Inconsistency score feeds A-04 Fraud Detection as additional signal.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════ S9: STRATEGIC DIFFERENTIATORS ═══════ -->
+<section class="section" id="s9">
+  <div class="sec-head">
+    <div class="sec-eye">Section 09</div>
+    <h2 class="sec-title">STRATEGIC DIFFERENTIATORS</h2>
+    <p class="sec-lead">V4 vs. any competing PoV or single-vendor claims AI product. These differentiators are architecture-level, not feature-level — they compound over time and are difficult to replicate without the foundational design.</p>
+  </div>
+
+  <div class="diff-grid">
+    <div class="diff-card">
+      <div class="diff-num">01</div>
+      <div class="diff-label"><strong>Pre-FNOL Activation</strong><br>Telematics crash detection initiates claim before call — 60-second outreach SLA. No competitor product matches this cycle time from loss event to claim creation.</div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-num">02</div>
+      <div class="diff-label"><strong>FNOL-Time Subrogation</strong><br>A-19 activates at FNOL — not post-settlement. Industry standard is post-close batch review. V4 targets ≥80% subrogation identification at intake, recovering value competitors leave on the table.</div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-num">03</div>
+      <div class="diff-label"><strong>Attorney Early Warning</strong><br>72-hour litigation risk flag enables pre-litigation reserve adjustment and intervention that reduces litigation frequency. No standard FNOL platform has this at intake stage.</div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-num">04</div>
+      <div class="diff-label"><strong>Deterministic AI Harness</strong><br>AI agents cannot write to SOR without passing rule validation. AI proposes, deterministic logic disposes. Eliminates the "hallucination to payment" risk that makes carriers hesitant to deploy LLM agents.</div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-num">05</div>
+      <div class="diff-label"><strong>SOR-Agnostic Architecture</strong><br>Canonical FNOL Payload v4 + A-14 adapter pattern means V4 deploys on Guidewire, Duck Creek, ALIP, or any custom SOR with no agent changes. Carriers don't re-platform to upgrade maturity.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px">
+    <div style="font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink5);margin:0 0 10px">Why V4 is Accenture-Grade</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Dimension</th><th>PoV / Market Standard</th><th>V4 (Accenture-Grade)</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Governance</strong></td><td>Decision audit noted; not operationalized</td><td class="v4b">Immutable DR per invocation; bias monitor; prompt hash; regulatory auto-compliance. Production-ready from day 1.</td></tr>
+          <tr><td><strong>Scalability</strong></td><td>Agent count fixed; adding capability = re-design</td><td class="v4b">Event-driven subscription model — add agent by subscribing to existing event. No workflow rewrites.</td></tr>
+          <tr><td><strong>Compliance</strong></td><td>State rules referenced; implementation unclear</td><td class="v4b">A-17 enforces rules as versioned YAML. 50-state expansion via config. Adverse action auto-drafted. DOI reporting event fired.</td></tr>
+          <tr><td><strong>Multi-LLM</strong></td><td>Single provider; upgrade = re-deployment</td><td class="v4b">LLM Gateway decouples. Provider swap = config change. A/B test live. Cost-routing enabled.</td></tr>
+          <tr><td><strong>Industrialization</strong></td><td>Conceptual PoV; deployment gaps</td><td class="v4b">Containerized agents, CI/CD pipeline, feature flags, dead-letter queues, circuit breakers, chaos testing spec — all defined.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ S10: IMPLEMENTATION ROADMAP ═══════ -->
+<section class="section" id="s10">
+  <div class="sec-head">
+    <div class="sec-eye">Section 10</div>
+    <h2 class="sec-title">IMPLEMENTATION ROADMAP</h2>
+    <p class="sec-lead">Three phases aligned to L1 → L2 → L3 maturity. Each phase delivers incremental value and is independently deployable. Phase 1 POC targets TX, GA, AZ APD claims.</p>
+  </div>
+
+  <div class="roadmap">
+    <div class="phase p1">
+      <div class="phase-label">Phase 1</div>
+      <div class="phase-title">FNOL CORE</div>
+      <div class="phase-time">Weeks 1–16 · L2 Foundation</div>
+      <div class="phase-body">Deploy FNOL Core Agents (A-01 through A-05), SOR Sync (A-14), Communications (A-11), Governance mesh (A-17, A-18). Event Bus + Orchestration Engine stood up. Canonical schema v4 deployed. SOR adapters implemented for target platform.</div>
+      <div class="phase-tags">
+        <span class="ptag">A-01 Intake</span>
+        <span class="ptag">A-02 Coverage</span>
+        <span class="ptag">A-03 Triage</span>
+        <span class="ptag">A-04 Fraud</span>
+        <span class="ptag">A-05 Damage</span>
+        <span class="ptag">A-14 SOR Sync</span>
+        <span class="ptag">A-17 Regulatory</span>
+        <span class="ptag">A-18 Audit DR</span>
+      </div>
+      <div style="margin-top:12px;font-family:var(--mono);font-size:9px;color:var(--acc2)">Outcome: ~55% APD STP · Fraud early detection · SLA compliance</div>
+    </div>
+    <div class="phase p2">
+      <div class="phase-label">Phase 2</div>
+      <div class="phase-title">FULL LIFECYCLE</div>
+      <div class="phase-time">Weeks 17–36 · L2 Complete</div>
+      <div class="phase-body">Add Decisioning Agents (A-06 TL, A-07 BI, A-08 Attorney, A-09 Settlement, A-13 Medical), Ecosystem Agents (A-10 Telematics, A-19 Subrogation), Bias Monitor (A-20). Full parallel execution patterns. Multi-LLM Gateway deployed.</div>
+      <div class="phase-tags">
+        <span class="ptag">A-06 Total Loss</span>
+        <span class="ptag">A-07 BI Eval</span>
+        <span class="ptag">A-08 Attorney</span>
+        <span class="ptag">A-09 Settlement</span>
+        <span class="ptag">A-13 Medical AI</span>
+        <span class="ptag">A-19 Subrogation</span>
+        <span class="ptag">A-20 Bias Monitor</span>
+        <span class="ptag">LLM Gateway</span>
+      </div>
+      <div style="margin-top:12px;font-family:var(--mono);font-size:9px;color:var(--v4)">Outcome: ~80% APD STP · BI acceleration · Subrogation at FNOL · Attorney warning live</div>
+    </div>
+    <div class="phase p3">
+      <div class="phase-label">Phase 3</div>
+      <div class="phase-title">L3 AI-NATIVE UX</div>
+      <div class="phase-time">Weeks 37–60 · L3 Target</div>
+      <div class="phase-body">Deploy L3 UX Agents (A-15 Conversational, A-16 Co-Pilot, A-21 Contact Center). SOR transitions to thin service. Adjuster Co-Pilot replaces desktop primary interface. Continuous learning loops from closed claim data. Feedback loop retrains damage and fraud models quarterly.</div>
+      <div class="phase-tags">
+        <span class="ptag">A-15 Conv. Orch.</span>
+        <span class="ptag">A-16 Co-Pilot</span>
+        <span class="ptag">A-21 Contact Center AI</span>
+        <span class="ptag">ML Feedback Loop</span>
+        <span class="ptag">Model Retraining</span>
+      </div>
+      <div style="margin-top:12px;font-family:var(--mono);font-size:9px;color:var(--up)">Outcome: >88% STP · 18% LAE reduction · L3 AI-Centric maturity achieved</div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Milestone</th><th>Phase</th><th>KPI Target</th><th>Go/No-Go Gate</th></tr></thead>
+        <tbody>
+          <tr><td><strong>POC Week 10</strong></td><td>Phase 1</td><td>APD STP ≥40% · Fraud precision ≥75% · Zero SLA breaches</td><td>Scorecard review (GO / Conditional GO / No-Go)</td></tr>
+          <tr><td><strong>Phase 1 Production</strong></td><td>Phase 1</td><td>APD STP ≥55% · p99 FNOL &lt;4 min · A-17 compliance 100%</td><td>Business + Compliance sign-off</td></tr>
+          <tr><td><strong>Phase 2 Production</strong></td><td>Phase 2</td><td>APD STP ≥80% · Subrogation ID ≥70% at FNOL · Attorney warning precision ≥70%</td><td>Executive steering committee</td></tr>
+          <tr><td><strong>L3 Activation</strong></td><td>Phase 3</td><td>STP ≥88% · LAE −18% · Adjuster Co-Pilot adoption ≥80%</td><td>Board-level transformation review</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ S11: HUMAN × CLAUDE COLLABORATION MODEL ═══════ -->
+<section class="section" id="s11">
+  <div class="sec-head">
+    <div class="sec-eye">Supplement</div>
+    <h2 class="sec-title">HUMAN × CLAUDE COLLABORATION MODEL</h2>
+    <p class="sec-lead">The Auto Platform Engineering Human × Claude model defines how Claude (claude-sonnet-4) functions as an intelligent co-designer alongside claims engineers, architects, and adjusters. Not a replacement — an acceleration layer. Based on the Anthropic P&C Playbook reference model.</p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Engineering Activity</th><th>Human Role</th><th>Claude Role</th><th>Artifact Produced</th><th>Governance Control</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>FNOL Agent Spec Design</strong></td>
+          <td>Domain SME defines business rules, SLAs, HITL thresholds</td>
+          <td>Generates structured agent spec with system prompt, I/O schema, confidence thresholds, Decision Record template</td>
+          <td>Agent Specification Document</td>
+          <td>Human reviews + approves; prompt hashed on approval</td>
+        </tr>
+        <tr>
+          <td><strong>System Prompt Engineering</strong></td>
+          <td>Adjuster SME provides example cases; QA validates outputs</td>
+          <td>Iterates prompt variants, generates evaluation test cases, produces reasoning traces for inspection</td>
+          <td>Prompt v1.x with eval set</td>
+          <td>Prompt stored in Version Registry; hash in DR on deploy</td>
+        </tr>
+        <tr>
+          <td><strong>Integration Spec (API / Events)</strong></td>
+          <td>Architect defines integration constraints, SOR schema</td>
+          <td>Generates OpenAPI spec, event schema (Avro/JSON), SOR adapter translation logic, circuit breaker config</td>
+          <td>OpenAPI YAML, Event Schema, Adapter Code</td>
+          <td>Architect code review; automated schema validation in CI/CD</td>
+        </tr>
+        <tr>
+          <td><strong>Regulatory Rule Authoring</strong></td>
+          <td>Compliance team provides state DOI requirements</td>
+          <td>Translates DOI requirements into YAML rule configs; generates SLA timer parameters; drafts adverse action letter templates</td>
+          <td>State Regulatory YAML Config + Letter Templates</td>
+          <td>Compliance sign-off per state; annual review cycle</td>
+        </tr>
+        <tr>
+          <td><strong>Decision Record Schema Design</strong></td>
+          <td>Audit/Legal defines retention and evidentiary requirements</td>
+          <td>Designs DR schema with all required fields; generates immutable audit store write logic; produces E&O defense readiness checklist</td>
+          <td>DR JSON Schema + Audit Store Spec</td>
+          <td>Legal review; immutability enforced at infrastructure level</td>
+        </tr>
+        <tr>
+          <td><strong>Fraud Pattern Analysis</strong></td>
+          <td>SIU investigator provides known fraud patterns; labels historical cases</td>
+          <td>Generates fraud feature engineering spec; identifies statistical patterns in labeled data; produces training dataset schema</td>
+          <td>Fraud Feature Spec + Training Data Schema</td>
+          <td>SIU + Data Science review; model card produced for each trained version</td>
+        </tr>
+        <tr>
+          <td><strong>Settlement Negotiation Logic</strong></td>
+          <td>Senior adjuster defines authority matrix, offer escalation rules</td>
+          <td>Formalizes authority matrix as decision table; generates settlement offer reasoning template; produces counter-offer logic spec</td>
+          <td>Authority Decision Table + Offer Logic Spec</td>
+          <td>Legal + Actuary sign-off; authority thresholds enforced deterministically</td>
+        </tr>
+        <tr>
+          <td><strong>Bias & Fairness Testing</strong></td>
+          <td>Data science defines protected class proxies; compliance sets thresholds</td>
+          <td>Generates statistical parity test suite; produces disparate impact analysis template; identifies proxy variable risks</td>
+          <td>Bias Test Suite + Impact Analysis Report</td>
+          <td>Compliance review; A-20 monitors continuously in production</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout v4" style="margin-top:16px">
+    <strong>Claude Code for Platform Engineering (V4 Addition):</strong> Claude Code (claude-sonnet-4) is used for auto-generating SOR adapter boilerplate, OpenAPI specs from natural language requirements, BPMN workflow YAML, and test harness scaffolding. Human architect reviews all generated code before merge. Estimated 40–60% reduction in integration development time vs. manual coding. All generated code tagged in commit history for traceability.
+  </div>
+</section>
+
+<!-- ═══════ S12: OPEN QUESTIONS ═══════ -->
+<section class="section" id="s12">
+  <div class="sec-head">
+    <div class="sec-eye">Supplement</div>
+    <h2 class="sec-title">OPEN QUESTIONS & ASSUMPTIONS</h2>
+    <p class="sec-lead">Items requiring carrier confirmation before production deployment. No assumptions were fabricated — marked OQ where answer unknown.</p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Open Question</th><th>Domain</th><th>Impact if Unresolved</th><th>Owner</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">OQ-01</td><td>Which SOR platform is in scope for Phase 1? (Guidewire vs. Duck Creek vs. ALIP)</td><td>Architecture</td><td>Adapter selection, integration timeline</td><td>Client IT Architecture</td></tr>
+        <tr><td class="mono">OQ-02</td><td>Is a telematics/TSP relationship already in place? Which provider?</td><td>Integration</td><td>A-10 integration spec; pre-FNOL capability timeline</td><td>Client Product</td></tr>
+        <tr><td class="mono">OQ-03</td><td>What is the carrier's existing fraud vendor (ISO ClaimSearch access, SIU workflow tool)?</td><td>Integration</td><td>A-04 integration; SIU referral event routing</td><td>Client SIU / Claims Ops</td></tr>
+        <tr><td class="mono">OQ-04</td><td>Does the carrier have an existing medical review vendor for BI claims?</td><td>Integration</td><td>A-13 vendor selection; build vs. integrate decision</td><td>Client BI / Medical Claims</td></tr>
+        <tr><td class="mono">OQ-05</td><td>What are the carrier's authority thresholds for settlement (by claim type, state)?</td><td>Decisioning</td><td>A-09 authority matrix; HITL gate configuration</td><td>Client Claims Leadership</td></tr>
+        <tr><td class="mono">OQ-06</td><td>Which states are in scope beyond TX/GA/AZ? What DOI reporting obligations apply?</td><td>Regulatory</td><td>A-17 YAML config scope; compliance review requirements</td><td>Client Compliance</td></tr>
+        <tr><td class="mono">OQ-07</td><td>What is the carrier's data retention policy for PII in claim records?</td><td>Privacy</td><td>PII Vault design; consent ledger scope; DR retention period</td><td>Client Legal / Privacy</td></tr>
+        <tr><td class="mono">OQ-08</td><td>Is there an existing contact center platform (Genesys, Five9, Amazon Connect)?</td><td>Integration</td><td>A-21 Contact Center AI integration; A-15 voice channel routing</td><td>Client Contact Center Ops</td></tr>
+        <tr><td class="mono">OQ-09</td><td>What model approval process does the carrier require for AI models in claims decisions?</td><td>Governance</td><td>Model validation timeline; MRM (Model Risk Management) gate before production</td><td>Client Risk / Actuarial</td></tr>
+        <tr><td class="mono">OQ-10</td><td>Does the carrier have an existing subrogation workflow tool or vendor relationship?</td><td>Integration</td><td>A-19 integration design; specialist assignment routing</td><td>Client Subrogation Ops</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn" style="margin-top:16px">
+    <strong>Key Assumptions (applied where inputs unavailable):</strong> (1) claude-sonnet-4-20250514 at temperature=0.0 is the default LLM for all agents — alternate models configurable via LLM Gateway; (2) Phase 1 POC scope: APD only, TX/GA/AZ, personal lines auto; (3) ISO ClaimSearch access assumed available; (4) CCC One or Mitchell assumed as damage estimation vendor; (5) Confluent Kafka assumed as event bus — AWS MSK or Azure Event Hubs are config-equivalent substitutes; (6) All SLA values represent industry-typical defaults — carrier-specific values override via config.
+  </div>
+
+  <div class="footnote">
+    Blueprint V4 · AI-Native FNOL Claims Solution · Accenture Insurance Technology · May 2026<br>
+    Built on: V3 Functional Specification (L100) · Claims Agentic PoV Gap Analysis · Anthropic P&C Personal Lines Playbook · Generate_V4_Blueprint_PROMPT.md<br>
+    Model: claude-sonnet-4-20250514 · Temperature 0.0 · All agents JSON-only output · Decision Records immutable<br>
+    ⚠ Draft for review — not a final regulatory or legal document. OQ items above require carrier confirmation before production deployment.
+  </div>
+</section>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<div class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+
+<script>
+// Active nav on scroll
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nlink');
+const scrollBtn = document.getElementById('scrollTop');
+
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      navLinks.forEach(l => l.classList.remove('active'));
+      const id = '#' + e.target.id;
+      const active = document.querySelector('.nlink[href="' + id + '"]');
+      if(active) active.classList.add('active');
+    }
+  });
+},{threshold:0.15,rootMargin:'-60px 0px -60% 0px'});
+
+sections.forEach(s => obs.observe(s));
+
+window.addEventListener('scroll', () => {
+  scrollBtn.classList.toggle('vis', window.scrollY > 400);
+});
+</script>
+</body>
+</html>
