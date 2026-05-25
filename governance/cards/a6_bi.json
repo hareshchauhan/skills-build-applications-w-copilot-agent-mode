@@ -1,0 +1,153 @@
+{
+  "agent_id": "a6_bi",
+  "agent_name": "BI Evaluation Agent",
+  "version": "3.5.0",
+  "blueprint_stage": "05 \u2014 BI Evaluation & Liability Determination",
+  "maturity_level": "L2",
+  "owner": {
+    "team": "Accenture P&C Claims AI",
+    "contact": "claims-ai@accenture.com",
+    "last_review": "2026-05-08",
+    "next_review": "2026-08-08"
+  },
+  "intended_use": {
+    "primary": "Comparative negligence determination via police report NLP, telematics reconstruction, witness statements; BI evaluation via medical record reading (Claude Opus 200K context); P10/P50/P90 settlement spread anchored to jurisdictional verdict database.",
+    "in_scope": [
+      "US personal-lines auto first-party claims",
+      "All 50 US states"
+    ],
+    "out_of_scope": [
+      "Commercial auto",
+      "Workers' comp",
+      "Pricing/underwriting"
+    ]
+  },
+  "model_type": "hybrid_rules_plus_ml",
+  "training_approach": "Rules + heuristics calibrated against POC closed-claim outcomes. ML uplift planned for v4. No demographic features used.",
+  "inputs": {
+    "data_sources": [
+      {
+        "source": "Police report (LexisNexis or state portal)",
+        "sensitivity": "PII + CRA",
+        "fields": [
+          "narrative",
+          "fault_assignment"
+        ]
+      },
+      {
+        "source": "Medical records (HIPAA-authorized)",
+        "sensitivity": "PHI",
+        "fields": [
+          "diagnoses",
+          "ICD-10",
+          "CPT",
+          "treatment_timeline"
+        ]
+      },
+      {
+        "source": "Verisk verdict database",
+        "sensitivity": "vendor + CRA-adjacent",
+        "fields": [
+          "comparable_verdicts"
+        ]
+      },
+      {
+        "source": "FNOL Intake (A1)",
+        "sensitivity": "PII",
+        "fields": [
+          "injury_description",
+          "attorney_retained"
+        ]
+      }
+    ],
+    "prohibited_inputs": [
+      "Race/ethnicity",
+      "Religion",
+      "National origin",
+      "Sexual orientation",
+      "Genetic information",
+      "Credit score in claims handling"
+    ]
+  },
+  "outputs": {
+    "fields": [
+      "faultPctByParty",
+      "biReserveRecommendation",
+      "settlementP10",
+      "settlementP50",
+      "settlementP90",
+      "attorneyRepresentationFlag",
+      "imeReferralFlag"
+    ],
+    "decision_record_emitted": true,
+    "hitl_gate": "confidence < 0.70"
+  },
+  "performance": {
+    "metrics": [
+      {
+        "name": "liability_assignment_agreement",
+        "current": 0.82,
+        "target": 0.88
+      }
+    ],
+    "calibration": {
+      "expected_calibration_error": 0.04,
+      "target_ece": 0.05
+    }
+  },
+  "fairness": {
+    "monitored": false,
+    "monitor": "governance/bias_monitor.py",
+    "protected_attributes": [],
+    "metrics": [
+      {
+        "demographic_parity_ratio": 0.8
+      },
+      {
+        "equalized_odds_difference": 0.1
+      },
+      {
+        "calibration_by_group": 0.02
+      }
+    ],
+    "remediation_path": "Threshold breach \u2192 bias_monitor flags \u2192 CCO + model owner notified within 24h \u2192 re-calibration job queued \u2192 HITL rate raised to 100% on flagged segment until resolved."
+  },
+  "failure_modes_known": [
+    {
+      "id": "FM-01",
+      "description": "Sparse loss narrative \u2192 low confidence",
+      "mitigation": "HITL gate"
+    }
+  ],
+  "human_oversight": {
+    "hitl_gates": [
+      {
+        "litigation": "litigationIndicator=true OR attorney_represented=true"
+      },
+      {
+        "fatality": "fatalityIndicator=true \u2192 senior adjuster + legal"
+      },
+      {
+        "medical_outlier": "treatment duration > 95th percentile for injury type"
+      },
+      {
+        "limits_pressure": "biLimitPerPerson < reserve recommendation"
+      }
+    ],
+    "override_logging": "All adjuster overrides logged with overrideUserId, overrideReason, overrideTimestamp; feedback signal sent to model registry."
+  },
+  "regulatory_alignment": [
+    "NAIC Model Bulletin on AI (Dec 2023): \u00a74 documentation, \u00a75 monitoring",
+    "NIST AI RMF GOVERN-1.4: model risk profile",
+    "State UCSPA (all 50): timely investigation requirements"
+  ],
+  "audit_log_location": "governance/decision_log/a6_bi/",
+  "retention_class": "EXTENDED_10Y",
+  "change_log": [
+    {
+      "date": "2026-05-08",
+      "version": "3.5.0",
+      "note": "Governance Layer v1 \u2014 model card added; bias monitor wired where applicable"
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "agent_id": "a2_coverage",
+  "agent_name": "Coverage & Liability Agent",
+  "version": "3.5.0",
+  "blueprint_stage": "02 \u2014 Coverage Verification & Reservation",
+  "maturity_level": "L2",
+  "owner": {
+    "team": "Accenture P&C Claims AI",
+    "contact": "claims-ai@accenture.com",
+    "last_review": "2026-05-08",
+    "next_review": "2026-08-08"
+  },
+  "intended_use": {
+    "primary": "Verify policy in-force at lossDateTime; check exclusions; create exposures by coverage type; set initial reserves; draft ROR letter when warranted.",
+    "in_scope": [
+      "US personal-lines auto first-party claims",
+      "All 50 US states"
+    ],
+    "out_of_scope": [
+      "Commercial auto",
+      "Workers' comp",
+      "Pricing/underwriting"
+    ]
+  },
+  "model_type": "hybrid_rules_plus_ml",
+  "training_approach": "Rules + heuristics calibrated against POC closed-claim outcomes. ML uplift planned for v4. No demographic features used.",
+  "inputs": {
+    "data_sources": [
+      {
+        "source": "Policy Admin SOR (Duck Creek/Guidewire)",
+        "sensitivity": "PII + financial",
+        "fields": [
+          "policy declarations",
+          "endorsements",
+          "exclusions"
+        ]
+      },
+      {
+        "source": "FNOL Intake (A1)",
+        "sensitivity": "PII",
+        "fields": [
+          "lossDateTime",
+          "lossCause",
+          "jurisdictionState"
+        ]
+      }
+    ],
+    "prohibited_inputs": [
+      "Race/ethnicity",
+      "Religion",
+      "National origin",
+      "Sexual orientation",
+      "Genetic information",
+      "Credit score in claims handling"
+    ]
+  },
+  "outputs": {
+    "fields": [
+      "coverageVerified",
+      "exposuresCreated",
+      "deductibleAmount",
+      "limits",
+      "initialReserveAmount",
+      "rorLetter",
+      "noFaultIndicator"
+    ],
+    "decision_record_emitted": true,
+    "hitl_gate": "confidence < 0.70"
+  },
+  "performance": {
+    "metrics": [
+      {
+        "name": "coverage_decision_accuracy",
+        "current": 0.96,
+        "target": 0.98
+      }
+    ],
+    "calibration": {
+      "expected_calibration_error": 0.04,
+      "target_ece": 0.05
+    }
+  },
+  "fairness": {
+    "monitored": false,
+    "monitor": "governance/bias_monitor.py",
+    "protected_attributes": [],
+    "metrics": [
+      {
+        "demographic_parity_ratio": 0.8
+      },
+      {
+        "equalized_odds_difference": 0.1
+      },
+      {
+        "calibration_by_group": 0.02
+      }
+    ],
+    "remediation_path": "Threshold breach \u2192 bias_monitor flags \u2192 CCO + model owner notified within 24h \u2192 re-calibration job queued \u2192 HITL rate raised to 100% on flagged segment until resolved."
+  },
+  "failure_modes_known": [
+    {
+      "id": "FM-01",
+      "description": "Sparse loss narrative \u2192 low confidence",
+      "mitigation": "HITL gate"
+    }
+  ],
+  "human_oversight": {
+    "hitl_gates": [
+      {
+        "low_confidence": "confidence < 0.70"
+      }
+    ],
+    "override_logging": "All adjuster overrides logged with overrideUserId, overrideReason, overrideTimestamp; feedback signal sent to model registry."
+  },
+  "regulatory_alignment": [
+    "NAIC Model Bulletin \u00a74 documentation",
+    "State UCSPA (all 50): coverage determination timing",
+    "CA Insurance Code \u00a7791",
+    "NY Reg 64",
+    "FCRA \u00a7615 (when CRA data used)"
+  ],
+  "audit_log_location": "governance/decision_log/a2_coverage/",
+  "retention_class": "STANDARD_7Y",
+  "change_log": [
+    {
+      "date": "2026-05-08",
+      "version": "3.5.0",
+      "note": "Governance Layer v1 \u2014 model card added; bias monitor wired where applicable"
+    }
+  ]
+}

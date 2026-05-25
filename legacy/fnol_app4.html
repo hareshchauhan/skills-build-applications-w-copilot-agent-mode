@@ -1,0 +1,1756 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>FNOL Intelligence Platform · Accenture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS (same as platform baseline) ─────────────────────────────── */
+:root{
+  --ink-0:#ffffff;--ink-1:#fafafa;--ink-2:#f4f4f5;--ink-3:#e4e4e7;
+  --ink-5:#a1a1aa;--ink-6:#71717a;--ink-7:#52525b;--ink-8:#3f3f46;--ink-9:#18181b;
+  --rule:#e4e4e7;--rule2:#d4d4d8;
+  --acc:#6d28d9;--acc-m:#7c3aed;--acc-soft:#ede9fe;--acc-lite:#f5f3ff;
+  --blue:#1d4ed8;--blue-soft:#dbeafe;
+  --emerald:#047857;--emerald-m:#059669;--emerald-soft:#d1fae5;
+  --amber:#b45309;--amber-m:#d97706;--amber-soft:#fef3c7;
+  --red:#b91c1c;--red-m:#dc2626;--red-soft:#fee2e2;
+  --teal:#0f766e;--teal-soft:#ccfbf1;
+  --sky:#0369a1;--sky-soft:#e0f2fe;
+  --orange:#c2410c;--orange-soft:#fff7ed;
+  --serif:'Fraunces',Georgia,serif;
+  --sans:'Inter Tight',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+  --nav-w:224px;
+  --top-h:52px;
+  --r:6px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;background:var(--ink-1);color:var(--ink-9);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:13px;color:var(--ink-9)}
+a{color:var(--blue);text-decoration:none}
+:focus-visible{outline:2px solid var(--acc-m);outline-offset:2px}
+
+/* ── SHELL LAYOUT ────────────────────────────────────────────────────── */
+.shell{display:flex;height:100vh;overflow:hidden}
+
+/* ── LEFT SIDEBAR ────────────────────────────────────────────────────── */
+.sidebar{width:var(--nav-w);flex-shrink:0;background:#fff;border-right:1px solid var(--rule);display:flex;flex-direction:column;height:100vh;overflow:hidden;position:relative;z-index:10}
+.sidebar-brand{padding:18px 18px 14px;border-bottom:1px solid var(--rule);flex-shrink:0}
+.brand-mark{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.brand-icon{width:28px;height:28px;border-radius:6px;background:linear-gradient(145deg,#1a0533,#6d28d9);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-icon svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brand-name{font-family:var(--serif);font-size:14px;font-weight:700;line-height:1.15;color:var(--ink-9)}
+.brand-sub{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-5);line-height:1}
+.sidebar-status{padding:8px 12px;background:var(--ink-1);border-radius:var(--r);display:flex;flex-direction:column;gap:4px}
+.status-row{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-6)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ink-5);flex-shrink:0;display:inline-block}
+.dot.ok{background:var(--emerald-m)}
+.dot.warn{background:var(--amber-m)}
+.dot.err{background:var(--red-m);animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── SIDEBAR NAV ─────────────────────────────────────────────────────── */
+.sidebar-nav{flex:1;overflow-y:auto;padding:10px 8px;scrollbar-width:none}
+.sidebar-nav::-webkit-scrollbar{display:none}
+.nav-section{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-5);padding:10px 10px 4px;margin-top:4px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r);cursor:pointer;border:none;background:transparent;width:100%;text-align:left;color:var(--ink-7);font-size:12.5px;font-family:var(--sans);font-weight:500;transition:background .12s,color .12s;position:relative}
+.nav-item:hover{background:var(--ink-2);color:var(--ink-9)}
+.nav-item.active{background:var(--acc-soft);color:var(--acc)}
+.nav-item-icon{font-size:14px;flex-shrink:0;width:18px;text-align:center;line-height:1}
+.nav-item-label{flex:1;line-height:1.2}
+.nav-badge{font-family:var(--mono);font-size:8px;padding:1px 5px;border-radius:8px;background:var(--acc-soft);color:var(--acc);letter-spacing:.04em;flex-shrink:0}
+.nav-badge.new{background:var(--emerald-soft);color:var(--emerald)}
+.nav-badge.ai{background:var(--sky-soft);color:var(--sky)}
+.nav-badge.gov{background:var(--amber-soft);color:var(--amber)}
+
+/* ── SIDEBAR FOOTER ──────────────────────────────────────────────────── */
+.sidebar-foot{padding:12px 8px;border-top:1px solid var(--rule);flex-shrink:0}
+.sidebar-foot button{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r);cursor:pointer;border:1px solid var(--rule);background:#fff;width:100%;font-size:11.5px;font-family:var(--mono);color:var(--ink-6);letter-spacing:.06em;transition:all .12s}
+.sidebar-foot button:hover{border-color:var(--rule2);background:var(--ink-2);color:var(--ink-9)}
+
+/* ── MAIN AREA ───────────────────────────────────────────────────────── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── TOP BAR ─────────────────────────────────────────────────────────── */
+.topbar{height:var(--top-h);border-bottom:1px solid var(--rule);background:#fff;display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0}
+.topbar-title{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-7);font-weight:600;flex:1}
+.topbar-pills{display:flex;align-items:center;gap:8px}
+.pill{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:10px;border:1px solid var(--rule);background:var(--ink-1);color:var(--ink-6);white-space:nowrap}
+
+/* ── CONTENT SCROLL AREA ─────────────────────────────────────────────── */
+.content{flex:1;overflow-y:auto;padding:24px;scrollbar-width:thin;scrollbar-color:var(--rule2) transparent}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-track{background:transparent}
+.content::-webkit-scrollbar-thumb{background:var(--rule2);border-radius:3px}
+
+/* ── PANELS & CARDS ──────────────────────────────────────────────────── */
+.panel{background:#fff;border:1px solid var(--rule);border-radius:var(--r)}
+.panel+.panel{margin-top:14px}
+.panel-head{padding:15px 20px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:12px}
+.panel-eyebrow{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-5);margin-bottom:2px}
+.panel-title{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:-.01em;margin:0;color:var(--ink-9)}
+.panel-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.panel-body{padding:20px}
+
+/* ── INNER TAB NAV (top of panel content) ─────────────────────────────── */
+.inner-tabs{display:flex;gap:0;border-bottom:1px solid var(--rule);background:#fff;padding:0 20px;margin-bottom:0;flex-shrink:0}
+.inner-tab{padding:10px 14px;border:none;background:transparent;color:var(--ink-6);font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .12s,border-color .12s}
+.inner-tab:hover{color:var(--ink-9)}
+.inner-tab.active{color:var(--acc);border-bottom-color:var(--acc)}
+.inner-panel{display:none;padding:20px}
+.inner-panel.active{display:block}
+
+/* ── HERO ────────────────────────────────────────────────────────────── */
+.hero{display:grid;grid-template-columns:1.5fr 1fr;gap:0;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:#fff;margin-bottom:18px}
+.hero-l{padding:26px 28px;border-right:1px solid var(--rule)}
+.hero-eyebrow{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-5);margin-bottom:10px}
+.hero-h{font-family:var(--serif);font-size:26px;font-weight:700;line-height:1.15;letter-spacing:-.02em;margin:0 0 8px;color:var(--ink-9)}
+.hero-h em{font-style:italic;color:var(--acc)}
+.hero-desc{font-size:12.5px;color:var(--ink-7);margin:0 0 14px;max-width:480px;line-height:1.6}
+.hero-meta{display:flex;gap:14px;flex-wrap:wrap}
+.hero-meta span{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-5)}
+.hero-meta span strong{color:var(--ink-7);font-weight:500}
+.hero-r{padding:26px 28px;background:var(--ink-1);display:flex;align-items:center}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.kpi{padding:10px 12px;background:#fff;border:1px solid var(--rule);border-radius:var(--r)}
+.kpi-n{font-family:var(--serif);font-size:22px;font-weight:700;line-height:1;color:var(--ink-9)}
+.kpi-l{font-family:var(--mono);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-5);margin-top:4px}
+
+/* ── FORMS ───────────────────────────────────────────────────────────── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 18px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px 18px}
+.fld{display:flex;flex-direction:column;gap:4px}
+.fld label{font-size:11px;font-weight:600;color:var(--ink-8);letter-spacing:.01em}
+.req{color:var(--red-m);margin-left:1px}
+.fld input,.fld select,.fld textarea{padding:7px 10px;border:1px solid var(--rule2);border-radius:var(--r);background:#fff;color:var(--ink-9);font-size:12.5px;transition:border-color .12s,box-shadow .12s;-webkit-appearance:none;appearance:none}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--acc-m);box-shadow:0 0 0 3px rgba(124,58,237,.1);outline:none}
+.fld textarea{resize:vertical;min-height:64px}
+.fld-hint{font-family:var(--mono);font-size:9.5px;color:var(--ink-5);letter-spacing:.04em;min-height:13px}
+.fld-hint.ok{color:var(--emerald)}
+.fld-hint.warn{color:var(--amber)}
+.check-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--rule);border-radius:var(--r);background:var(--ink-1);cursor:pointer;transition:border-color .12s,background .12s}
+.check-row:hover{border-color:var(--rule2);background:var(--ink-2)}
+.check-row input[type=checkbox]{width:13px;height:13px;accent-color:var(--acc-m);cursor:pointer;flex-shrink:0;margin:0}
+.check-row label{font-size:11.5px;font-weight:500;color:var(--ink-8);cursor:pointer;margin:0;line-height:1.2}
+
+.sec-sep{display:flex;align-items:center;gap:10px;margin:18px 0 12px}
+.sec-sep-icon{font-size:13px;flex-shrink:0}
+.sec-sep-label{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-5);flex-shrink:0}
+.sec-sep-line{flex:1;height:1px;background:var(--rule)}
+
+/* ── BUTTONS ─────────────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r);border:1px solid transparent;font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.01em;transition:all .12s;cursor:pointer;white-space:nowrap}
+.btn svg{width:13px;height:13px;flex-shrink:0}
+.btn-primary{background:var(--acc-m);color:#fff;border-color:var(--acc-m)}
+.btn-primary:hover{background:var(--acc);border-color:var(--acc)}
+.btn-sec{background:#fff;color:var(--ink-7);border-color:var(--rule2)}
+.btn-sec:hover{border-color:var(--ink-5);background:var(--ink-1)}
+.btn-ghost{background:transparent;color:var(--ink-6);border-color:transparent}
+.btn-ghost:hover{background:var(--ink-2);color:var(--ink-9)}
+.btn-sm{padding:4px 9px;font-size:11px}
+.btn-lg{padding:10px 20px;font-size:13.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+
+/* ── BADGES ──────────────────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:9px;font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+.b-purple{background:var(--acc-soft);color:var(--acc)}
+.b-green{background:var(--emerald-soft);color:var(--emerald)}
+.b-amber{background:var(--amber-soft);color:var(--amber)}
+.b-red{background:var(--red-soft);color:var(--red)}
+.b-blue{background:var(--blue-soft);color:var(--blue)}
+.b-sky{background:var(--sky-soft);color:var(--sky)}
+.b-teal{background:var(--teal-soft);color:var(--teal)}
+.b-orange{background:var(--orange-soft);color:var(--orange)}
+.b-gray{background:var(--ink-2);color:var(--ink-6)}
+
+/* ── ALERTS ──────────────────────────────────────────────────────────── */
+.alert{padding:11px 14px;border-radius:var(--r);display:flex;align-items:flex-start;gap:9px;font-size:12.5px;margin-bottom:14px}
+.alert svg{width:15px;height:15px;flex-shrink:0;margin-top:1px}
+.alert-ok{background:var(--emerald-soft);color:#064e3b;border:1px solid #6ee7b7}
+.alert-warn{background:var(--amber-soft);color:#78350f;border:1px solid #fcd34d}
+.alert-err{background:var(--red-soft);color:#7f1d1d;border:1px solid #fca5a5}
+.alert-info{background:var(--blue-soft);color:#1e3a8a;border:1px solid #93c5fd}
+.alert-purple{background:var(--acc-soft);color:#4c1d95;border:1px solid #c4b5fd}
+
+/* ── PIPELINE TRACK ──────────────────────────────────────────────────── */
+.pipe-track{display:flex;align-items:center;overflow-x:auto;padding-bottom:4px;gap:0;scrollbar-width:thin}
+.pipe-track::-webkit-scrollbar{height:3px}
+.pipe-track::-webkit-scrollbar-thumb{background:var(--rule2)}
+.ps{display:flex;flex-direction:column;align-items:center;flex:0 0 auto;min-width:72px;max-width:88px;position:relative}
+.ps-dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--rule2);background:#fff;display:flex;align-items:center;justify-content:center;z-index:2;transition:all .25s;flex-shrink:0}
+.ps-dot svg{width:11px;height:11px;stroke:var(--ink-5);fill:none;stroke-width:2.5}
+.ps.ok .ps-dot{background:var(--emerald-m);border-color:var(--emerald-m)}
+.ps.ok .ps-dot svg{stroke:#fff}
+.ps.warn .ps-dot{background:var(--amber-m);border-color:var(--amber-m)}
+.ps.warn .ps-dot svg{stroke:#fff}
+.ps.err .ps-dot{background:var(--red-m);border-color:var(--red-m)}
+.ps.err .ps-dot svg{stroke:#fff}
+.ps.skip .ps-dot{background:var(--ink-2);border-color:var(--rule)}
+.ps.skip .ps-dot svg{stroke:var(--ink-5);opacity:.5}
+.ps-conn{flex:1;min-width:12px;height:2px;background:var(--rule);align-self:center;position:relative;top:0;margin-top:-16px}
+.ps-conn.ok{background:var(--emerald-m)}
+.ps-label{font-family:var(--mono);font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-5);text-align:center;margin-top:5px;line-height:1.3;max-width:72px}
+.ps.ok .ps-label{color:var(--emerald)}
+.ps.warn .ps-label{color:var(--amber)}
+.ps.err .ps-label{color:var(--red)}
+.ps-dur{font-family:var(--mono);font-size:7px;color:var(--ink-5);margin-top:2px;text-align:center}
+
+/* ── SUBMIT RESULT BOX ───────────────────────────────────────────────── */
+.result-box{background:var(--acc-lite);border:1px solid #c4b5fd;border-radius:var(--r);padding:18px;margin-top:18px;animation:rise .25s ease}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.result-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.result-kpi{background:#fff;border:1px solid var(--rule);border-radius:var(--r);padding:10px 12px}
+.result-kpi-v{font-family:var(--serif);font-size:19px;font-weight:700;color:var(--ink-9);line-height:1}
+.result-kpi-l{font-family:var(--mono);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-5);margin-top:4px}
+
+/* ── TABLE ───────────────────────────────────────────────────────────── */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--rule)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead{background:var(--ink-1)}
+th{padding:8px 11px;text-align:left;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-5);font-weight:500;border-bottom:1px solid var(--rule);white-space:nowrap}
+td{padding:8px 11px;border-bottom:1px solid var(--rule);color:var(--ink-8);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr{cursor:pointer;transition:background .08s}
+tbody tr:hover{background:var(--ink-1)}
+tbody tr.sel{background:var(--acc-soft)}
+.td-id{font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--acc)}
+.td-mono{font-family:var(--mono);font-size:10.5px;color:var(--ink-6)}
+
+/* ── CHAT ────────────────────────────────────────────────────────────── */
+.chat-wrap{display:flex;flex-direction:column;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:#fff}
+.chat-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:300px;max-height:460px;scrollbar-width:thin;scrollbar-color:var(--rule2) transparent}
+.chat-body::-webkit-scrollbar{width:4px}
+.chat-body::-webkit-scrollbar-thumb{background:var(--rule2)}
+.chat-foot{padding:10px 12px;border-top:1px solid var(--rule);display:flex;gap:8px;background:#fff}
+.chat-foot textarea{flex:1;resize:none;border:1px solid var(--rule2);border-radius:var(--r);padding:7px 10px;font-size:12.5px;height:36px;max-height:100px;transition:border-color .12s;background:#fff}
+.chat-foot textarea:focus{border-color:var(--acc-m);outline:none;box-shadow:0 0 0 3px rgba(124,58,237,.08)}
+.msg{max-width:80%;animation:rise .15s ease}
+.msg.user{align-self:flex-end}
+.msg.user .bubble{background:var(--acc-m);color:#fff;border-radius:12px 12px 3px 12px}
+.msg.bot .bubble,.msg.assistant .bubble{background:var(--ink-1);color:var(--ink-9);border-radius:12px 12px 12px 3px;border:1px solid var(--rule)}
+.msg.alert .bubble{background:var(--amber-soft);color:#78350f;border:1px solid #fcd34d;border-radius:var(--r)}
+.msg.system .bubble{background:var(--sky-soft);color:var(--sky);border:1px solid #bae6fd;border-radius:var(--r);font-family:var(--mono);font-size:10px;line-height:1.5}
+.bubble{padding:8px 12px;font-size:12.5px;line-height:1.55;word-break:break-word}
+.msg-role{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-5);margin-bottom:3px;padding:0 3px}
+.msg.user .msg-role{text-align:right}
+.msg-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;padding:0 3px}
+.msg-chip{padding:2px 7px;border-radius:8px;border:1px solid var(--rule2);background:#fff;font-size:9.5px;color:var(--ink-6);font-family:var(--mono)}
+
+/* ── CONVO LAYOUT ────────────────────────────────────────────────────── */
+.convo-grid{display:grid;grid-template-columns:1fr 260px;gap:14px}
+.captured-box{background:#fff;border:1px solid var(--rule);border-radius:var(--r);padding:12px}
+.captured-box h4{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-5);margin:0 0 9px}
+.captured-row{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid var(--rule);font-size:11.5px}
+.captured-row:last-child{border-bottom:none}
+.ck{font-family:var(--mono);font-size:9.5px;color:var(--ink-5);flex-shrink:0}
+.cv{font-weight:500;color:var(--ink-9);text-align:right;word-break:break-word}
+
+/* ── STAGE DETAIL ────────────────────────────────────────────────────── */
+.stage-card{background:#fff;border:1px solid var(--rule);border-radius:var(--r);margin-bottom:8px;overflow:hidden;cursor:pointer;transition:border-color .12s}
+.stage-card:hover{border-color:var(--rule2)}
+.stage-card.open{border-color:var(--acc-m)}
+.stage-card-head{padding:10px 13px;display:flex;align-items:center;gap:10px}
+.stage-card-id{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--ink-5);min-width:28px;flex-shrink:0}
+.stage-card-name{font-size:12.5px;font-weight:500;color:var(--ink-9);flex:1}
+.stage-card-dur{font-family:var(--mono);font-size:9.5px;color:var(--ink-5)}
+.stage-card-body{padding:12px;border-top:1px solid var(--rule);background:var(--ink-1);display:none}
+.stage-card.open .stage-card-body{display:block}
+.kv{display:grid;grid-template-columns:160px 1fr;gap:3px 10px;font-size:11.5px}
+.kv dt{font-family:var(--mono);font-size:9px;color:var(--ink-5);letter-spacing:.06em;text-transform:uppercase;padding:3px 0}
+.kv dd{color:var(--ink-7);padding:3px 0;margin:0;word-break:break-word}
+.decision-item{padding:9px 10px;border-radius:var(--r);background:var(--ink-1);border:1px solid var(--rule);margin-bottom:5px;font-size:12px}
+.decision-item:last-child{margin-bottom:0}
+.di-head{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap}
+.di-rationale{font-size:11px;color:var(--ink-6);font-style:italic;line-height:1.5;margin-top:3px}
+
+/* ── TOTAL LOSS ──────────────────────────────────────────────────────── */
+.tl-grid{display:grid;grid-template-columns:1fr 300px;gap:14px}
+.tl-metric{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--rule);font-size:12.5px}
+.tl-metric:last-child{border-bottom:none}
+.tl-mk{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-5)}
+.tl-mv{font-weight:600;color:var(--ink-9)}
+.ratio-bar{height:7px;border-radius:3px;background:var(--ink-3);overflow:hidden;position:relative;margin:6px 0}
+.ratio-fill{height:100%;border-radius:3px;transition:width .5s ease;background:var(--emerald-m)}
+.ratio-fill.warn{background:var(--amber-m)}
+.ratio-fill.danger{background:var(--red-m)}
+.ratio-marker{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--red-m);border-radius:1px}
+.letter-box{font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--ink-7);background:var(--ink-1);border:1px solid var(--rule);border-radius:var(--r);padding:14px;white-space:pre-wrap;max-height:380px;overflow-y:auto}
+
+/* ── GOVERNANCE CARDS ────────────────────────────────────────────────── */
+.gov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:18px}
+.gov-card{background:#fff;border:1px solid var(--rule);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:7px;transition:border-color .12s,box-shadow .12s}
+.gov-card:hover{border-color:var(--rule2);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.gov-card-icon{font-size:18px;line-height:1}
+.gov-card-title{font-size:12.5px;font-weight:600;color:var(--ink-9)}
+.gov-card-desc{font-size:11px;color:var(--ink-6);line-height:1.5}
+.gov-card-foot{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;color:var(--ink-5)}
+
+/* ── SYSTEM ──────────────────────────────────────────────────────────── */
+.sys-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.sys-card{background:#fff;border:1px solid var(--rule);border-radius:var(--r);padding:14px}
+.sys-label{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-5);margin-bottom:5px}
+.sys-val{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--ink-9);line-height:1.1}
+.sys-sub{font-family:var(--mono);font-size:9.5px;color:var(--ink-6);margin-top:3px}
+
+/* ── SPINNERS / MISC ─────────────────────────────────────────────────── */
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(124,58,237,.2);border-top-color:var(--acc-m);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
+.spinner-lg{width:28px;height:28px;border-width:3px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+.empty{text-align:center;padding:40px 20px;color:var(--ink-5)}
+.empty svg{width:40px;height:40px;margin:0 auto 10px;display:block;opacity:.3}
+.empty p{margin:0;font-size:12.5px;max-width:260px;margin:0 auto;line-height:1.5}
+.flex-center{display:flex;align-items:center;justify-content:center}
+.demo-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.demo-lbl{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-5)}
+.submit-row{display:flex;align-items:center;gap:12px;padding-top:18px;border-top:1px solid var(--rule);margin-top:18px}
+#submit-status{font-family:var(--mono);font-size:10px;color:var(--ink-6);display:flex;align-items:center;gap:7px}
+#policy-ctx{min-height:13px}
+
+/* ── TOAST ───────────────────────────────────────────────────────────── */
+#toast{position:fixed;bottom:22px;right:22px;z-index:9999;padding:10px 15px;border-radius:var(--r);font-size:12.5px;font-weight:500;max-width:340px;box-shadow:0 8px 24px rgba(0,0,0,.12);transform:translateY(10px);opacity:0;transition:all .22s ease;pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.info{background:#18181b;color:#fff}
+#toast.ok{background:#064e3b;color:#d1fae5}
+#toast.err{background:#7f1d1d;color:#fee2e2}
+#toast.warn{background:#78350f;color:#fef3c7}
+
+/* ── API KEY MODAL ───────────────────────────────────────────────────── */
+#key-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:999;display:flex;align-items:center;justify-content:center;animation:fade .15s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.key-modal{background:#fff;border-radius:var(--r);box-shadow:0 12px 36px rgba(0,0,0,.12);padding:22px;width:380px;max-width:92vw;animation:rise .2s ease}
+.key-modal h3{font-family:var(--serif);font-size:18px;font-weight:700;margin:0 0 6px;color:var(--ink-9)}
+.key-modal p{font-size:12.5px;color:var(--ink-6);margin:0 0 14px;line-height:1.5}
+.key-modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+#key-overlay.hidden{display:none}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────── */
+@media(max-width:1100px){
+  .tl-grid{grid-template-columns:1fr}
+  .convo-grid{grid-template-columns:1fr}
+  .result-kpis{grid-template-columns:1fr 1fr}
+}
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .hero-r{border-top:1px solid var(--rule);border-left:none}
+  .sidebar{position:fixed;left:-240px;transition:left .2s;z-index:200}
+  .sidebar.open{left:0}
+  .main{margin-left:0}
+  .g3,.g4{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .result-kpis{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<!-- ═══════════ LEFT SIDEBAR ═══════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">FNOL Intelligence</div>
+        <div class="brand-sub">Platform</div>
+      </div>
+    </div>
+    <div class="sidebar-status">
+      <div class="status-row"><span class="dot" id="health-dot"></span><span id="health-text">checking…</span></div>
+      <div class="status-row" id="llm-row" style="display:none"><span id="llm-text">LLM · —</span></div>
+      <div class="status-row" id="sor-row" style="display:none"><span id="sor-text">SOR · —</span></div>
+      <div class="status-row" id="ver-row" style="display:none"><span id="ver-text">v —</span></div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">Intake</div>
+    <button class="nav-item active" data-tab="submit">
+      <span class="nav-item-icon">📋</span>
+      <span class="nav-item-label">Submit FNOL</span>
+    </button>
+
+    <div class="nav-section">Analysis</div>
+    <button class="nav-item" data-tab="pipeline">
+      <span class="nav-item-icon">🔬</span>
+      <span class="nav-item-label">Pipeline Trace</span>
+    </button>
+    <button class="nav-item" data-tab="claims">
+      <span class="nav-item-icon">📂</span>
+      <span class="nav-item-label">Claims Register</span>
+    </button>
+
+    <div class="nav-section">AI Agents</div>
+    <button class="nav-item" data-tab="copilot">
+      <span class="nav-item-icon">🤖</span>
+      <span class="nav-item-label">Adjuster Co-Pilot</span>
+      <span class="nav-badge">A9</span>
+    </button>
+    <button class="nav-item" data-tab="convo">
+      <span class="nav-item-icon">💬</span>
+      <span class="nav-item-label">Conversational FNOL</span>
+      <span class="nav-badge ai">A10</span>
+    </button>
+    <button class="nav-item" data-tab="totalloss">
+      <span class="nav-item-icon">🚗</span>
+      <span class="nav-item-label">Total Loss &amp; Salvage</span>
+      <span class="nav-badge new">A11</span>
+    </button>
+
+    <div class="nav-section">Compliance</div>
+    <button class="nav-item" data-tab="governance">
+      <span class="nav-item-icon">🛡️</span>
+      <span class="nav-item-label">Governance</span>
+      <span class="nav-badge gov">AI Act</span>
+    </button>
+
+    <div class="nav-section">Admin</div>
+    <button class="nav-item" data-tab="system">
+      <span class="nav-item-icon">⚙️</span>
+      <span class="nav-item-label">System</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-foot">
+    <button id="apikey-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span id="apikey-label" style="font-size:11px">API Key</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">01 · Submit FNOL</div>
+    <div class="topbar-pills">
+      <span class="pill" id="pill-engine">Engine: L100-V2</span>
+      <span class="pill">Duck Creek · Native</span>
+      <span class="pill">Accenture · P&amp;C Auto</span>
+    </div>
+  </div>
+
+  <!-- SCROLLABLE CONTENT -->
+  <div class="content">
+
+    <!-- ═══ TAB: SUBMIT ═══ -->
+    <div data-panel="submit">
+
+      <div class="hero">
+        <div class="hero-l">
+          <div class="hero-eyebrow">FNOL Intelligence Platform · Operator Console · L100 May 2026</div>
+          <h1 class="hero-h">From <em>First Notice of Loss</em><br>to settlement decision in seconds.</h1>
+          <p class="hero-desc">8 specialized AI agents — intake, coverage, triage, fraud, damage, BI, settlement, subrogation — orchestrated on Duck Creek as system of record.</p>
+          <div class="hero-meta">
+            <span>Blueprint <strong>L100 · MAY 2026</strong></span>
+            <span>Maturity <strong>L2 → L3</strong></span>
+            <span>SOR <strong>Duck Creek</strong></span>
+          </div>
+        </div>
+        <div class="hero-r">
+          <div class="kpi-grid">
+            <div class="kpi"><div class="kpi-n">85%</div><div class="kpi-l">STP Automation</div></div>
+            <div class="kpi"><div class="kpi-n">8</div><div class="kpi-l">AI Agents</div></div>
+            <div class="kpi"><div class="kpi-n">&lt;2 min</div><div class="kpi-l">Intake to Decision</div></div>
+            <div class="kpi"><div class="kpi-n">≥80%</div><div class="kpi-l">Subro at FNOL</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-row">
+        <span class="demo-lbl">Load Demo →</span>
+        <button class="btn btn-sec btn-sm" id="demo1">🚗 Rear-end · TX</button>
+        <button class="btn btn-sec btn-sm" id="demo2">⚠️ Fraud Signal · GA</button>
+        <button class="btn btn-sec btn-sm" id="demo3">💥 Total Loss · TX</button>
+      </div>
+
+      <div id="submit-banner"></div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-eyebrow">Section 01</div>
+            <h2 class="panel-title">New First Notice of Loss</h2>
+          </div>
+        </div>
+        <div class="panel-body">
+          <form id="fnol-form">
+
+            <div class="sec-sep">
+              <span class="sec-sep-icon">📋</span>
+              <span class="sec-sep-label">Policy &amp; Loss</span>
+              <div class="sec-sep-line"></div>
+            </div>
+            <div class="g3">
+              <div class="fld">
+                <label>Policy Number <span class="req">*</span></label>
+                <select id="f-policy"><option value="">— choose policy —</option></select>
+                <div class="fld-hint" id="policy-ctx"></div>
+              </div>
+              <div class="fld">
+                <label>Loss Date &amp; Time <span class="req">*</span></label>
+                <input type="datetime-local" id="f-loss-dt"/>
+              </div>
+              <div class="fld">
+                <label>Loss Cause <span class="req">*</span></label>
+                <select id="f-cause">
+                  <option value="">— select —</option>
+                  <option value="REAR_END_COLLISION">Rear-end Collision</option>
+                  <option value="HEAD_ON_COLLISION">Head-on Collision</option>
+                  <option value="SINGLE_VEHICLE">Single Vehicle</option>
+                  <option value="SINGLE_VEHICLE_COLLISION">Single Vehicle Collision</option>
+                  <option value="HIT_AND_RUN">Hit &amp; Run</option>
+                  <option value="PARKING_LOT">Parking Lot</option>
+                  <option value="WEATHER">Weather / Environmental</option>
+                  <option value="THEFT">Theft / Vandalism</option>
+                  <option value="FIRE">Fire</option>
+                  <option value="ANIMAL">Animal Strike</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="g2" style="margin-top:12px">
+              <div class="fld">
+                <label>Loss Location</label>
+                <input type="text" id="f-loc" placeholder="City, State, highway, intersection…"/>
+              </div>
+              <div class="fld">
+                <label>Loss Description <span class="req">*</span></label>
+                <textarea id="f-desc" rows="2" placeholder="What happened…"></textarea>
+              </div>
+            </div>
+
+            <div class="sec-sep" style="margin-top:18px">
+              <span class="sec-sep-icon">👤</span>
+              <span class="sec-sep-label">Reporter</span>
+              <div class="sec-sep-line"></div>
+            </div>
+            <div class="g4">
+              <div class="fld">
+                <label>Reporter Name <span class="req">*</span></label>
+                <input type="text" id="f-rn" placeholder="Full name"/>
+              </div>
+              <div class="fld">
+                <label>Reporter Phone</label>
+                <input type="tel" id="f-rp" placeholder="+1-555-000-0000"/>
+              </div>
+              <div class="fld">
+                <label>Policy Tenure (days)</label>
+                <input type="number" id="f-tenure" min="0" max="9999" value="365"/>
+              </div>
+              <div class="fld">
+                <label>Prior Claims Count</label>
+                <input type="number" id="f-prior" min="0" max="99" value="0"/>
+              </div>
+            </div>
+
+            <div class="sec-sep" style="margin-top:18px">
+              <span class="sec-sep-icon">🚘</span>
+              <span class="sec-sep-label">Vehicle &amp; Damage</span>
+              <div class="sec-sep-line"></div>
+            </div>
+            <div class="g4">
+              <div class="fld">
+                <label>Est. Loss (USD)</label>
+                <input type="number" id="f-est" min="0" value="0"/>
+              </div>
+              <div class="fld">
+                <label>Vehicle ACV (USD)</label>
+                <input type="number" id="f-acv" min="0" value="0"/>
+              </div>
+              <div class="fld">
+                <label>Vehicle Class</label>
+                <select id="f-vclass">
+                  <option value="">— select —</option>
+                  <option value="STANDARD">Standard</option>
+                  <option value="LUXURY">Luxury</option>
+                  <option value="EV">EV</option>
+                  <option value="TRUCK">Truck / SUV</option>
+                  <option value="MOTORCYCLE">Motorcycle</option>
+                  <option value="COMMERCIAL">Commercial</option>
+                </select>
+              </div>
+              <div class="fld">
+                <label>Photo Count / Quality (0–1)</label>
+                <div style="display:flex;gap:6px">
+                  <input type="number" id="f-pc" min="0" max="999" value="0" style="width:60px"/>
+                  <input type="number" id="f-pq" min="0" max="1" step="0.01" value="0.5" style="flex:1"/>
+                </div>
+              </div>
+            </div>
+            <div class="g4" style="margin-top:12px">
+              <div class="check-row fld"><input type="checkbox" id="f-drive"/><label for="f-drive">Vehicle Drivable</label></div>
+              <div class="check-row fld"><input type="checkbox" id="f-recall"/><label for="f-recall">Recall Indicator</label></div>
+              <div class="check-row fld"><input type="checkbox" id="f-iso"/><label for="f-iso">ISO Match</label></div>
+              <div class="check-row fld"><input type="checkbox" id="seed-fraud"/><label for="seed-fraud">🧪 Seed Fraud (Demo)</label></div>
+            </div>
+
+            <div class="sec-sep" style="margin-top:18px">
+              <span class="sec-sep-icon">⚕️</span>
+              <span class="sec-sep-label">Injury &amp; Liability</span>
+              <div class="sec-sep-line"></div>
+            </div>
+            <div class="g4">
+              <div class="check-row fld"><input type="checkbox" id="f-inj"/><label for="f-inj">Injury Reported</label></div>
+              <div class="fld">
+                <label>Injury Severity</label>
+                <select id="f-isev">
+                  <option value="">None / Unknown</option>
+                  <option value="MINOR">Minor</option>
+                  <option value="MODERATE">Moderate</option>
+                  <option value="SERIOUS">Serious</option>
+                  <option value="CRITICAL">Critical</option>
+                  <option value="FATAL">Fatal</option>
+                </select>
+              </div>
+              <div class="check-row fld"><input type="checkbox" id="f-fatal"/><label for="f-fatal">Fatality Indicator</label></div>
+              <div class="check-row fld"><input type="checkbox" id="f-att"/><label for="f-att">Attorney Represented</label></div>
+            </div>
+            <div class="g4" style="margin-top:12px">
+              <div class="check-row fld"><input type="checkbox" id="f-libclear"/><label for="f-libclear">Liability Clear</label></div>
+              <div class="check-row fld"><input type="checkbox" id="f-rb"/><label for="f-rb">Rear-ended by Other</label></div>
+              <div class="check-row fld"><input type="checkbox" id="f-ro"/><label for="f-ro">Rear-ended Other</label></div>
+              <div class="fld">
+                <label>Third-Party Carrier</label>
+                <input type="text" id="f-tpc" placeholder="Carrier name"/>
+              </div>
+            </div>
+            <div class="g2" style="margin-top:12px">
+              <div class="fld">
+                <label>Third-Party Policy #</label>
+                <input type="text" id="f-tpp" placeholder="Policy number"/>
+              </div>
+            </div>
+
+            <div class="sec-sep" style="margin-top:18px">
+              <span class="sec-sep-icon">📡</span>
+              <span class="sec-sep-label">Telematics (S0 — Pre-FNOL)</span>
+              <div class="sec-sep-line"></div>
+            </div>
+            <div class="g4">
+              <div class="check-row fld"><input type="checkbox" id="t-crash"/><label for="t-crash">Crash Alert Received</label></div>
+              <div class="fld">
+                <label>Delta-V (mph)</label>
+                <input type="number" id="t-dv" min="0" max="200" step="0.1" value="0"/>
+              </div>
+              <div class="fld">
+                <label>Impact Severity (0–10)</label>
+                <input type="number" id="t-is" min="0" max="10" step="0.1" value="0"/>
+              </div>
+              <div style="display:flex;gap:8px">
+                <div class="check-row fld" style="flex:1"><input type="checkbox" id="t-ab"/><label for="t-ab">Airbag</label></div>
+                <div class="check-row fld" style="flex:1"><input type="checkbox" id="t-con"/><label for="t-con">Consent</label></div>
+              </div>
+            </div>
+
+            <div class="submit-row">
+              <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+                Run 8-Agent Pipeline
+              </button>
+              <span id="submit-status"></span>
+            </div>
+          </form>
+
+          <div id="submit-result" class="hidden">
+            <div class="result-box">
+              <div class="result-kpis">
+                <div class="result-kpi"><div class="result-kpi-v td-id" id="r-cid" style="font-size:12px">—</div><div class="result-kpi-l">Claim ID</div></div>
+                <div class="result-kpi"><div class="result-kpi-v" id="r-status" style="font-size:14px">—</div><div class="result-kpi-l">Final Status</div></div>
+                <div class="result-kpi"><div class="result-kpi-v" id="r-dur">—</div><div class="result-kpi-l">Duration</div></div>
+                <div class="result-kpi"><div class="result-kpi-v td-mono" id="r-prov" style="font-size:12px">—</div><div class="result-kpi-l">LLM Provider</div></div>
+              </div>
+              <div id="r-track"></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+                <button class="btn btn-sec btn-sm" id="r-pipeline">📊 Inspect Pipeline</button>
+                <button class="btn btn-sec btn-sm" id="r-copilot">🤖 Open Co-Pilot</button>
+                <button class="btn btn-ghost btn-sm" id="r-new">+ New FNOL</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /panel-body -->
+      </div><!-- /panel -->
+    </div><!-- /submit -->
+
+    <!-- ═══ TAB: PIPELINE ═══ -->
+    <div data-panel="pipeline" class="hidden">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+        <div>
+          <div class="panel-eyebrow">Section 02</div>
+          <h2 style="margin:0;font-family:var(--serif);font-size:18px;font-weight:600">Pipeline Trace Viewer</h2>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          <select id="pipe-selector" style="padding:6px 9px;border:1px solid var(--rule2);border-radius:var(--r);font-family:var(--mono);font-size:10.5px;color:var(--ink-7);background:#fff;min-width:200px">
+            <option value="">— select claim to inspect —</option>
+          </select>
+          <button class="btn btn-sec btn-sm" id="pipe-refresh">↻</button>
+        </div>
+      </div>
+      <div id="pipeline-view">
+        <div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><p>Submit a claim or select one from the dropdown.</p></div>
+      </div>
+    </div>
+
+    <!-- ═══ TAB: CLAIMS ═══ -->
+    <div data-panel="claims" class="hidden">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+        <div>
+          <div class="panel-eyebrow">Section 03</div>
+          <h2 style="margin:0;font-family:var(--serif);font-size:18px;font-weight:600">Claims Register</h2>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          <input type="text" id="claims-search" placeholder="Search claim ID, status, cause…" style="padding:6px 10px;border:1px solid var(--rule2);border-radius:var(--r);font-size:12px;width:220px;background:#fff"/>
+          <button class="btn btn-sec btn-sm" id="claims-refresh">↻ Refresh</button>
+        </div>
+      </div>
+      <div class="panel" id="claims-panel">
+        <div class="flex-center" style="padding:48px"><span class="spinner spinner-lg"></span></div>
+      </div>
+      <div id="claim-detail" class="hidden" style="margin-top:14px">
+        <div class="panel">
+          <div class="panel-head">
+            <div><div class="panel-eyebrow">Claim Detail</div><h3 class="panel-title" id="cd-title">—</h3></div>
+            <div class="panel-actions">
+              <button class="btn btn-sec btn-sm" id="cd-pipeline">📊 Pipeline</button>
+              <button class="btn btn-sec btn-sm" id="cd-copilot">🤖 Co-Pilot</button>
+              <button class="btn btn-ghost btn-sm" id="cd-close">✕</button>
+            </div>
+          </div>
+          <div class="panel-body" id="cd-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TAB: COPILOT ═══ -->
+    <div data-panel="copilot" class="hidden">
+      <div class="panel-eyebrow" style="margin-bottom:4px">Section 04</div>
+      <h2 style="margin:0 0 14px;font-family:var(--serif);font-size:18px;font-weight:600">A9 · Adjuster Co-Pilot</h2>
+      <div style="display:grid;grid-template-columns:220px 1fr;gap:14px;height:calc(100vh - 220px);min-height:480px">
+        <div class="panel" style="overflow:hidden;display:flex;flex-direction:column">
+          <div class="panel-head" style="padding:10px 12px;flex-shrink:0">
+            <div class="panel-eyebrow" style="margin:0">Claims</div>
+          </div>
+          <div id="copilot-claim-list" style="flex:1;overflow-y:auto;padding:8px;scrollbar-width:thin">
+            <div class="empty" style="padding:20px 10px"><p>Submit a claim to start.</p></div>
+          </div>
+        </div>
+        <div class="panel" style="overflow:hidden;display:flex;flex-direction:column">
+          <div class="panel-head" style="padding:10px 16px;flex-shrink:0">
+            <div>
+              <div class="panel-eyebrow">A9 · Adjuster Co-Pilot</div>
+              <div class="panel-title" id="copilot-label" style="font-size:14px">Select a claim from the list</div>
+            </div>
+            <div class="panel-actions">
+              <button class="btn btn-ghost btn-sm" id="copilot-alerts-btn" style="display:none">🔔 Alerts</button>
+            </div>
+          </div>
+          <div class="chat-body" id="copilot-body">
+            <div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>Select a claim to start a Co-Pilot conversation.</p></div>
+          </div>
+          <div class="chat-foot">
+            <textarea id="copilot-input" placeholder="Ask anything about this claim… (Ctrl+Enter to send)" rows="1" disabled></textarea>
+            <button class="btn btn-primary btn-sm" id="copilot-send" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TAB: CONVO ═══ -->
+    <div data-panel="convo" class="hidden">
+      <div class="panel-eyebrow" style="margin-bottom:4px">Section 05</div>
+      <h2 style="margin:0 0 12px;font-family:var(--serif);font-size:18px;font-weight:600">A10 · Conversational FNOL Agent (L3)</h2>
+      <div class="alert alert-info" style="margin-bottom:14px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Customer-facing conversational intake. The agent extracts all FNOL fields through natural dialogue, then runs the full 8-agent pipeline automatically when intake is complete.</span>
+      </div>
+      <div class="convo-grid">
+        <div class="panel" style="display:flex;flex-direction:column;overflow:hidden">
+          <div class="panel-head" style="padding:10px 16px;flex-shrink:0">
+            <div>
+              <div class="panel-eyebrow">A10 · L3 Agent</div>
+              <div class="panel-title" style="font-size:14px">FNOL Intake Agent</div>
+            </div>
+            <div class="panel-actions">
+              <span class="td-mono" id="convo-sid-lbl" style="font-size:9.5px;color:var(--ink-5)">No session</span>
+              <button class="btn btn-ghost btn-sm" id="convo-reset">↺ New Session</button>
+            </div>
+          </div>
+          <div class="chat-body" id="convo-body"></div>
+          <div class="chat-foot">
+            <textarea id="convo-input" placeholder="Type your message… (Enter to send)" rows="1"></textarea>
+            <button class="btn btn-primary btn-sm" id="convo-send">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="panel" style="padding:14px">
+            <h4 style="font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-5);margin:0 0 10px">📋 Captured Fields</h4>
+            <div id="convo-captured"></div>
+          </div>
+          <div class="panel" style="padding:14px">
+            <h4 style="font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-5);margin:0 0 9px">Session Info</h4>
+            <dl class="kv">
+              <dt>Session ID</dt><dd id="convo-sid" style="font-family:var(--mono);font-size:9.5px">—</dd>
+              <dt>Status</dt><dd id="convo-status">—</dd>
+              <dt>User turns</dt><dd id="convo-turns">0</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TAB: TOTAL LOSS ═══ -->
+    <div data-panel="totalloss" class="hidden">
+      <!-- Inner tab nav at top -->
+      <div class="panel-eyebrow" style="margin-bottom:4px">Section 06</div>
+      <h2 style="margin:0 0 14px;font-family:var(--serif);font-size:18px;font-weight:600">A11 · Total Loss &amp; Salvage Orchestrator</h2>
+
+      <div class="panel" style="margin-bottom:14px">
+        <!-- Inner tabs -->
+        <div class="inner-tabs" style="padding:0 0 0 0;border-bottom:1px solid var(--rule)">
+          <button class="inner-tab active" data-itab="tl-list">Evaluations</button>
+          <button class="inner-tab" data-itab="tl-detail-tab">Detail &amp; Actions</button>
+          <button class="inner-tab" data-itab="tl-letter-tab">Owner Letter</button>
+        </div>
+
+        <div class="inner-panel active" data-ipanel="tl-list">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <button class="btn btn-sec btn-sm" id="tl-refresh">↻ Refresh</button>
+            <button class="btn btn-primary btn-sm" id="tl-evaluate-btn">Run A11 Evaluation</button>
+            <span id="tl-eval-status" style="font-family:var(--mono);font-size:10px;color:var(--ink-5)"></span>
+          </div>
+          <div id="tl-list-body">
+            <div class="flex-center" style="padding:48px"><span class="spinner spinner-lg"></span></div>
+          </div>
+        </div>
+
+        <div class="inner-panel" data-ipanel="tl-detail-tab">
+          <div id="tl-detail-body">
+            <div class="empty"><p>Select an evaluation from the Evaluations tab first.</p></div>
+          </div>
+        </div>
+
+        <div class="inner-panel" data-ipanel="tl-letter-tab">
+          <div id="tl-letter-body">
+            <div class="empty"><p>Generate a letter from the Detail &amp; Actions panel.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TAB: GOVERNANCE ═══ -->
+    <div data-panel="governance" class="hidden">
+      <div class="panel-eyebrow" style="margin-bottom:4px">Section 07</div>
+      <h2 style="margin:0 0 14px;font-family:var(--serif);font-size:18px;font-weight:600">Governance &amp; AI Compliance Layer</h2>
+
+      <div class="alert alert-purple" style="margin-bottom:16px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;margin-top:1px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Aligned to <strong>NAIC Model Bulletin on AI</strong>, <strong>Colorado Reg 10-1-1</strong>, <strong>NYDFS Circular Letter No. 7</strong>, and <strong>FCRA §615</strong>. All 51 state addenda implemented. Demographic proxy monitoring is surveillance-only — never used as input features.</span>
+      </div>
+
+      <!-- Inner tabs -->
+      <div class="panel">
+        <div class="inner-tabs">
+          <button class="inner-tab active" data-itab="gov-overview">Overview</button>
+          <button class="inner-tab" data-itab="gov-reg">Regulatory Matrix</button>
+          <button class="inner-tab" data-itab="gov-arch">Architecture</button>
+        </div>
+
+        <div class="inner-panel active" data-ipanel="gov-overview">
+          <div class="gov-grid">
+            <div class="gov-card">
+              <div class="gov-card-icon">📜</div>
+              <div class="gov-card-title">Model Cards</div>
+              <div class="gov-card-desc">10 model cards documenting all agent models, training data, bias assessments, and performance benchmarks.</div>
+              <div class="gov-card-foot"><span class="badge b-green">Active</span> 10 cards registered</div>
+            </div>
+            <div class="gov-card">
+              <div class="gov-card-icon">⚖️</div>
+              <div class="gov-card-title">Decision Log</div>
+              <div class="gov-card-desc">Immutable SQLite audit trail with SHA-256 chain integrity. Every AI decision recorded with confidence, rationale, and HITL flags.</div>
+              <div class="gov-card-foot"><span class="badge b-green">SQLite</span> Hash-chained</div>
+            </div>
+            <div class="gov-card">
+              <div class="gov-card-icon">🏛️</div>
+              <div class="gov-card-title">Regulatory Frameworks</div>
+              <div class="gov-card-desc">NAIC · Colorado 10-1-1 · NYDFS No. 7 · FCRA §615. All 51 state addenda implemented.</div>
+              <div class="gov-card-foot"><span class="badge b-blue">51 states</span> All addenda</div>
+            </div>
+            <div class="gov-card">
+              <div class="gov-card-icon">🎯</div>
+              <div class="gov-card-title">Bias Monitor</div>
+              <div class="gov-card-desc">Demographic proxy cache — DOB, gender, language, ZIP. Monitoring-only. Real-time disparity reporting across 4 protected attributes.</div>
+              <div class="gov-card-foot"><span class="badge b-amber">Monitor-only</span> 4 proxies</div>
+            </div>
+            <div class="gov-card">
+              <div class="gov-card-icon">📣</div>
+              <div class="gov-card-title">FCRA Adverse Action</div>
+              <div class="gov-card-desc">Auto-generated adverse-action notices per FCRA §615 with consumer rights language and dispute procedures.</div>
+              <div class="gov-card-foot"><span class="badge b-red">FCRA §615</span> Auto-generated</div>
+            </div>
+            <div class="gov-card">
+              <div class="gov-card-icon">⚑</div>
+              <div class="gov-card-title">HITL Escalation</div>
+              <div class="gov-card-desc">Auto human-in-the-loop flags for borderline cases. Fires when TLT exceeds state threshold by ≥10pp or fraud score ≥0.80.</div>
+              <div class="gov-card-foot"><span class="badge b-teal">Configured</span> Auto-escalate</div>
+            </div>
+            <div class="gov-card">
+              <div class="gov-card-icon">🔍</div>
+              <div class="gov-card-title">Explainability (XAI)</div>
+              <div class="gov-card-desc">Every pipeline decision includes structured rationale, confidence score, evidence citations, and human-readable explanation.</div>
+              <div class="gov-card-foot"><span class="badge b-purple">XAI</span> All stages</div>
+            </div>
+            <div class="gov-card">
+              <div class="gov-card-icon">🔒</div>
+              <div class="gov-card-title">PII Handling</div>
+              <div class="gov-card-desc">TTL-bounded pipeline trace store. Sensitive fields masked in logs. Data minimization enforced at intake per SOC 2 controls.</div>
+              <div class="gov-card-foot"><span class="badge b-purple">TTL-bounded</span> Masked</div>
+            </div>
+            <div class="gov-card">
+              <div class="gov-card-icon">📄</div>
+              <div class="gov-card-title">PDF Audit Emission</div>
+              <div class="gov-card-desc">reportlab-generated Letter-size PDFs with hash-anchored audit footers (~4.5 KB per decision report).</div>
+              <div class="gov-card-foot"><span class="badge b-sky">reportlab</span> Hash-anchored</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="inner-panel" data-ipanel="gov-reg">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Framework</th><th>Scope</th><th>Jurisdiction</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td style="font-weight:600">NAIC Model Bulletin on AI</td><td style="color:var(--ink-6);font-size:12px">AI use in insurance — all lines</td><td class="td-mono">All states</td><td><span class="badge b-green">Implemented</span></td></tr>
+                <tr><td style="font-weight:600">Colorado Reg 10-1-1</td><td style="color:var(--ink-6);font-size:12px">Algorithmic bias in auto claims</td><td class="td-mono">CO</td><td><span class="badge b-green">Implemented</span></td></tr>
+                <tr><td style="font-weight:600">NYDFS Circular Letter No. 7</td><td style="color:var(--ink-6);font-size:12px">AI model governance</td><td class="td-mono">NY</td><td><span class="badge b-green">Implemented</span></td></tr>
+                <tr><td style="font-weight:600">FCRA §615</td><td style="color:var(--ink-6);font-size:12px">Adverse action notices — credit reporting</td><td class="td-mono">Federal</td><td><span class="badge b-green">Implemented</span></td></tr>
+                <tr><td style="font-weight:600">51 State Addenda</td><td style="color:var(--ink-6);font-size:12px">State-specific TLT thresholds &amp; compliance</td><td class="td-mono">All 51</td><td><span class="badge b-green">All Addenda</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="inner-panel" data-ipanel="gov-arch">
+          <div class="g2">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="padding:12px;background:var(--ink-1);border-radius:var(--r);border:1px solid var(--rule)">
+                <div style="font-weight:600;font-size:12.5px;margin-bottom:4px">🏗️ governance/ Package</div>
+                <div style="font-size:11.5px;color:var(--ink-6);line-height:1.5">8 modules · 10 model cards · 5 templates · 51 state addenda · 3 policy files — fully integrated with pipeline runtime</div>
+              </div>
+              <div style="padding:12px;background:var(--ink-1);border-radius:var(--r);border:1px solid var(--rule)">
+                <div style="font-weight:600;font-size:12.5px;margin-bottom:4px">🔗 16 Governance API Endpoints</div>
+                <div style="font-size:11.5px;color:var(--ink-6);line-height:1.5">/api/v1/fnol/governance/* — model cards, decision log query, bias report, adverse action notices, HITL queue management</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="padding:12px;background:var(--ink-1);border-radius:var(--r);border:1px solid var(--rule)">
+                <div style="font-weight:600;font-size:12.5px;margin-bottom:4px">📊 Real-time Bias Monitoring</div>
+                <div style="font-size:11.5px;color:var(--ink-6);line-height:1.5">4 proxy attributes: DOB, gender, preferred language, garaging ZIP. Variance tracked per claim. Policy Admin SOR-sourced. Never input features.</div>
+              </div>
+              <div style="padding:12px;background:var(--ink-1);border-radius:var(--r);border:1px solid var(--rule)">
+                <div style="font-weight:600;font-size:12.5px;margin-bottom:4px">🗄️ Decision Log Backend</div>
+                <div style="font-size:11.5px;color:var(--ink-6);line-height:1.5">SQLite at governance/decision_log_data/decisions.db. SHA-256 chain validated. 8+ decision records per full pipeline run. FCRA adverse-action template fires correctly.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TAB: SYSTEM ═══ -->
+    <div data-panel="system" class="hidden">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div>
+          <div class="panel-eyebrow">Section 08</div>
+          <h2 style="margin:0;font-family:var(--serif);font-size:18px;font-weight:600">System &amp; Configuration</h2>
+        </div>
+        <button class="btn btn-sec btn-sm" id="sys-refresh" style="margin-left:auto">↻ Refresh</button>
+      </div>
+      <div id="system-body">
+        <div class="flex-center" style="padding:48px"><span class="spinner spinner-lg"></span></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- API KEY MODAL -->
+<div id="key-overlay" class="hidden">
+  <div class="key-modal">
+    <h3>🔑 API Key Required</h3>
+    <p id="key-reason">Enter the FNOL_API_KEY set on the server. Check your launcher output or .env file.</p>
+    <div class="fld">
+      <label>X-API-Key</label>
+      <input type="password" id="key-input" placeholder="Paste your API key…" autocomplete="off"/>
+    </div>
+    <div class="key-modal-foot">
+      <button class="btn btn-ghost btn-sm" id="key-cancel">Cancel</button>
+      <button class="btn btn-primary btn-sm" id="key-save">Save &amp; Retry</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* ════════════════════════════════════════════════════════════
+   CONSTANTS
+════════════════════════════════════════════════════════════ */
+const API_BASE = window.location.origin;
+const LS_KEY = 'fnol_apikey_v2';  // versioned — won't conflict with old stored wrong key
+const STAGE_ICO = {S0:'📡',S1:'📋',S2:'🛡️',S3:'🎯',S4A:'🔍',S4B:'🔧',A11:'🚗',S5:'⚖️',S6:'💰',S7:'↩️',A9:'🤖',A10:'💬'};
+const TAB_TITLES = {submit:'01 · Submit FNOL',pipeline:'02 · Pipeline Trace',claims:'03 · Claims Register',copilot:'04 · A9 · Adjuster Co-Pilot',convo:'05 · A10 · Conversational FNOL',totalloss:'06 · A11 · Total Loss & Salvage',governance:'07 · Governance',system:'08 · System'};
+
+/* ════════════════════════════════════════════════════════════
+   DOM HELPERS
+════════════════════════════════════════════════════════════ */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtMs = ms => ms==null?'—':(ms<1000?ms+' ms':(ms/1000).toFixed(2)+' s');
+const fmtUsd = n => n==null?'—':'$'+Number(n).toLocaleString(undefined,{maximumFractionDigits:0});
+const nowLocal = () => {const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16);};
+
+function statusColor(s){
+  if(!s) return 'gray';
+  const l=s.toLowerCase();
+  if(l.includes('stp')||l.includes('complete')) return 'b-green';
+  if(l.includes('fraud')||l.includes('siu')) return 'b-red';
+  if(l.includes('review')||l.includes('hitl')||l.includes('manual')) return 'b-amber';
+  if(l.includes('loss')||l.includes('total')) return 'b-orange';
+  if(l.includes('pend')||l.includes('open')) return 'b-blue';
+  return 'b-purple';
+}
+
+function toast(msg,kind='info',ms=3200){
+  const t=$('#toast');t.textContent=msg;t.className='toast show '+kind;
+  clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),ms);
+}
+
+/* ════════════════════════════════════════════════════════════
+   API KEY — no hardcoded defaults; prompt if missing
+════════════════════════════════════════════════════════════ */
+let _keyResolve=null;
+const getKey=()=>localStorage.getItem(LS_KEY)||'';
+const setKey=k=>{if(k&&k.trim())localStorage.setItem(LS_KEY,k.trim());else localStorage.removeItem(LS_KEY);updateKeyLabel();};
+
+function updateKeyLabel(){
+  const k=getKey();
+  $('#apikey-label').textContent=k?'Key: …'+k.slice(-4):'API Key (not set)';
+  $('#apikey-label').style.color=k?'var(--emerald)':'var(--red-m)';
+}
+
+$('#apikey-btn').addEventListener('click',()=>showKeyModal('Update your API key.'));
+$('#key-cancel').addEventListener('click',()=>closeKeyModal(null));
+$('#key-save').addEventListener('click',()=>{
+  const v=$('#key-input').value.trim();
+  if(!v){toast('Enter an API key.','err');return;}
+  setKey(v);closeKeyModal(v);
+});
+$('#key-input').addEventListener('keydown',e=>{if(e.key==='Enter')$('#key-save').click();});
+$('#key-overlay').addEventListener('click',e=>{if(e.target===$('#key-overlay'))closeKeyModal(null);});
+
+function showKeyModal(reason){
+  return new Promise(resolve=>{
+    _keyResolve=resolve;
+    $('#key-reason').textContent=reason+' (Check your launcher output for the active FNOL_API_KEY.)';
+    $('#key-input').value=getKey();
+    $('#key-overlay').classList.remove('hidden');
+    setTimeout(()=>$('#key-input').focus(),80);
+  });
+}
+function closeKeyModal(val){
+  $('#key-overlay').classList.add('hidden');
+  if(_keyResolve){_keyResolve(val);_keyResolve=null;}
+}
+
+/* ════════════════════════════════════════════════════════════
+   API FETCH WRAPPER
+════════════════════════════════════════════════════════════ */
+async function api(path,opts={},_retry=false){
+  const headers={'Content-Type':'application/json',...(opts.headers||{})};
+  const k=getKey();if(k)headers['X-API-Key']=k;
+  const res=await fetch(API_BASE+path,{...opts,headers});
+  if(res.status===401&&!_retry){
+    // Don't clear key automatically — let user decide
+    const reason=k?'Server rejected the API key.':'API key required for this endpoint.';
+    const fresh=await showKeyModal(reason);
+    if(fresh)return api(path,opts,true);
+    throw new Error('401 — API key required');
+  }
+  if(!res.ok){const b=await res.text().catch(()=>'');throw new Error(`${res.status} ${res.statusText} — ${b.slice(0,200)}`);}
+  return res.json();
+}
+
+/* ════════════════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════════════════ */
+const S={
+  config:null,health:null,policies:[],
+  claims:[],claimsF:[],
+  pipeMap:{},
+  selClaim:null,
+  copilotMsgs:{},
+  convo:{sid:null,history:[],captured:{}},
+  tlEvals:[],selEval:null,
+};
+
+/* ════════════════════════════════════════════════════════════
+   LEFT NAV + TAB SWITCHING
+════════════════════════════════════════════════════════════ */
+$$('.nav-item[data-tab]').forEach(btn=>btn.addEventListener('click',()=>switchTab(btn.dataset.tab)));
+
+function switchTab(tab){
+  $$('.nav-item[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  $$('.main .content > [data-panel]').forEach(p=>p.classList.toggle('hidden',p.dataset.panel!==tab));
+  $('#topbar-title').textContent=TAB_TITLES[tab]||tab;
+  if(tab==='pipeline')buildPipePicker();
+  if(tab==='claims')loadClaims();
+  if(tab==='copilot')renderCopilotList();
+  if(tab==='totalloss')loadTlList();
+  if(tab==='system')loadSystem();
+}
+
+/* ════════════════════════════════════════════════════════════
+   INNER TABS (Total Loss, Governance)
+════════════════════════════════════════════════════════════ */
+function initInnerTabs(container){
+  $$(container+' .inner-tab').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const itab=btn.dataset.itab;
+      $$(container+' .inner-tab').forEach(b=>b.classList.toggle('active',b===btn));
+      $$(container+' .inner-panel').forEach(p=>p.classList.toggle('active',p.dataset.ipanel===itab));
+    });
+  });
+}
+initInnerTabs('[data-panel="totalloss"]');
+initInnerTabs('[data-panel="governance"]');
+
+/* ════════════════════════════════════════════════════════════
+   BOOTSTRAP
+════════════════════════════════════════════════════════════ */
+async function bootstrap(){
+  updateKeyLabel();
+  // If no key stored at all, prompt immediately
+  if(!getKey()){
+    await showKeyModal('Enter the FNOL API key to connect.');
+    if(!getKey()){
+      $('#health-dot').className='dot err';
+      $('#health-text').textContent='Key not set';
+      return;
+    }
+  }
+  try{
+    const h=await api('/api/v1/health');
+    S.health=h;
+    $('#health-dot').className='dot ok';
+    $('#health-text').textContent='API Live';
+  }catch(e){
+    $('#health-dot').className='dot err';
+    $('#health-text').textContent='API Offline';
+    toast('Cannot reach API at '+API_BASE+'. Start with fnol_launcher.py.','err',8000);
+    return;
+  }
+  try{
+    const c=await api('/api/v1/config');
+    S.config=c;S.policies=c.policies||[];
+    $('#llm-row').style.display='';$('#llm-text').textContent='LLM · '+(c.llm_provider||'—').toUpperCase();
+    $('#sor-row').style.display='';$('#sor-text').textContent='SOR · '+(c.sor_type||'mock').toUpperCase();
+    $('#ver-row').style.display='';$('#ver-text').textContent='v '+(c.version||'—');
+    $('#pill-engine').textContent='v '+(c.version||'—')+' · '+(c.llm_provider||'mock').toUpperCase();
+    buildPolicyDrop(c.policies||[]);
+    $('#f-loss-dt').value=nowLocal();
+  }catch(e){toast('Config failed: '+e.message,'err',6000);}
+  await loadClaims(true);
+  bootstrapConvo();
+}
+
+/* ════════════════════════════════════════════════════════════
+   POLICY DROPDOWN
+════════════════════════════════════════════════════════════ */
+function buildPolicyDrop(policies){
+  const sel=$('#f-policy');
+  sel.innerHTML='<option value="">— choose policy —</option>'
+    +policies.map(p=>`<option value="${esc(p.policy_number)}">${esc(p.policy_number)} · ${esc(p.jurisdiction_state)}</option>`).join('')
+    +'<option value="__custom">— custom policy number —</option>';
+  sel.addEventListener('change',()=>{
+    const v=sel.value,ctx=$('#policy-ctx');
+    if(v==='__custom'){
+      const inp=document.createElement('input');
+      inp.type='text';inp.id='f-policy';inp.placeholder='Enter policy number';
+      inp.style.cssText='padding:7px 10px;border:1px solid var(--rule2);border-radius:var(--r);font-size:12.5px;width:100%;font-family:var(--sans)';
+      sel.replaceWith(inp);
+      ctx.textContent='Custom — will fail coverage if not in SOR.';ctx.className='fld-hint warn';
+    }else if(v){
+      ctx.textContent='✓ '+v+' selected';ctx.className='fld-hint ok';
+    }else{ctx.textContent='';ctx.className='fld-hint';}
+  });
+}
+
+/* ════════════════════════════════════════════════════════════
+   DEMO FILL
+════════════════════════════════════════════════════════════ */
+function fill(m){Object.entries(m).forEach(([id,v])=>{const el=document.getElementById(id);if(!el)return;if(el.type==='checkbox')el.checked=!!v;else el.value=v;});}
+$('#demo1').addEventListener('click',()=>{
+  fill({'f-policy':'POC-POL-00123','f-loss-dt':nowLocal(),'f-cause':'REAR_END_COLLISION','f-loc':'Houston, TX (I-10 W)','f-desc':'Stopped at red light, struck from behind. Mild whiplash, vehicle drivable.','f-rn':'Aria Castillo','f-rp':'+1-713-555-0142','f-tenure':'720','f-est':'4800','f-acv':'22500','f-vclass':'STANDARD','f-pc':'6','f-pq':'0.82','f-prior':'0','f-drive':true,'f-recall':false,'f-iso':false,'f-inj':true,'f-isev':'MINOR','f-fatal':false,'f-libclear':true,'f-rb':true,'f-ro':false,'f-att':false,'f-tpc':'ACME Mutual','f-tpp':'ACM-7782-99','t-crash':true,'t-dv':'9.5','t-is':'3.2','t-ab':false,'t-con':true,'seed-fraud':false});
+  toast('Demo loaded — review and submit.','info');
+});
+$('#demo2').addEventListener('click',()=>{
+  fill({'f-policy':'POC-POL-00456','f-loss-dt':nowLocal(),'f-cause':'SINGLE_VEHICLE','f-loc':'Atlanta, GA','f-desc':'Hit a deer late at night. No witnesses. Third claim this year.','f-rn':'Jordan Mehta','f-rp':'+1-404-555-0188','f-tenure':'45','f-est':'9200','f-acv':'12000','f-vclass':'STANDARD','f-pc':'1','f-pq':'0.41','f-prior':'3','f-drive':false,'f-recall':false,'f-iso':true,'f-inj':false,'f-isev':'','f-fatal':false,'f-libclear':true,'f-rb':false,'f-ro':false,'f-att':true,'f-tpc':'','f-tpp':'','t-crash':false,'t-dv':'0','t-is':'0','t-ab':false,'t-con':false,'seed-fraud':true});
+  toast('Fraud demo loaded.','info');
+});
+$('#demo3').addEventListener('click',()=>{
+  fill({'f-policy':'POC-POL-00789','f-loss-dt':nowLocal(),'f-cause':'HEAD_ON_COLLISION','f-loc':'Austin, TX — US-183','f-desc':'Severe head-on at highway speed. Both airbags deployed. Inoperable. Serious injury.','f-rn':'Priya Donnelly','f-rp':'+1-512-555-0199','f-tenure':'400','f-est':'62000','f-acv':'58000','f-vclass':'EV','f-pc':'12','f-pq':'0.91','f-prior':'0','f-drive':false,'f-recall':false,'f-iso':false,'f-inj':true,'f-isev':'SERIOUS','f-fatal':false,'f-libclear':true,'f-rb':true,'f-ro':false,'f-att':false,'f-tpc':'Statewide Auto','f-tpp':'SWA-101-22','t-crash':true,'t-dv':'28.4','t-is':'8.7','t-ab':true,'t-con':true,'seed-fraud':false});
+  toast('Total loss demo loaded — will trigger A11.','info');
+});
+
+/* ════════════════════════════════════════════════════════════
+   SUBMIT FNOL
+════════════════════════════════════════════════════════════ */
+$('#fnol-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const polEl=document.getElementById('f-policy');
+  const pol=polEl.value.trim();
+  if(!pol){toast('Select a policy number.','err');return;}
+  const lossDt=$('#f-loss-dt').value;
+  const body={
+    policy_number:pol,
+    loss_date_time:lossDt?new Date(lossDt).toISOString():new Date().toISOString(),
+    loss_location:$('#f-loc').value.trim()||null,
+    loss_cause:$('#f-cause').value||'OTHER',
+    loss_description:$('#f-desc').value.trim(),
+    reporter_name:$('#f-rn').value.trim(),
+    reporter_phone:$('#f-rp').value.trim()||null,
+    estimated_loss_usd:+$('#f-est').value||0,
+    vehicle_acv_usd:+$('#f-acv').value||0,
+    photo_count:+$('#f-pc').value||0,
+    photo_quality_score:+$('#f-pq').value||0,
+    drivable_indicator:$('#f-drive').checked,
+    injury_reported:$('#f-inj').checked,
+    injury_severity:$('#f-isev').value||null,
+    fatality_indicator:$('#f-fatal').checked,
+    liability_clear:$('#f-libclear').checked,
+    rear_ended_other:$('#f-ro').checked,
+    rear_ended_by_other:$('#f-rb').checked,
+    attorney_represented:$('#f-att').checked,
+    prior_claims_count:+$('#f-prior').value||0,
+    iso_match:$('#f-iso').checked,
+    third_party_carrier:$('#f-tpc').value.trim()||null,
+    third_party_policy_number:$('#f-tpp').value.trim()||null,
+    vehicle_recall_indicator:$('#f-recall').checked,
+    vehicle_class:$('#f-vclass').value||null,
+    policy_tenure_days:+$('#f-tenure').value||365,
+    seed_fraud:$('#seed-fraud').checked,
+    telematics:{crash_alert_received:$('#t-crash').checked,delta_v_mph:+$('#t-dv').value||0,impact_severity_score:+$('#t-is').value||0,airbag_deployed:$('#t-ab').checked,consent_given:$('#t-con').checked},
+  };
+  const btn=$('#submit-btn');
+  btn.disabled=true;
+  $('#submit-status').innerHTML='<span class="spinner"></span>&nbsp;Running 8-agent pipeline…';
+  $('#submit-banner').innerHTML='';
+  $('#submit-result').classList.add('hidden');
+  try{
+    const t0=performance.now();
+    const out=await api('/api/v1/fnol/claims',{method:'POST',body:JSON.stringify(body)});
+    const wall=Math.round(performance.now()-t0);
+    S.pipeMap[out.claim_id]=out.pipeline;
+    renderSubmitResult(out,wall);
+    await loadClaims(true);
+    toast('✓ Pipeline complete — '+out.final_status,'ok');
+  }catch(err){
+    $('#submit-banner').innerHTML=`<div class="alert alert-err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><div><strong>Submit failed</strong> — ${esc(err.message)}</div></div>`;
+  }finally{btn.disabled=false;$('#submit-status').innerHTML='';}
+});
+
+$('#r-new').addEventListener('click',()=>{$('#submit-result').classList.add('hidden');window.scrollTo({top:0,behavior:'smooth'});});
+
+function renderSubmitResult(out,wall){
+  $('#submit-result').classList.remove('hidden');
+  $('#r-cid').textContent=out.claim_id;
+  $('#r-status').innerHTML=`<span class="badge ${statusColor(out.final_status)}">${esc(out.final_status)}</span>`;
+  $('#r-dur').textContent=fmtMs(out.total_duration_ms||wall);
+  $('#r-prov').textContent=(out.llm_provider||S.config?.llm_provider||'—').toUpperCase();
+  $('#r-track').innerHTML=buildTrack(out.pipeline);
+  $('#r-pipeline').onclick=()=>{S.selClaim=out.claim_id;switchTab('pipeline');renderPipelineFor(out.claim_id);};
+  $('#r-copilot').onclick=()=>{S.selClaim=out.claim_id;switchTab('copilot');openCopilot(out.claim_id);};
+  $('#submit-result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ════════════════════════════════════════════════════════════
+   PIPELINE TRACK (mini horizontal)
+════════════════════════════════════════════════════════════ */
+const checkSvg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+const dashSvg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+
+function buildTrack(pipeline){
+  if(!pipeline?.stages)return'';
+  const stages=pipeline.stages||[];
+  let h='<div class="pipe-track" style="padding:10px 0 4px">';
+  stages.forEach((s,i)=>{
+    const st=s.status||(s.skipped?'skip':'ok');
+    if(i>0)h+=`<div class="ps-conn ${st==='ok'?'ok':''}"></div>`;
+    h+=`<div class="ps ${st}" title="${esc(s.stage_name||s.stage_id)} · ${fmtMs(s.duration_ms)}">
+      <div class="ps-dot">${st==='skip'?dashSvg:checkSvg}</div>
+      <div class="ps-label">${esc(s.stage_id)}</div>
+      <div class="ps-dur">${fmtMs(s.duration_ms)}</div>
+    </div>`;
+  });
+  h+='</div>';return h;
+}
+
+/* ════════════════════════════════════════════════════════════
+   PIPELINE VIEWER
+════════════════════════════════════════════════════════════ */
+function buildPipePicker(){
+  const sel=$('#pipe-selector');
+  const ids=Object.keys(S.pipeMap);
+  sel.innerHTML='<option value="">— select claim —</option>'+ids.map(id=>`<option value="${esc(id)}">${esc(id)}</option>`).join('');
+  if(S.selClaim&&S.pipeMap[S.selClaim]){sel.value=S.selClaim;renderPipelineFor(S.selClaim);}
+}
+$('#pipe-selector').addEventListener('change',e=>{if(e.target.value)renderPipelineFor(e.target.value);else $('#pipeline-view').innerHTML='<div class="empty"><p>Select a claim.</p></div>';});
+$('#pipe-refresh').addEventListener('click',async()=>{await loadClaims(true);buildPipePicker();toast('Refreshed','info',2000);});
+
+function renderPipelineFor(cid){
+  const pipe=S.pipeMap[cid];
+  if(!pipe){$('#pipeline-view').innerHTML='<div class="empty"><p>No pipeline trace for this claim.</p></div>';return;}
+  const stages=pipe.stages||[];
+  let h=`<div class="panel" style="margin-bottom:14px"><div class="panel-body">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="badge ${statusColor(pipe.final_status)}">${esc(pipe.final_status||'—')}</span>
+      <span class="td-id" style="font-size:10.5px">${esc(cid)}</span>
+      <span class="td-mono">${fmtMs(pipe.total_duration_ms)}</span>
+      <span class="td-mono">LLM: ${esc((pipe.llm_provider||'—').toUpperCase())}</span>
+    </div>
+    ${buildTrack(pipe)}
+  </div></div>`;
+  stages.forEach(s=>{
+    const st=s.status||(s.skipped?'skip':'ok');
+    const bc=st==='ok'?'b-green':st==='warn'?'b-amber':st==='err'?'b-red':'b-gray';
+    const ico=STAGE_ICO[s.stage_id]||'⚙️';
+    const decisions=s.decisions||[];const outputs=s.outputs||{};
+    h+=`<div class="stage-card" onclick="this.classList.toggle('open')">
+      <div class="stage-card-head">
+        <span class="stage-card-id">${ico} ${esc(s.stage_id)}</span>
+        <span class="stage-card-name">${esc(s.stage_name||s.stage_id)}</span>
+        <span class="badge ${bc}" style="margin-left:auto">${esc(st)}</span>
+        <span class="stage-card-dur">${fmtMs(s.duration_ms)}</span>
+      </div>
+      <div class="stage-card-body">`;
+    if(Object.keys(outputs).length){
+      h+='<dl class="kv">';
+      Object.entries(outputs).slice(0,14).forEach(([k,v])=>{
+        const vs=typeof v==='object'?JSON.stringify(v).slice(0,120):String(v??'—');
+        h+=`<dt>${esc(k)}</dt><dd>${esc(vs)}</dd>`;
+      });
+      h+='</dl>';
+    }
+    decisions.forEach(d=>{
+      h+=`<div class="decision-item">
+        <div class="di-head">
+          <span class="badge ${d.hitl_required?'b-red':'b-green'}">${esc(d.decision||'—')}</span>
+          <span class="td-mono" style="font-size:9.5px">conf=${(d.confidence||0).toFixed(2)}</span>
+          ${d.hitl_required?'<span class="badge b-amber">⚑ HITL</span>':''}
+        </div>
+        ${d.rationale?`<div class="di-rationale">"${esc(d.rationale.slice(0,300))}"</div>`:''}
+      </div>`;
+    });
+    h+=`</div></div>`;
+  });
+  $('#pipeline-view').innerHTML=h;
+}
+
+/* ════════════════════════════════════════════════════════════
+   CLAIMS REGISTER
+════════════════════════════════════════════════════════════ */
+async function loadClaims(silent=false){
+  if(!silent)$('#claims-panel').innerHTML='<div class="flex-center" style="padding:48px"><span class="spinner spinner-lg"></span></div>';
+  try{
+    const r=await api('/api/v1/fnol/claims');
+    S.claims=r.claims||[];S.claimsF=[...S.claims];
+    renderClaimsTable(S.claimsF);
+    renderCopilotList();
+    buildPipePicker();
+  }catch(e){if(!silent)toast('Claims failed: '+e.message,'err');}
+}
+$('#claims-refresh').addEventListener('click',()=>loadClaims());
+$('#claims-search').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase();
+  S.claimsF=S.claims.filter(c=>(c.claim_id||'').toLowerCase().includes(q)||(c.loss_cause||'').toLowerCase().includes(q)||(c.summary?.final_status||'').toLowerCase().includes(q));
+  renderClaimsTable(S.claimsF);
+});
+
+function renderClaimsTable(claims){
+  if(!claims.length){$('#claims-panel').innerHTML='<div class="empty" style="padding:48px"><p>No claims found. Submit your first FNOL.</p></div>';return;}
+  let h='<div class="tbl-wrap"><table><thead><tr><th>Claim ID</th><th>Policy</th><th>Cause</th><th>Status</th><th>Duration</th><th>Loss Date</th></tr></thead><tbody>';
+  claims.forEach(c=>{
+    const st=c.summary?.final_status||c.final_status||'—';
+    h+=`<tr onclick="openClaimDetail('${esc(c.claim_id||'')}')">
+      <td class="td-id">${esc(c.claim_id||'—')}</td>
+      <td class="td-mono">${esc(c.policy_number||'—')}</td>
+      <td>${esc((c.loss_cause||'—').replace(/_/g,' '))}</td>
+      <td><span class="badge ${statusColor(st)}">${esc(st)}</span></td>
+      <td class="td-mono">${fmtMs(c.summary?.pipeline_duration_ms)}</td>
+      <td class="td-mono">${c.loss_date_time?c.loss_date_time.slice(0,10):'—'}</td>
+    </tr>`;
+  });
+  h+='</tbody></table></div>';
+  $('#claims-panel').innerHTML=h;
+}
+
+async function openClaimDetail(cid){
+  try{
+    const r=await api('/api/v1/fnol/claims/'+cid);
+    const pipe=S.pipeMap[cid]||r.pipeline;
+    const st=r.summary?.final_status||r.final_status||pipe?.final_status||'—';
+    $('#cd-title').innerHTML=`${esc(cid)} <span class="badge ${statusColor(st)}">${esc(st)}</span>`;
+    const fields=[['Policy',r.policy_number],['Loss Cause',r.loss_cause],['Reporter',r.reporter_name],['Phone',r.reporter_phone],['Location',r.loss_location],['Est. Loss',fmtUsd(r.estimated_loss_usd)],['ACV',fmtUsd(r.vehicle_acv_usd)],['Drivable',r.drivable_indicator?'Yes':'No'],['Injury',r.injury_reported?r.injury_severity||'Yes':'No'],['Attorney',r.attorney_represented?'Yes':'No'],['Prior Claims',r.prior_claims_count]];
+    let h='<div class="g3" style="gap:8px">';
+    fields.forEach(([k,v])=>{
+      h+=`<div style="padding:7px 10px;background:var(--ink-1);border-radius:var(--r)">
+        <div style="font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-5)">${esc(k)}</div>
+        <div style="font-size:12.5px;font-weight:500;color:var(--ink-9);margin-top:2px">${esc(String(v??'—'))}</div>
+      </div>`;
+    });
+    h+='</div>';
+    if(pipe)h+='<div style="margin-top:14px">'+buildTrack(pipe)+'</div>';
+    $('#cd-body').innerHTML=h;
+    $('#cd-pipeline').onclick=()=>{S.selClaim=cid;switchTab('pipeline');renderPipelineFor(cid);};
+    $('#cd-copilot').onclick=()=>{S.selClaim=cid;switchTab('copilot');openCopilot(cid);};
+    $('#claim-detail').classList.remove('hidden');
+    $('#claim-detail').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){toast('Claim detail failed: '+e.message,'err');}
+}
+$('#cd-close').addEventListener('click',()=>$('#claim-detail').classList.add('hidden'));
+
+/* ════════════════════════════════════════════════════════════
+   ADJUSTER CO-PILOT (A9)
+════════════════════════════════════════════════════════════ */
+function renderCopilotList(){
+  const el=$('#copilot-claim-list');
+  if(!S.claims.length){el.innerHTML='<div class="empty" style="padding:20px 10px"><p>Submit a claim first.</p></div>';return;}
+  el.innerHTML=S.claims.map(c=>{
+    const st=c.summary?.final_status||'—';const sel=S.selClaim===c.claim_id;
+    return `<div onclick="openCopilot('${esc(c.claim_id||'')}')" style="padding:8px 9px;border-radius:var(--r);cursor:pointer;margin-bottom:3px;border:1px solid ${sel?'var(--acc-m)':'var(--rule)'};background:${sel?'var(--acc-soft)':'#fff'};transition:all .12s">
+      <div style="font-family:var(--mono);font-size:10px;font-weight:500;color:${sel?'var(--acc)':'var(--ink-7)'}">${esc(c.claim_id||'—')}</div>
+      <div style="margin-top:2px"><span class="badge ${statusColor(st)}" style="font-size:7.5px">${esc(st)}</span></div>
+    </div>`;
+  }).join('');
+}
+
+async function openCopilot(cid){
+  S.selClaim=cid;renderCopilotList();
+  $('#copilot-label').textContent=cid;
+  $('#copilot-input').disabled=false;$('#copilot-send').disabled=false;
+  $('#copilot-alerts-btn').style.display='';
+  if(!S.copilotMsgs[cid])S.copilotMsgs[cid]=[];
+  renderCopilotMsgs(cid);
+  try{
+    const a=await api('/api/v1/fnol/copilot/alerts/'+cid);
+    (a.alerts||[]).forEach(al=>{
+      if(!S.copilotMsgs[cid].find(m=>m.text===(al.text||al)))
+        S.copilotMsgs[cid].push({role:'alert',text:al.text||al,suggested_actions:al.suggested_actions||[]});
+    });
+    renderCopilotMsgs(cid);
+  }catch(e){}
+}
+
+function renderCopilotMsgs(cid){
+  const msgs=S.copilotMsgs[cid]||[];
+  const el=$('#copilot-body');
+  if(!msgs.length){el.innerHTML='<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>Ask anything about claim '+esc(cid)+'</p></div>';return;}
+  el.innerHTML=msgs.map(m=>{
+    const role=m.role==='user'?'user':m.role==='alert'?'alert':m.role==='system'?'system':'bot';
+    const label=role==='user'?'You':role==='alert'?'⚡ Alert':role==='system'?'System':'Co-Pilot (A9)';
+    const chips=(m.suggested_actions||[]).map(a=>`<div class="msg-chip">${esc(a.label||a)}</div>`).join('');
+    return `<div class="msg ${role}"><div class="msg-role">${esc(label)}</div><div class="bubble">${esc(m.text||'…')}</div>${chips?`<div class="msg-chips">${chips}</div>`:''}</div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+async function sendCopilot(){
+  const cid=S.selClaim;if(!cid)return;
+  const inp=$('#copilot-input');const q=inp.value.trim();if(!q)return;
+  inp.value='';
+  const msgs=S.copilotMsgs[cid]||(S.copilotMsgs[cid]=[]);
+  msgs.push({role:'user',text:q});msgs.push({role:'bot',text:'…'});
+  renderCopilotMsgs(cid);
+  try{
+    const r=await api('/api/v1/fnol/copilot',{method:'POST',body:JSON.stringify({claim_id:cid,question:q})});
+    msgs[msgs.length-1]={role:'bot',text:r.text,suggested_actions:r.suggested_actions||[]};
+  }catch(e){msgs[msgs.length-1]={role:'bot',text:'Error: '+e.message};}
+  renderCopilotMsgs(cid);
+}
+$('#copilot-send').addEventListener('click',sendCopilot);
+$('#copilot-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){e.preventDefault();sendCopilot();}});
+$('#copilot-alerts-btn').addEventListener('click',()=>{if(S.selClaim)openCopilot(S.selClaim);});
+
+/* ════════════════════════════════════════════════════════════
+   CONVERSATIONAL FNOL (A10)
+════════════════════════════════════════════════════════════ */
+async function bootstrapConvo(){
+  if(S.convo.history.length)return;
+  try{
+    const r=await api('/api/v1/fnol/conversation/start',{method:'POST',body:JSON.stringify({})});
+    S.convo.sid=r.session_id;
+    appendConvo('assistant',r.assistant_message);updateConvoMeta();
+  }catch(e){appendConvo('assistant',"Hello — I'm the FNOL intake agent. Can't reach server right now.");}
+}
+
+function appendConvo(role,text){
+  S.convo.history.push({role,text});renderConvoMsgs();
+  $('#convo-turns').textContent=S.convo.history.filter(m=>m.role==='user').length;
+}
+
+function renderConvoMsgs(){
+  const el=$('#convo-body');
+  el.innerHTML=S.convo.history.map(m=>{
+    const role=m.role==='user'?'user':m.role==='system'?'system':'bot';
+    const label=role==='user'?'You':role==='system'?'System':'FNOL Agent (A10)';
+    return `<div class="msg ${role}"><div class="msg-role">${esc(label)}</div><div class="bubble">${esc(m.text||'')}</div></div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+function renderConvoCapture(){
+  const c=S.convo.captured||{};const keys=Object.keys(c);
+  const el=$('#convo-captured');
+  if(!keys.length){el.innerHTML='<div style="font-family:var(--mono);font-size:9.5px;color:var(--ink-5);text-align:center;padding:12px 0">Nothing captured yet</div>';return;}
+  el.innerHTML=keys.map(k=>`<div class="captured-row"><span class="ck">${esc(k)}</span><span class="cv">${esc(JSON.stringify(c[k]))}</span></div>`).join('');
+}
+
+function updateConvoMeta(){
+  const sid=S.convo.sid;
+  $('#convo-sid').textContent=sid?sid.slice(0,16)+'…':'—';
+  $('#convo-sid-lbl').textContent=sid?'Session: '+sid.slice(0,12):'No session';
+  $('#convo-status').innerHTML=sid?'<span class="badge b-green">Active</span>':'—';
+}
+
+async function sendConvo(){
+  const inp=$('#convo-input');const txt=inp.value.trim();if(!txt)return;
+  inp.value='';appendConvo('user',txt);appendConvo('assistant','…');
+  try{
+    const r=await api('/api/v1/fnol/conversation/turn',{method:'POST',body:JSON.stringify({session_id:S.convo.sid,user_message:txt})});
+    S.convo.captured=r.captured||S.convo.captured;
+    renderConvoCapture();
+    S.convo.history.pop();appendConvo('assistant',r.assistant_message);
+    if(r.done&&r.claim_result){
+      const cr=r.claim_result;
+      if(cr.pipeline)S.pipeMap[cr.claim_id]=cr.pipeline;
+      await loadClaims(true);
+      appendConvo('system',`✓ Pipeline complete · ${cr.claim_id} · ${cr.final_status} · ${fmtMs(cr.total_duration_ms)}`);
+    }
+  }catch(e){S.convo.history.pop();appendConvo('assistant','Error: '+e.message);}
+  $('#convo-turns').textContent=S.convo.history.filter(m=>m.role==='user').length;
+}
+$('#convo-send').addEventListener('click',sendConvo);
+$('#convo-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendConvo();}});
+$('#convo-reset').addEventListener('click',async()=>{
+  S.convo={sid:null,history:[],captured:{}};
+  renderConvoMsgs();renderConvoCapture();updateConvoMeta();
+  await bootstrapConvo();
+});
+
+/* ════════════════════════════════════════════════════════════
+   TOTAL LOSS & SALVAGE (A11)
+════════════════════════════════════════════════════════════ */
+async function loadTlList(){
+  $('#tl-list-body').innerHTML='<div class="flex-center" style="padding:48px"><span class="spinner spinner-lg"></span></div>';
+  try{
+    const r=await api('/api/v1/fnol/total-loss');
+    S.tlEvals=r.evaluations||[];renderTlList();
+  }catch(e){toast('TL list failed: '+e.message,'err');}
+}
+$('#tl-refresh').addEventListener('click',loadTlList);
+$('#tl-evaluate-btn').addEventListener('click',async()=>{
+  const cid=S.claims[0]?.claim_id;
+  if(!cid){toast('Submit a claim first.','err');return;}
+  $('#tl-eval-status').innerHTML='<span class="spinner"></span> Evaluating…';
+  try{
+    const ev=await api('/api/v1/fnol/total-loss/evaluate',{method:'POST',body:JSON.stringify({claim_id:cid})});
+    await loadTlList();
+    openTlDetail(ev.evaluation_id);
+    toast('A11 evaluation complete','ok');
+  }catch(e){toast('A11 failed: '+e.message,'err');}
+  finally{$('#tl-eval-status').innerHTML='';}
+});
+
+function renderTlList(){
+  const evals=S.tlEvals;
+  if(!evals.length){$('#tl-list-body').innerHTML='<div class="empty" style="padding:40px"><p>No evaluations yet. Submit the Total Loss demo, then click "Run A11 Evaluation".</p></div>';return;}
+  let h='<div class="tbl-wrap"><table><thead><tr><th>Evaluation ID</th><th>Claim ID</th><th>Determination</th><th>State TLT</th><th>Observed %</th><th>Salvage Vendor</th><th>HITL</th></tr></thead><tbody>';
+  evals.forEach(ev=>{
+    const det=ev.determination||'—';
+    const dc=det==='TOTAL_LOSS'?'b-red':det==='BORDERLINE'?'b-amber':'b-green';
+    h+=`<tr onclick="openTlDetail('${esc(ev.evaluation_id||'')}')">
+      <td class="td-id">${esc((ev.evaluation_id||'—').slice(0,18))}</td>
+      <td class="td-mono">${esc(ev.claim_id||'—')}</td>
+      <td><span class="badge ${dc}">${esc(det)}</span></td>
+      <td class="td-mono">${ev.state_tlt_threshold!=null?(ev.state_tlt_threshold*100).toFixed(0)+'%':'—'}</td>
+      <td class="td-mono">${ev.observed_tlt_pct!=null?(ev.observed_tlt_pct*100).toFixed(1)+'%':'—'}</td>
+      <td><span class="badge ${ev.salvage_assignment?'b-teal':'b-gray'}">${esc(ev.salvage_assignment?.vendor||'Unassigned')}</span></td>
+      <td>${ev.hitl_required?'<span class="badge b-amber">⚑ HITL</span>':'<span class="badge b-gray">Auto</span>'}</td>
+    </tr>`;
+  });
+  h+='</tbody></table></div>';
+  $('#tl-list-body').innerHTML=h;
+}
+
+async function openTlDetail(evId){
+  try{
+    const ev=await api('/api/v1/fnol/total-loss/'+evId);
+    S.selEval=ev;
+    // Switch to detail inner tab
+    const btn=$('[data-itab="tl-detail-tab"]');if(btn)btn.click();
+    renderTlDetailPanel(ev);
+  }catch(e){toast('TL detail failed: '+e.message,'err');}
+}
+
+function renderTlDetailPanel(ev){
+  const det=ev.determination||'—';
+  const dc=det==='TOTAL_LOSS'?'b-red':det==='BORDERLINE'?'b-amber':'b-green';
+  const pct=ev.observed_tlt_pct!=null?(ev.observed_tlt_pct*100).toFixed(1):'—';
+  const tlt=ev.state_tlt_threshold!=null?(ev.state_tlt_threshold*100).toFixed(0):'—';
+  const fw=Math.min(100,(ev.observed_tlt_pct||0)*100);
+  const fc=fw>=75?'danger':fw>=60?'warn':'';
+  const ml=(ev.state_tlt_threshold||0)*100;
+
+  $('#tl-detail-body').innerHTML=`
+    <div style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+        <span class="badge ${dc}" style="font-size:10px;padding:3px 10px">${esc(det)}</span>
+        <span class="td-id" style="font-size:11px">${esc(ev.evaluation_id||'—')}</span>
+        ${ev.hitl_required?'<span class="badge b-amber">⚑ HITL Required</span>':''}
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+          <span style="font-family:var(--serif);font-size:28px;font-weight:700">${pct}%</span>
+          <span style="font-size:12px;color:var(--ink-6)">observed vs <strong>${tlt}%</strong> state TLT threshold (${esc(ev.state||'—')})</span>
+        </div>
+        <div class="ratio-bar"><div class="ratio-fill ${fc}" style="width:${fw}%"></div><div class="ratio-marker" style="left:${ml}%"></div></div>
+      </div>
+      <div class="g2" style="gap:8px;margin-bottom:14px">
+        ${[['Claim ID',ev.claim_id],['State',ev.state],['ACV Refined',fmtUsd(ev.acv_refined_usd)],['Repair Est.',fmtUsd(ev.repair_estimate_usd)],['Prior Damage',fmtUsd(ev.prior_damage_usd)],['Branded Title',ev.branded_title?'⚠️ Yes':'No']].map(([k,v])=>`<div style="padding:8px 10px;background:var(--ink-1);border-radius:var(--r)"><div class="td-mono" style="font-size:8.5px;text-transform:uppercase;letter-spacing:.1em">${esc(k)}</div><div style="font-size:13px;font-weight:600;color:var(--ink-9);margin-top:2px">${esc(String(v??'—'))}</div></div>`).join('')}
+      </div>
+    </div>
+    ${ev.salvage_assignment?`<div style="margin-bottom:14px"><div class="td-mono" style="font-size:8.5px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Salvage Assignment</div><div style="padding:12px;background:var(--ink-1);border:1px solid var(--rule);border-radius:var(--r)"><div style="font-weight:600;font-size:12.5px">🏭 ${esc(ev.salvage_assignment.vendor?.toUpperCase()||'—')}</div><div class="td-mono" style="margin-top:4px">Bid: ${fmtUsd(ev.salvage_assignment.salvage_bid_usd)} · Net recovery: ${fmtUsd(ev.salvage_assignment.net_recovery_usd)}</div>${ev.salvage_assignment.yard_location?`<div class="td-mono" style="margin-top:2px">📍 ${esc(ev.salvage_assignment.yard_location)}</div>`:''}</div></div>`:''}
+    <div style="border-top:1px solid var(--rule);padding-top:14px">
+      <div class="td-mono" style="font-size:8.5px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Salvage Assignment</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+        ${['auto','copart','iaa','mock'].map(v=>`<button class="btn btn-sec btn-sm" onclick="doAssignSalvage('${esc(ev.evaluation_id)}','${v}')">${v.toUpperCase()}</button>`).join('')}
+      </div>
+      <div class="td-mono" style="font-size:8.5px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Owner Decision</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+        <button class="btn btn-sec btn-sm" onclick="doOwnerDecision('${esc(ev.evaluation_id)}','carrier_retains_salvage')">Carrier Retains</button>
+        <button class="btn btn-sec btn-sm" onclick="doOwnerDecision('${esc(ev.evaluation_id)}','owner_retains_salvage')">Owner Retains</button>
+      </div>
+      <div class="td-mono" style="font-size:8.5px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Customer Notification Letter</div>
+      <button class="btn btn-primary btn-sm" onclick="doGenerateLetter('${esc(ev.evaluation_id)}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Generate Owner Letter
+      </button>
+    </div>`;
+}
+
+async function doAssignSalvage(evId,vendor){
+  try{const ev=await api('/api/v1/fnol/total-loss/assign-salvage',{method:'POST',body:JSON.stringify({evaluation_id:evId,vendor})});S.selEval=ev;renderTlDetailPanel(ev);await loadTlList();toast('Salvage assigned to '+vendor.toUpperCase(),'ok');}
+  catch(e){toast('Assign failed: '+e.message,'err');}
+}
+async function doOwnerDecision(evId,choice){
+  try{const ev=await api('/api/v1/fnol/total-loss/owner-decision',{method:'POST',body:JSON.stringify({evaluation_id:evId,choice})});S.selEval=ev;renderTlDetailPanel(ev);toast('Decision recorded','ok');}
+  catch(e){toast('Decision failed: '+e.message,'err');}
+}
+async function doGenerateLetter(evId){
+  try{
+    const r=await api('/api/v1/fnol/total-loss/letter',{method:'POST',body:JSON.stringify({evaluation_id:evId})});
+    const letter=r.letter||'(no letter)';
+    $('#tl-letter-body').innerHTML=`
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span class="badge b-green">Generated</span>
+        <span class="td-mono" style="font-size:9.5px">${esc(evId.slice(0,20))}</span>
+        <button class="btn btn-sec btn-sm" style="margin-left:auto" onclick="navigator.clipboard.writeText(document.getElementById('letter-content').textContent).then(()=>toast('Copied','ok'))">Copy</button>
+      </div>
+      <div class="letter-box" id="letter-content">${esc(letter)}</div>`;
+    const btn=$('[data-itab="tl-letter-tab"]');if(btn)btn.click();
+    toast('Letter generated','ok');
+  }catch(e){toast('Letter failed: '+e.message,'err');}
+}
+
+/* ════════════════════════════════════════════════════════════
+   SYSTEM TAB
+════════════════════════════════════════════════════════════ */
+async function loadSystem(){
+  try{
+    const[h,c]=await Promise.all([api('/api/v1/health'),api('/api/v1/config')]);
+    S.health=h;S.config=c;
+    let html=`<div class="sys-grid">
+      ${[{l:'LLM Provider',v:(c.llm_provider||'—').toUpperCase(),s:h.llm_active?'Active':'Inactive'},
+         {l:'SOR Backend',v:(c.sor_type||'—').toUpperCase(),s:h.sor_connected?'Connected':'Disconnected'},
+         {l:'Pipeline Version',v:h.version||c.version||'—',s:'Operational'},
+         {l:'Policies Seeded',v:String(c.policies?.length??0),s:'POC Dataset'},
+         {l:'Pipeline Stages',v:String(c.pipeline_stages?.length??0),s:'Registered'},
+         {l:'Rate Limit',v:c.thresholds?.rate_limit||String(c.fnol_rate_limit_max||60),s:'Per key/min'},
+      ].map(m=>`<div class="sys-card"><div class="sys-label">${esc(m.l)}</div><div class="sys-val">${esc(m.v)}</div><div class="sys-sub">${esc(m.s)}</div></div>`).join('')}
+    </div>
+    <div class="g2" style="gap:14px;margin-top:0">
+      <div class="panel">
+        <div class="panel-head"><h3 class="panel-title" style="font-size:14px">Pipeline Stage Registry</h3></div>
+        <div class="tbl-wrap" style="border:none">
+          <table><thead><tr><th>ID</th><th>Stage Name</th><th>Agent</th><th>Type</th></tr></thead>
+          <tbody>${(c.pipeline_stages||[]).map(s=>`<tr><td><span class="badge b-purple" style="font-size:7.5px">${esc(s.id)}</span></td><td style="font-size:12px">${esc(s.name)}</td><td class="td-mono" style="font-size:9.5px">${esc(s.agent||'—')}</td><td><span class="badge ${s.conditional?'b-amber':'b-gray'}" style="font-size:7.5px">${s.conditional?'Conditional':'Standard'}</span></td></tr>`).join('')}</tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3 class="panel-title" style="font-size:14px">POC Test Policies</h3></div>
+        <div class="tbl-wrap" style="border:none">
+          <table><thead><tr><th>Policy #</th><th>State</th><th>Best For</th></tr></thead>
+          <tbody>
+            <tr><td class="td-id">POC-POL-00123</td><td>TX</td><td style="font-size:11.5px;color:var(--ink-6)">Rear-end collision demo</td></tr>
+            <tr><td class="td-id">POC-POL-00456</td><td>GA</td><td style="font-size:11.5px;color:var(--ink-6)">Fraud signal demo</td></tr>
+            <tr><td class="td-id">POC-POL-00789</td><td>TX</td><td style="font-size:11.5px;color:var(--ink-6)">Total loss / A11 trigger</td></tr>
+            <tr><td class="td-id">POC-POL-00999</td><td>—</td><td style="font-size:11.5px;color:var(--ink-6)">Coverage denial path</td></tr>
+          </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <div class="panel-head"><h3 class="panel-title" style="font-size:14px">Runtime Configuration</h3></div>
+      <div class="panel-body" style="padding:0">
+        <div class="tbl-wrap" style="border:none">
+          <table>
+            ${[['Service',h.service],['Version',h.version||c.version],['API Base',API_BASE],['LLM Provider',(c.llm_provider||'—').toUpperCase()],['LLM Active',String(h.llm_active??'—')],['SOR Type',(c.sor_type||'—').toUpperCase()],['SOR Connected',String(h.sor_connected??'—')],['Fraud Threshold',c.thresholds?.fraud_threshold||'—'],['TL Flag Threshold',c.thresholds?.tl_flag_threshold||'—']].map(([k,v])=>`<tr><td style="font-family:var(--mono);font-size:9.5px;color:var(--ink-5);letter-spacing:.08em;text-transform:uppercase;width:200px;padding:7px 12px">${esc(k)}</td><td style="padding:7px 12px;font-size:12.5px;font-weight:500;color:var(--ink-9)">${esc(String(v??'—'))}</td></tr>`).join('')}
+          </table>
+        </div>
+      </div>
+    </div>`;
+    $('#system-body').innerHTML=html;
+  }catch(e){$('#system-body').innerHTML=`<div class="alert alert-err"><div>System info failed: ${esc(e.message)}</div></div>`;}
+}
+$('#sys-refresh').addEventListener('click',loadSystem);
+
+/* ════════════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════════════ */
+bootstrap();
+</script>
+</body>
+</html>

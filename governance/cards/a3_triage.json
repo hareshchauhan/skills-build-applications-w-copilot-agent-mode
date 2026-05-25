@@ -1,0 +1,165 @@
+{
+  "agent_id": "a3_triage",
+  "agent_name": "Triage & Assignment Agent",
+  "version": "3.5.0",
+  "blueprint_stage": "03 \u2014 Triage, Complexity Scoring & Adjuster Assignment",
+  "maturity_level": "L2",
+  "owner": {
+    "team": "Accenture P&C Claims AI",
+    "contact": "claims-ai@accenture.com",
+    "last_review": "2026-05-08",
+    "next_review": "2026-08-08"
+  },
+  "intended_use": {
+    "primary": "Score auto-claim complexity 1\u201310 across 5 weighted dimensions and recommend handling track. Routes to STP, T2 standard, T3 BI/liability, T4 complex, T5 CAT, or SIU_HOLD.",
+    "in_scope": [
+      "US personal-lines auto first-party claims",
+      "All 50 US states"
+    ],
+    "out_of_scope": [
+      "Commercial auto",
+      "Workers' comp",
+      "Pricing/underwriting"
+    ]
+  },
+  "model_type": "hybrid_rules_plus_ml",
+  "training_approach": "Rules + heuristics calibrated against POC closed-claim outcomes. ML uplift planned for v4. No demographic features used.",
+  "inputs": {
+    "data_sources": [
+      {
+        "source": "FNOL Intake (A1)",
+        "sensitivity": "PII",
+        "fields": [
+          "policyNumber",
+          "lossDateTime",
+          "lossDescription"
+        ]
+      }
+    ],
+    "prohibited_inputs": [
+      "Race/ethnicity",
+      "Religion",
+      "National origin",
+      "Sexual orientation",
+      "Genetic information",
+      "Credit score in claims handling"
+    ]
+  },
+  "outputs": {
+    "fields": [
+      "triageScore",
+      "recommendedTrack",
+      "trackConfidence",
+      "stpEligible",
+      "reserveGuidance",
+      "catEventCode"
+    ],
+    "decision_record_emitted": true,
+    "hitl_gate": "confidence < 0.70"
+  },
+  "performance": {
+    "metrics": [
+      {
+        "name": "track_accuracy",
+        "current": 0.87,
+        "target": 0.92
+      },
+      {
+        "name": "stp_precision",
+        "current": 0.94,
+        "target": 0.95
+      },
+      {
+        "name": "latency_p95_ms",
+        "current": 145,
+        "target": 200
+      }
+    ],
+    "calibration": {
+      "expected_calibration_error": 0.04,
+      "target_ece": 0.05
+    }
+  },
+  "fairness": {
+    "monitored": true,
+    "monitor": "governance/bias_monitor.py",
+    "protected_attributes": [
+      {
+        "attribute": "age_band (where permitted)",
+        "proxy": "DOB from policy data"
+      },
+      {
+        "attribute": "gender (where permitted)",
+        "proxy": "policy data field"
+      },
+      {
+        "attribute": "language_preference",
+        "proxy": "claimant.preferredLanguage"
+      },
+      {
+        "attribute": "census_tract_composition",
+        "proxy": "garaging ZIP \u2192 census",
+        "note": "Monitoring only \u2014 never input"
+      }
+    ],
+    "metrics": [
+      {
+        "demographic_parity_ratio": 0.8
+      },
+      {
+        "equalized_odds_difference": 0.1
+      },
+      {
+        "calibration_by_group": 0.02
+      }
+    ],
+    "remediation_path": "Threshold breach \u2192 bias_monitor flags \u2192 CCO + model owner notified within 24h \u2192 re-calibration job queued \u2192 HITL rate raised to 100% on flagged segment until resolved."
+  },
+  "failure_modes_known": [
+    {
+      "id": "FM-T-01",
+      "description": "Sparse loss narrative (<50 chars) \u2192 low confidence \u2192 over-routes to T2",
+      "mitigation": "HITL gate, confidence floor 0.70"
+    },
+    {
+      "id": "FM-T-02",
+      "description": "Multi-vehicle pileups \u2192 liability clarity penalized \u2192 potential over-triage",
+      "mitigation": "Explicit multi-vehicle rule; supervisor review for pileups"
+    },
+    {
+      "id": "FM-T-03",
+      "description": "Out-of-state losses \u2192 CAT zone false negatives possible",
+      "mitigation": "Weather API check (planned v4); manual CAT activation supported"
+    }
+  ],
+  "human_oversight": {
+    "hitl_gates": [
+      {
+        "low_confidence": "trackConfidence < 0.70"
+      },
+      {
+        "high_severity": "fatality | severe injury | airbag + deltaV \u2265 25mph"
+      },
+      {
+        "bias_flag_active": "Any demographic parity breach in last 7d"
+      }
+    ],
+    "override_logging": "All adjuster overrides logged with overrideUserId, overrideReason, overrideTimestamp; feedback signal sent to model registry."
+  },
+  "regulatory_alignment": [
+    "NAIC Model Bulletin \u00a75 monitoring",
+    "Colorado Reg 10-1-1 \u00a75",
+    "NYDFS Circular Letter No. 7",
+    "NIST AI RMF GOVERN-1.4",
+    "State UCSPA (timely investigation)"
+  ],
+  "audit_log_location": "governance/decision_log/a3_triage/",
+  "retention_class": "STANDARD_7Y",
+  "change_log": [
+    {
+      "date": "2026-05-08",
+      "version": "3.5.0",
+      "note": "Governance Layer v1 \u2014 model card added; bias monitor wired where applicable"
+    }
+  ]
+}

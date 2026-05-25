@@ -1,0 +1,10 @@
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.6
+httpx>=0.27
+
+# Optional — install whichever LLM provider matches FNOL_LLM_PROVIDER
+# anthropic>=0.34
+# openai>=1.30
+# boto3>=1.34         # for FNOL_LLM_PROVIDER=bedrock
+# google-generativeai # for FNOL_LLM_PROVIDER=gemini
